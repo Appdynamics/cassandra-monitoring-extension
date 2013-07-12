@@ -1,0 +1,26 @@
+<project default="build">
+    <property name="build.dir" value="dist" />
+    <property name="conf.dir" value="conf" />
+    <property name="project.name" value="cassandra"/>
+    <property name="machine.agent.jar" value="lib/machineagent/machineagent.jar"/>
+    <property name="log.jar" value="lib/log4j/log4j-1.2.15.jar"/>
+    <path id="cp">
+        <pathelement location="${machine.agent.jar}"/>
+        <pathelement location="${log.jar}"/>
+    </path>
+
+    <target name="build">
+        <mkdir dir="${build.dir}/classes"/>
+        <javac destdir="${build.dir}/classes" srcdir="src/main/java" classpathref="cp" debug="on"/>
+        <jar destfile="${build.dir}/${project.name}.jar">
+            <fileset dir="${build.dir}/classes"/>
+        </jar>
+        <copy todir="${build.dir}/">
+            <fileset dir="${conf.dir}" includes="monitor.xml"/>
+        </copy>
+        <delete dir="${build.dir}/classes"/>
+    </target>
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+</project>
