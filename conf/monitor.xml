@@ -18,7 +18,7 @@
                         <argument name="pass" is-required="true" default-value="password" />
                 </task-arguments>
                 <java-task>
-                        <classpath>cassandra.jar</classpath>
+                        <classpath>CassandraMonitor.jar</classpath>
                         <impl-class>com.appdynamics.monitors.cassandra.CassandraMonitor</impl-class>
                 </java-task>
         </monitor-run-task>
