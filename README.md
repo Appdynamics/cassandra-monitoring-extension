@@ -30,7 +30,7 @@ Metrics include:
 
 ##Files and Folders Included
 
-|**Directory/File** | **Description**|
+|**File/Folder** | **Description**|
 | ------------- |:-------------|
 |conf|Contains the monitor.xml|
 |lib|Contains Third-party project references|
