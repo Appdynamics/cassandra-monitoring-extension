@@ -17,6 +17,8 @@
      *    [Streaming](#Cassandra-Streaming)
      *    [Storage](#Cassandra-Storage)
      *    [Thread Pool](#Cassandra-ThreadPool)
+-   [Contributing](#Cassandra-Contributing)
+-   [Support](#Cassandra-Support)
 
 ##<a name = "Cassandra-use-case"></a>Use Case
 
@@ -298,13 +300,12 @@ file contains the metric parsing and printing.
 </table>
 
 
+##<a name = "Cassandra-Contributing"></a>Contributing
 
-
-##Contributing
 
 Always feel free to fork and contribute any changes directly via GitHub.
 
 
-##Support
+##<a name = "Cassandra-Support"></a>Support
 
 For any support questions, please contact ace@appdynamics.com.
