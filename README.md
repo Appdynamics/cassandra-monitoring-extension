@@ -51,11 +51,10 @@ Files/Folders Included:
 
 |**Directory/File** | **Description**|
 | ------------- |:-------------|
-|bin |Contains class files|
 |conf|Contains the monitor.xml|
 |lib|Contains Third-party project references|
 |src|Contains source code to Cassandra Custom Monitor|
-|dist|Contains the distribution package (monitor.xml and jar)|
+|dist|Only obtained when using ant. Run 'ant build' to get binaries. Run 'ant package' to get the distributable .zip file|
 |build.xml|Ant build script to package the project (required only if changing Java code)|
 
 
@@ -67,18 +66,12 @@ file contains the metric parsing and printing.
 
 ##<a name = "Cassandra-Installation"></a>Installation
 
-1.  In the \<machine-agent-home\>/monitors/ directory create a new folder for the Cassandra monitoring extension.
-2.  Copy over the contents in the 'dist' folder to the folder made in
-    step 1.
-3.  Restart the Machine Agent.
-4.  Look in the Metric Browser for: Application Infrastructure Performance|\<Tier\>|Custom Metrics|Cassandra|Status
-
-##<a name = "Cassandra-RebuildingProject"></a>Rebuilding the Project
-
-1.  Go to root directory (where all the files are located) through the command line.
-2.  Type "ant" (without the quotes).
-
-    'dist' will be updated with the monitor.xml and cassandra.jar
+1. Run 'ant package' from the cassandra-monitoring-extension directory
+2. Deploy the file CassandraMonitor.zip found in the 'dist' directory into \<machineagent install dir\>/monitors/
+3. Unzip the downloaded file
+4. Open \<machineagent install dir\>/monitors/CassandraMonitor/monitor.xml and configure the Cassandra credentials
+5. Restart the machineagent
+6. In the AppDynamics Metric Browser, look for: Application Infrastructure Performance  | \<Tier\> | Custom Metrics | Cassandra | Status
 
 
 ##<a name = "Cassandra-Configuration"></a>Configuration
@@ -94,30 +87,31 @@ file contains the metric parsing and printing.
 ###<a name = "Cassandra-ExampleMonitorXML"></a>Example Monitor XML
 ```
 <monitor>
-	<name>CassandraMonitor</name>
-	<type>managed</type>
-	<description>Cassandra monitor</description>
-	<monitor-configuration></monitor-configuration>
-	<monitor-run-task>
-		<execution-style>periodic</execution-style>
-		<execution-frequency-in-seconds>60</execution-frequency-in-seconds>
-		<name>Cassandra Monitor Run Task</name>
-		<display-name>Cassandra Monitor Task</display-name>
-		<description>Cassandra Monitor Task</description>
-		<type>java</type>
-		<execution-timeout-in-secs>60</execution-timeout-in-secs>
-		<task-arguments>
-			<argument name="host" is-required="true" default-value="localhost" />
-			<argument name="port" is-required="true" default-value="80" />
-			<argument name="user" is-required="true" default-value="username" />
-			<argument name="pass" is-required="true" default-value="password" />
-		</task-arguments>
-		<java-task>
-			<classpath>cassandra.jar</classpath>
-			<impl-class>com.appdynamics.monitors.cassandra.CassandraMonitor</impl-class>
-		</java-task>
-	</monitor-run-task>
+        <name>CassandraMonitor</name>
+        <type>managed</type>
+        <description>Cassandra monitor</description>
+        <monitor-configuration></monitor-configuration>
+        <monitor-run-task>
+                <execution-style>periodic</execution-style>
+                <execution-frequency-in-seconds>60</execution-frequency-in-seconds>
+                <name>Cassandra Monitor Run Task</name>
+                <display-name>Cassandra Monitor Task</display-name>
+                <description>Cassandra Monitor Task</description>
+                <type>java</type>
+                <execution-timeout-in-secs>60</execution-timeout-in-secs>
+                <task-arguments>
+                        <argument name="host" is-required="true" default-value="localhost" />
+                        <argument name="port" is-required="true" default-value="80" />
+                        <argument name="user" is-required="true" default-value="username" />
+                        <argument name="pass" is-required="true" default-value="password" />
+                </task-arguments>
+                <java-task>
+                        <classpath>CassandraMonitor.jar</classpath>
+                        <impl-class>com.appdynamics.monitors.cassandra.CassandraMonitor</impl-class>
+                </java-task>
+        </monitor-run-task>
 </monitor>
+
 ```
 
 ##<a name = "Cassandra-Metrics"></a>Metrics
