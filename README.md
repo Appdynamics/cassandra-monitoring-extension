@@ -3,9 +3,7 @@
 
 ##Use Case
 
-Apache Cassandra is an open source distributed database management system.
-The Cassandra monitoring extension captures statistics from the Cassandra server
-and displays them in the AppDynamics Metric Browser.
+Apache Cassandra is an open source distributed database management system. The Cassandra monitoring extension captures statistics from the Cassandra server and displays them in the AppDynamics Metric Browser.
 
 Metrics include:
 
@@ -28,7 +26,17 @@ Metrics include:
 * Thread pool tasks: active, completed, blocked, pending
 
 
-##Files and Folders Included
+##Installation
+
+1. Run 'ant package' from the cassandra-monitoring-extension directory
+2. Deploy the file CassandraMonitor.zip found in the 'dist' directory into \<machineagent install dir\>/monitors/
+3. Unzip the deployed file
+4. Open \<machineagent install dir\>/monitors/CassandraMonitor/monitor.xml and configure the Cassandra credentials
+5. Restart the machineagent
+6. In the AppDynamics Metric Browser, look for: Application Infrastructure Performance  | \<Tier\> | Custom Metrics | Cassandra | Status
+
+
+##Directory Structure
 
 |**File/Folder** | **Description**|
 | ------------- |:-------------|
@@ -41,15 +49,6 @@ Metrics include:
 Main Java File:
 src/com/appdynamics/monitors/cassandra/CassandraMonitor.java  -\> This
 file contains the metric parsing and printing.
-
-##Installation
-
-1. Run 'ant package' from the cassandra-monitoring-extension directory
-2. Deploy the file CassandraMonitor.zip found in the 'dist' directory into \<machineagent install dir\>/monitors/
-3. Unzip the deployed file
-4. Open \<machineagent install dir\>/monitors/CassandraMonitor/monitor.xml and configure the Cassandra credentials
-5. Restart the machineagent
-6. In the AppDynamics Metric Browser, look for: Application Infrastructure Performance  | \<Tier\> | Custom Metrics | Cassandra | Status
 
 
 ##Configuration
@@ -152,8 +151,8 @@ file contains the metric parsing and printing.
 
 <table class='confluenceTable'><tbody>
 <tr>
-<th align = 'left'> Metric Name </th>
-<th align = 'left'> Description </th>
+<th align="left"> Metric Name </th>
+<th align="left"> Description </th>
 </tr>
 <tr>
 <td class='confluenceTd'> Completed Tasks </td>
@@ -179,8 +178,8 @@ file contains the metric parsing and printing.
 
 <table class='confluenceTable'><tbody>
 <tr>
-<th align = 'left'> Metric Name </th>
-<th align = 'left'> Description </th>
+<th align="left"> Metric Name </th>
+<th align="left"> Description </th>
 </tr>
 <tr>
 <td class='confluenceTd'> Total Timeouts </td>
@@ -194,8 +193,8 @@ file contains the metric parsing and printing.
 
 <table class='confluenceTable'><tbody>
 <tr>
-<th align = 'left'> Metric Name </th>
-<th align = 'left'> Description </th>
+<th align="left"> Metric Name </th>
+<th align="left"> Description </th>
 </tr>
 <tr>
 <td class='confluenceTd'> Dropped </td>
@@ -209,8 +208,8 @@ file contains the metric parsing and printing.
 
 <table class='confluenceTable'><tbody>
 <tr>
-<th align = 'left'> Metric Name </th>
-<th align = 'left'> Description </th>
+<th align="left"> Metric Name </th>
+<th align="left"> Description </th>
 </tr>
 <tr>
 <td class='confluenceTd'> ActiveOutboundStreams </td>
@@ -233,8 +232,8 @@ file contains the metric parsing and printing.
 
 <table class='confluenceTable'><tbody>
 <tr>
-<th align = 'left'> Metric Name </th>
-<th align = 'left'> Description </th>
+<th align="left"> Metric Name </th>
+<th align="left"> Description </th>
 </tr>
 <tr>
 <td class='confluenceTd'> Load </td>
@@ -249,8 +248,8 @@ file contains the metric parsing and printing.
 
 <table class='confluenceTable'><tbody>
 <tr>
-<th align = 'left'> Metric Name </th>
-<th align = 'left'> Description </th>
+<th align="left"> Metric Name </th>
+<th align="left"> Description </th>
 </tr>
 <tr>
 <td class='confluenceTd'> Active Tasks </td>
@@ -276,12 +275,15 @@ file contains the metric parsing and printing.
 </table>
 
 
+
 ##Contributing
 
+Always feel free to fork and contribute any changes directly via [GitHub](https://github.com/Appdynamics/cassandra-monitoring-extension).
 
-Always feel free to fork and contribute any changes directly via GitHub.
+##Community
 
+Find out more in the [AppSphere](http://appsphere.appdynamics.com/t5/Extensions/Cassandra-Monitoring-Extension/idi-p/827) community.
 
 ##Support
 
-For any support questions, please contact ace@appdynamics.com.
+For any questions or feature request, please contact [AppDynamics Center of Excellence](mailto://ace-request@appdynamics.com).
