@@ -286,4 +286,4 @@ Find out more in the [AppSphere](http://appsphere.appdynamics.com/t5/Extensions/
 
 ##Support
 
-For any questions or feature request, please contact [AppDynamics Center of Excellence](mailto://ace-request@appdynamics.com).
+For any questions or feature request, please contact [AppDynamics Center of Excellence](mailto:ace-request@appdynamics.com).
