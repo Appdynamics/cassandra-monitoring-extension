@@ -1,26 +1,7 @@
-# AppDynamics Apache Cassandra Monitoring Extension
+# AppDynamics Apache Cassandra - Monitoring Extension
 
--   [Use Case](#Cassandra-use-case)
--   [Files](#Cassandra-FilesFolders)
--   [Installation](#Cassandra-InstallationSteps)
--   [Rebuilding the Project](#Cassandra-RebuildingProject)
--   [Configuration](#Cassandra-Configuration)
-     *    [Example Monitor XML](#Cassandra-ExampleMonitorXML)
--   [Metrics](#Cassandra-Metrics)
-     *    [Cache](#Cassandra-Cache)
-     *    [Client Request](#Cassandra-ClientRequest)
-     *    [Column Family](#Cassandra-ColumnFamily)
-     *    [Commit Log](#Cassandra-CommitLog)
-     *    [Compaction](#Cassandra-Compaction)
-     *    [Connection](#Cassandra-Connection)
-     *    [Dropped Message](#Cassandra-DroppedMessage)
-     *    [Streaming](#Cassandra-Streaming)
-     *    [Storage](#Cassandra-Storage)
-     *    [Thread Pool](#Cassandra-ThreadPool)
--   [Contributing](#Cassandra-Contributing)
--   [Support](#Cassandra-Support)
 
-##<a name = "Cassandra-use-case"></a>Use Case
+##Use Case
 
 Apache Cassandra is an open source distributed database management system.
 The Cassandra monitoring extension captures statistics from the Cassandra server
@@ -47,9 +28,7 @@ Metrics include:
 * Thread pool tasks: active, completed, blocked, pending
 
 
-##<a name = "Cassandra-FilesFolders"></a>Files
-
-Files/Folders Included:
+##Files and Folders Included
 
 |**Directory/File** | **Description**|
 | ------------- |:-------------|
@@ -59,14 +38,11 @@ Files/Folders Included:
 |dist|Only obtained when using ant. Run 'ant build' to get binaries. Run 'ant package' to get the distributable .zip file|
 |build.xml|Ant build script to package the project (required only if changing Java code)|
 
-
-
-![](images/emoticons/information.gif)
 Main Java File:
 src/com/appdynamics/monitors/cassandra/CassandraMonitor.java  -\> This
 file contains the metric parsing and printing.
 
-##<a name = "Cassandra-Installation"></a>Installation
+##Installation
 
 1. Run 'ant package' from the cassandra-monitoring-extension directory
 2. Deploy the file CassandraMonitor.zip found in the 'dist' directory into \<machineagent install dir\>/monitors/
@@ -76,7 +52,7 @@ file contains the metric parsing and printing.
 6. In the AppDynamics Metric Browser, look for: Application Infrastructure Performance  | \<Tier\> | Custom Metrics | Cassandra | Status
 
 
-##<a name = "Cassandra-Configuration"></a>Configuration
+##Configuration
 
 
 |**Parameter** | **Description**|
@@ -86,7 +62,7 @@ file contains the metric parsing and printing.
 |User|Username to access cassandra jmx server|
 |Pass|Password to access cassandra jmx server|
 
-###<a name = "Cassandra-ExampleMonitorXML"></a>Example Monitor XML
+###Example Monitor XML
 ```
 <monitor>
         <name>CassandraMonitor</name>
@@ -116,9 +92,9 @@ file contains the metric parsing and printing.
 
 ```
 
-##<a name = "Cassandra-Metrics"></a>Metrics
+##Metrics
 
-###<a name = "Cassandra-Cache"></a>Cache
+###Cache
 
 |**Metric Name**|**Description**|
 |:-------------|:-------------|
@@ -128,7 +104,7 @@ file contains the metric parsing and printing.
 |Requests|Cache request count|
 |Size|Cache size in bytes|
 
-###<a name = "Cassandra-ClientRequest"></a>Client Request
+###Client Request
 |**Metric Name**|**Description**|
 |:-------------|:-------------|
 |Latency|Latency statistics|
@@ -137,7 +113,7 @@ file contains the metric parsing and printing.
 |Unavailables|Total number of unavailable requests. More precisely, total number of UnavailableException thrown|
 
 
-###<a name = "Cassandra-ColumnFamily"></a>Column Family
+###Column Family
 |**Metric Name**|**Description**|
 |:-------------|:-------------|
 |Bloom Filter Disk Space Used|Disk space used by bloom filter|
@@ -164,7 +140,7 @@ file contains the metric parsing and printing.
 |Write Latency|Write latency statistics|
 |Write Total Latency|Total latency for writes, in microseconds|
 
-###<a name = "Cassandra-CommitLog"></a>Commit Log
+###Commit Log
 |**Metric Name**|**Description**|
 |:-------------|:-------------|
 |Completed Tasks|Approximate number of completed tasks|
@@ -172,7 +148,7 @@ file contains the metric parsing and printing.
 |Total Commit Log Size|Current data size of all commit log segments|
 
 
-###<a name = "Cassandra-Compaction"></a>Compaction
+###Compaction
 
 <table class='confluenceTable'><tbody>
 <tr>
@@ -199,7 +175,7 @@ file contains the metric parsing and printing.
 </table>
 
 
-###<a name = "Cassandra-Connection"></a>Connection
+###Connection
 
 <table class='confluenceTable'><tbody>
 <tr>
@@ -214,7 +190,7 @@ file contains the metric parsing and printing.
 </table>
 
 
-###<a name = "Cassandra-DroppedMessage"></a>Dropped Message
+###Dropped Message
 
 <table class='confluenceTable'><tbody>
 <tr>
@@ -229,7 +205,7 @@ file contains the metric parsing and printing.
 </table>
 
 
-###<a name = "Cassandra-Streaming"></a>Streaming
+###Streaming
 
 <table class='confluenceTable'><tbody>
 <tr>
@@ -252,7 +228,7 @@ file contains the metric parsing and printing.
 </table>
 
 
-###<a name = "Cassandra-Storage"></a>Storage
+###Storage
 
 
 <table class='confluenceTable'><tbody>
@@ -269,7 +245,7 @@ file contains the metric parsing and printing.
 
 
 
-###<a name = "Cassandra-ThreadPool"></a>Thread Pool
+###Thread Pool
 
 <table class='confluenceTable'><tbody>
 <tr>
@@ -300,12 +276,12 @@ file contains the metric parsing and printing.
 </table>
 
 
-##<a name = "Cassandra-Contributing"></a>Contributing
+##Contributing
 
 
 Always feel free to fork and contribute any changes directly via GitHub.
 
 
-##<a name = "Cassandra-Support"></a>Support
+##Support
 
 For any support questions, please contact ace@appdynamics.com.
