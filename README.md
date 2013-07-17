@@ -68,7 +68,7 @@ file contains the metric parsing and printing.
 
 1. Run 'ant package' from the cassandra-monitoring-extension directory
 2. Deploy the file CassandraMonitor.zip found in the 'dist' directory into \<machineagent install dir\>/monitors/
-3. Unzip the downloaded file
+3. Unzip the deployed file
 4. Open \<machineagent install dir\>/monitors/CassandraMonitor/monitor.xml and configure the Cassandra credentials
 5. Restart the machineagent
 6. In the AppDynamics Metric Browser, look for: Application Infrastructure Performance  | \<Tier\> | Custom Metrics | Cassandra | Status
