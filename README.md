@@ -56,8 +56,8 @@ file contains the metric parsing and printing.
 
 |**Parameter** | **Description**|
 | ------------- |:-------------|
-|Host|Mongo DB Host|
-|Port|Mongo DB Port|
+|Host|Cassandra DB Host|
+|Port|Cassandra DB Port|
 |User|Username to access cassandra jmx server|
 |Pass|Password to access cassandra jmx server|
 
