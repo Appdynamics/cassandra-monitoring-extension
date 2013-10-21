@@ -1,13 +1,18 @@
+
 package com.appdynamics.monitors.cassandra;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
+import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
@@ -15,257 +20,273 @@ import javax.management.remote.JMXServiceURL;
 
 import org.apache.log4j.Logger;
 
-import com.appdynamics.monitors.cassandra.metrics.Metric;
 import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.MetricWriter;
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
 import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
 
+/**
+ * Cassandra Monitoring Extension.
+ */
 public class CassandraMonitor extends AManagedMonitor
 {
-	private MBeanServerConnection connection = null;
-	private HashMap<String, Metric> cassandraMetrics = new HashMap<String, Metric>();
-	private ObjectName cassandraBean = null;
+    private static final String CAMEL_CASE_REGEX = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])";
+    private static Logger logger = Logger.getLogger(CassandraMonitor.class);
+    private static final String CASSANDRA_METRICS_OBJECT = "org.apache.cassandra.metrics";
+    private static final String CUSTOM_METRICS_CASSANDRA_STATUS = "Custom Metrics|Cassandra|Status";
 
-	private static Logger logger = Logger.getLogger(CassandraMonitor.class);
+    private MBeanServerConnection connection = null;
+    private final HashMap<String, Object> cassandraMetrics = new HashMap<String, Object>();
+    private final Collection<String> filters = new HashSet<String>();
 
-	/**
-	 * Main execution method that uploads the metrics to the AppDynamics Controller
-	 * @see com.singularity.ee.agent.systemagent.api.ITask#execute(java.util.Map, com.singularity.ee.agent.systemagent.api.TaskExecutionContext)
-	 */
-	@Override
-	public TaskOutput execute(Map<String, String> args, TaskExecutionContext arg1)
-			throws TaskExecutionException
-	{
-		try
-		{
-			String host = args.get("host");
-			String port = args.get("port");
-			String username = args.get("user");
-			String password = args.get("pass");
+    /**
+     * Connects to JMX Remote Server to access Cassandra JMX Metrics
+     * 
+     * @param   host                Host of the remote jmx server.
+     * @param   port                Port of the remote jmx server.
+     * @param   username            Username to access the remote jmx server.
+     * @param   password            Password to access the remote jmx server.
+     * @throws  IOException         Failed to connect to server.
+     */
+    public void connect(final String host, final String port, final String username, final String password)
+        throws IOException
+    {
+        final JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi");
+        final Map<String, Object> env = new HashMap<String, Object>();
+        JMXConnector connector = null;
 
-			connect(host, port, username, password);
-			populate();
+        if (!"".equals(username)) {
+            env.put(JMXConnector.CREDENTIALS, new String[] { username, password });
+            connector = JMXConnectorFactory.connect(url, env);
+        }
+        else {
+            connector = JMXConnectorFactory.connect(url);
+        }
 
-			printMetric("Uptime", 1, MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
-				MetricWriter.METRIC_TIME_ROLLUP_TYPE_SUM,
-				MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
+        this.connection = connector.getMBeanServerConnection();
+    }
 
-			for (Iterator<Entry<String, Metric>> it = cassandraMetrics.entrySet().iterator();it.hasNext();) {
-				Map.Entry<String, Metric> metricMap = (Map.Entry<String, Metric>)it.next(); 
-				Metric metric = metricMap.getValue();
-				if (metric != null) {
-					for (MBeanAttributeInfo attr : metric.attrs) {
-						printMetric(
-							getMetricPrefix() 
-								+ metricMap.getKey()
-								+ "|"
-								+ metric.name
-								+ "|"
-								+ getTileCase(attr.getName(), true),
-							connection.getAttribute(metric.bean, attr.getName()),
-							MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
-							MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
-							MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE
-						);
-					}
-				}
-			}
+    /**
+     * Populates the metrics by iterating through properties of given mbean name (domain).
+     */
+    public void populateMetrics(final String mbeanDomain)
+    {
+        try {
+            // Get all the m-beans registered.
+            final Set<ObjectInstance> queryMBeans = this.connection.queryMBeans(null, null);
 
-			return new TaskOutput("Cassandra Metric Upload Complete");
+            // Iterate through each of them available.
+            for (final ObjectInstance mbean : queryMBeans) {
 
-		} catch (Exception e)
-		{
-			logger.error(e.toString());
-			return new TaskOutput("Cassandra Metric Upload Failed!");
-		}
-	}
+                // Get the canonical name
+                final String canonicalName = mbean.getObjectName().getCanonicalName();
 
-	/**
-	 * Connects to JMX Remote Server to access Cassandra JMX Metrics
-	 * 
-	 * @param 	host				Host of the remote jmx server.
-	 * @param 	port				Port of the remote jmx server.
-	 * @param 	username			Username to access the remote jmx server.
-	 * @param 	password			Password to access the remote jmx server.
-	 * @throws 	IOException			Failed to connect to server.
-	 */
-	public void connect(String host, String port, String username, String password)
-			throws IOException
-	{
-		JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + ":" + port
-				+ "/jmxrmi");
-		Map<String, Object> env = new HashMap<String, Object>();
-		JMXConnector connector = null;
-		if (!username.equals("")) {
-			env.put(JMXConnector.CREDENTIALS, new String[] { username, password });
-			connector = JMXConnectorFactory.connect(url, env);
-		}
-		else {
-			connector = JMXConnectorFactory.connect(url);
-		}
-		connection = connector.getMBeanServerConnection();
-	}
+                // See if its the one we want to gather metrics from.
+                // If the 'domain' name is not supplied then, 
+                // the m-bean "org.apache.cassandra.metrics" would be used.
+                if (canonicalName.startsWith(mbeanDomain)) {
+                    final ObjectName objectName = mbean.getObjectName();
 
-	/**
-	 * Fetches all the attributes from Cassandra RegionServer JMX
-	 * @throws Exception
-	 */
-	public void populate() throws Exception
-	{
-		cassandraMetrics.put(
-			"Cache", 
-			getStats(new String[]{
-				"CapacityInBytes", 
-				"Hits", 
-				"HitRate", 
-				"Requests", 
-				"Size"
-			 })
-		);
-		cassandraMetrics.put(
-			"Client Request",
-			getStats(new String[]{
-				"Latency", 
-				"Total latency", 
-				"Timeouts", 
-				"Unavailables"
-			})
-		);
-		cassandraMetrics.put(
-			"Column Family",
-			getStats(new String[]{
-				"BloomFilterDiskSpaceUsed",
-				"BloomFilterFalsePositives",
-				"BloomFilterFalseRatio",
-				"CompressionRatio",
-				"EstimatedRowSizeHistogram",
-				"EstimatedColumnCountHistogram",
-				"LiveDiskSpaceUsed",
-				"LiveSSTableCount",
-				"MaxRowSize",
-				"MeanRowSize",
-				"MemtableColumnsCount",
-				"MemtableColumnsCount",
-				"MemtableSwitchCount",
-				"MinRowSize",
-				"PendingTasks",
-				"ReadLatency," +
-				"ReadTotalLatency",
-				"RecentBloomFilterFalsePositives",
-				"RecentBloomFilterFalseRatio",
-				"SSTablesPerReadHistogram",
-				"TotalDiskSpaceUsed",
-				"WriteLatency",
-				"WriteTotalLatency"
-			})
-		);
-		cassandraMetrics.put(
-			"Commit Log",
-			getStats(new String[] {
-				"CompletedTasks",
-				"PendingTasks",
-				"TotalCommitLogSize"
-			})
-		);
-		cassandraMetrics.put(
-			"Compaction",
-			getStats(new String[] {
-				"CompletedTasks",
-				"PendingTasks",
-				"BytesCompacted",
-				"TotalCompactionsCompleted"
-			})
-		);
-		cassandraMetrics.put(
-			"Connection",
-			getStats(new String[] {
-				"CommandPendingTasks",
-				"CommandCompletedTasks",
-				"CommandDroppedTasks",
-				"ResponsePendingTasks",
-				"ResponseCompletedTasks",
-				"Timeout"
-			})
-		);
-		cassandraMetrics.put(
-			"Streaming",
-			getStats(new String[] {
-				"ActiveOutboundStreams",
-				"TotalIncomingBytes",
-				"TotalOutgoingBytes",
-			})
-		);
-		
-		cassandraMetrics.put(
-			"Storage",
-			getStats(new String[] {
-				"Load",
-			})
-		);
-		cassandraMetrics.put(
-			"Thread Pool",
-			getStats(new String[] {
-				"ActiveTasks",
-				"CompletedTasks",
-				"CurrentlyBlockedTasks",
-				"PendingTasks",
-				"TotalBlockedTasks"
-			})
-		);
-	}
+                    // Fetch all attributes.
+                    final MBeanAttributeInfo[] attributes = this.connection.getMBeanInfo(objectName).getAttributes();
+                    for (final MBeanAttributeInfo attr : attributes) {
 
-	public Metric getStats(String[] metricNames) throws Exception {
+                        // See we do not violate the security rules, i.e. only if the attribute is readable.
+                        if (attr.isReadable()) {
+                            // Collect the statistics.
+                            final Object attribute = this.connection.getAttribute(objectName, attr.getName());
+                            final String[] split = canonicalName.substring(canonicalName.indexOf(':') + 1).split(",");
+                            String type = null, keySpace = null, scope = null, name = null;
 
-		Metric metric = new Metric();
-		
-		for (String metricName : metricNames) {
-			metric.name = getTileCase(metricName, false);
-			metric.bean = cassandraBean;
-			metric.attrs = connection.getMBeanInfo(cassandraBean).getAttributes();
-		}
+                            // Form the AppDynamics Controller UI's path to show it.
+                            for (final String token : split) {
+                                final String[] keyValuePairs = token.split("=");
 
-		return metric;
-	}
+                                // Standard jmx attributes. {type, scope, name, keyspace, etc.}
+                                if ("type".equalsIgnoreCase(keyValuePairs[0])) {
+                                    type = keyValuePairs[1];
+                                }
+                                else if ("scope".equalsIgnoreCase(keyValuePairs[0])) {
+                                    scope = keyValuePairs[1];
+                                }
+                                else if ("name".equalsIgnoreCase(keyValuePairs[0])) {
+                                    name = keyValuePairs[1];
+                                }
+                                else if ("keyspace".equalsIgnoreCase(keyValuePairs[0])) {
+                                    keySpace = keyValuePairs[1];
+                                }
+                            }
 
-	/**
-	 * Returns the metric to the AppDynamics Controller.
-	 * 
-	 * @param metricName 	Name of the Metric
-	 * @param metricValue 	Value of the Metric
-	 * @param aggregation 	Average OR Observation OR Sum
-	 * @param timeRollup 	Average OR Current OR Sum
-	 * @param cluster 		Collective OR Individual
-	 */
-	public void printMetric(String metricName, Object metricValue, String aggregation,
-			String timeRollup, String cluster)
-	{
-		MetricWriter metricWriter = getMetricWriter(metricName, aggregation,
-				timeRollup, cluster);
+                            if (null != attr.getName()) {
+                                // Get the metrics name tiled.
+                                final String attributeNameTiled = getTileCase(attr.getName(), false);
 
-		metricWriter.printMetric(String.valueOf(metricValue));
-	}
+                                // If not it is to be filtered add it to the metrics.
+                                if (!filters.contains(attributeNameTiled)) {
+                                    String metricsKey = getMetricPrefix()
+                                        + ((isNotEmpty(type)) ? ("|" + getTileCase(type, false)) : "")
+                                        + ((isNotEmpty(keySpace)) ? ("|" + getTileCase(keySpace, false)) : "")
+                                        + ((isNotEmpty(scope)) ? ("|" + getTileCase(scope, false)) : "")
+                                        + ((isNotEmpty(name)) ? ("|" + getTileCase(name, false)) : "")
+                                        + ("|" + attributeNameTiled);
 
-	public String getTileCase(String camelCase, boolean caps) {
-		String tileCase = "";
-		String[] tileWords = camelCase.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])");
-		for (String tileWord : tileWords) {
-			tileCase += tileWord + " ";
-		}
-		if (caps) {
-			tileCase = tileCase.substring(0, 1).toUpperCase() + tileCase.substring(1);
-		}
-		return tileCase.trim();
-	}
+                                    // Put the path and the value in case every thing is okay and not null.
+                                    cassandraMetrics.put(metricsKey, attribute);
+                                    System.out.println(metricsKey + "{" + String.valueOf(attribute) + "}");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            logger.error("Collecting statistics failed.", e);
+        }
+    }
 
-	/**
-	 * Metric Prefix
-	 * 
-	 * @return Metric Location in the Controller (String)
-	 */
-	public String getMetricPrefix()
-	{
-		return "Custom Metrics|Cassandra|Status|";
-	}
+    /**
+     * @param input
+     * @return
+     */
+    public static boolean isNotEmpty(final String input)
+    {
+        return null != input && !"".equals(input.trim());
+    }
+
+    /**
+     * Main execution method that uploads the metrics to the AppDynamics Controller
+     * @see com.singularity.ee.agent.systemagent.api.ITask#execute(java.util.Map, com.singularity.ee.agent.systemagent.api.TaskExecutionContext)
+     */
+    @Override
+    public TaskOutput execute(final Map<String, String> args, final TaskExecutionContext arg1)
+        throws TaskExecutionException
+    {
+        try {
+            final String host = args.get("host");
+            final String port = args.get("port");
+            final String username = args.get("user");
+            final String password = args.get("pass");
+            final String filter = args.get("filter");
+            String mBeanDomain = args.get("mbean");
+
+            parseFilters(filter);
+            mBeanDomain = (null != mBeanDomain) ? mBeanDomain : CASSANDRA_METRICS_OBJECT;
+
+            // Obtain JMX connection.
+            connect(host, port, username, password);
+
+            // Populate the metrics.
+            populateMetrics(mBeanDomain);
+
+            // Send it to controller.
+            printMetric(
+                "Uptime", 1, MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
+                MetricWriter.METRIC_TIME_ROLLUP_TYPE_SUM, MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
+
+            for (Iterator<Entry<String, Object>> it = cassandraMetrics.entrySet().iterator(); it.hasNext();) {
+                final Map.Entry<String, Object> metricMap = (Map.Entry<String, Object>) it.next();
+
+                printMetric(
+                    metricMap.getKey(), metricMap.getValue(), MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
+                    MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT, MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
+            }
+
+            return new TaskOutput("Cassandra Metric Upload Complete");
+        }
+        catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return new TaskOutput("Cassandra Metric Upload Failed!");
+        }
+    }
+
+    /**
+     * @param filter
+     */
+    private void parseFilters(final String filter)
+    {
+        if (isNotEmpty(filter)) {
+            final String[] split = filter.split(",");
+            filters.clear();
+
+            for (final String token : split) {
+                filters.add(token.trim());
+            }
+        }
+    }
+
+    /**
+     * Returns the metric to the AppDynamics Controller.
+     * 
+     * @param metricName 	Name of the Metric
+     * @param metricValue 	Value of the Metric
+     * @param aggregation 	Average OR Observation OR Sum
+     * @param timeRollup 	Average OR Current OR Sum
+     * @param cluster 		Collective OR Individual
+     */
+    public void printMetric(
+        final String metricName,
+        final Object metricValue,
+        final String aggregation,
+        final String timeRollup,
+        final String cluster)
+    {
+        MetricWriter metricWriter = getMetricWriter(metricName, aggregation, timeRollup, cluster);
+        metricWriter.printMetric(String.valueOf(metricValue));
+    }
+
+    /**
+     * @param camelCase
+     * @param caps
+     * @return
+     */
+    public String getTileCase(final String camelCase, final boolean caps)
+    {
+        if (-1 == camelCase.indexOf('_')) {
+            return _getTileCase(camelCase, CAMEL_CASE_REGEX);
+        }
+        else {
+            return _getTileCase(camelCase, "_");
+        }
+    }
+
+    /**
+     * @param camelCase
+     * @param regEx
+     * @param caps
+     * @return
+     */
+    public String _getTileCase(final String camelCase, final String regEx)
+    {
+        String tileCase = "";
+        String[] tileWords = camelCase.split(regEx);
+
+        for (String tileWord : tileWords) {
+            tileCase += Character.toUpperCase(tileWord.charAt(0)) + tileWord.substring(1) + " ";
+        }
+
+        return tileCase.trim();
+    }
+
+    /**
+     * Metric Prefix
+     * 
+     * @return Metric Location in the Controller (String)
+     */
+    public String getMetricPrefix()
+    {
+        return CUSTOM_METRICS_CASSANDRA_STATUS;
+    }
+
+    /**
+     * @param args
+     * @throws IOException
+     */
+    public static void main(String[] args) throws IOException
+    {
+        CassandraMonitor monitor = new CassandraMonitor();
+        monitor.connect("localhost", "7199", "", "");
+        monitor.populateMetrics(CASSANDRA_METRICS_OBJECT);
+    }
 }

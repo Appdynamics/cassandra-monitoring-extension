@@ -13,9 +13,11 @@
                 <execution-timeout-in-secs>60</execution-timeout-in-secs>
                 <task-arguments>
                         <argument name="host" is-required="true" default-value="localhost" />
-                        <argument name="port" is-required="true" default-value="80" />
-                        <argument name="user" is-required="true" default-value="username" />
-                        <argument name="pass" is-required="true" default-value="password" />
+                        <argument name="port" is-required="true" default-value="7199" />
+                        <argument name="user" is-required="false" default-value="" />
+                        <argument name="pass" is-required="false" default-value="" />
+                        <argument name="mbean" is-required="false" default-value="org.apache.cassandra.metrics" />
+                        <argument name="filter" is-required="false" default-value="" />
                 </task-arguments>
                 <java-task>
                         <classpath>CassandraMonitor.jar</classpath>

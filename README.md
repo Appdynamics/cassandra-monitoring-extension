@@ -54,12 +54,15 @@ file contains the metric parsing and printing.
 ##Configuration
 
 
-|**Parameter** | **Description**|
-| ------------- |:-------------|
-|Host|Cassandra DB Host|
-|Port|Cassandra DB Port|
-|User|Username to access cassandra jmx server|
-|Pass|Password to access cassandra jmx server|
+|**Parameter** | **Description**| **Optional**|
+| ------------- |:-------------|:-------------|
+|Host|Cassandra DB Host|No|
+|Port|Cassandra DB Port|No|
+|User|Username to access cassandra jmx server|Yes|
+|Pass|Password to access cassandra jmx server|Yes|
+|MBean|Statistics bean of cassandra jmx server|Yes|
+|Filter|Statistics which needs to be filtered|Yes|
+
 
 ###Example Monitor XML
 ```
@@ -81,6 +84,8 @@ file contains the metric parsing and printing.
                         <argument name="port" is-required="true" default-value="80" />
                         <argument name="user" is-required="true" default-value="username" />
                         <argument name="pass" is-required="true" default-value="password" />
+                        <argument name="mbean" is-required="false" default-value="org.apache.cassandra.metrics" />
+                        <argument name="filter" is-required="false" default-value="" />
                 </task-arguments>
                 <java-task>
                         <classpath>CassandraMonitor.jar</classpath>
