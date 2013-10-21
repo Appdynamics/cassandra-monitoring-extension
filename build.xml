@@ -11,7 +11,7 @@
 
     <target name="build">
         <mkdir dir="${build.dir}/classes"/>
-        <javac destdir="${build.dir}/classes" srcdir="src/main/java" classpathref="cp" debug="on"/>
+        <javac destdir="${build.dir}/classes" srcdir="src/main/java" source="1.5" target="1.5" classpathref="cp" debug="on"/>
         <mkdir dir="${build.dir}/CassandraMonitor"/>
         <jar destfile="${build.dir}/CassandraMonitor/${project.name}.jar">
             <fileset dir="${build.dir}/classes"/>
