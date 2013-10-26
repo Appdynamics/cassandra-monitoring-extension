@@ -1,5 +1,6 @@
 # AppDynamics Apache Cassandra - Monitoring Extension
 
+This extension works only with the Java agent.
 
 ##Use Case
 
