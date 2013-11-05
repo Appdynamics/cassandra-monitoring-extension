@@ -96,6 +96,9 @@ public class CassandraMonitor extends AManagedMonitor
                         if (attr.isReadable()) {
                             // Collect the statistics.
                             final Object attribute = this.connection.getAttribute(objectName, attr.getName());
+                            if (attribute instanceof String){
+                                continue;
+                            }
                             final String[] split = canonicalName.substring(canonicalName.indexOf(':') + 1).split(",");
                             String type = null, keySpace = null, scope = null, name = null;
 
@@ -186,12 +189,10 @@ public class CassandraMonitor extends AManagedMonitor
                 "Uptime", 1, MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
                 MetricWriter.METRIC_TIME_ROLLUP_TYPE_SUM, MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
 
-            for (Iterator<Entry<String, Object>> it = cassandraMetrics.entrySet().iterator(); it.hasNext();) {
-                final Map.Entry<String, Object> metricMap = (Map.Entry<String, Object>) it.next();
-
+            for (final Entry<String, Object> metricMap : cassandraMetrics.entrySet()) {
                 printMetric(
-                    metricMap.getKey(), metricMap.getValue(), MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
-                    MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT, MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
+                        metricMap.getKey(), metricMap.getValue(), MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
+                        MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT, MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
             }
 
             return new TaskOutput("Cassandra Metric Upload Complete");
@@ -234,7 +235,13 @@ public class CassandraMonitor extends AManagedMonitor
         final String cluster)
     {
         MetricWriter metricWriter = getMetricWriter(metricName, aggregation, timeRollup, cluster);
-        metricWriter.printMetric(String.valueOf(metricValue));
+        if (metricValue instanceof Double){
+            metricWriter.printMetric(String.valueOf(Math.round((Double)metricValue)));
+        } else if (metricValue instanceof Float) {
+            metricWriter.printMetric(String.valueOf(Math.round((Float)metricValue)));
+        } else {
+            metricWriter.printMetric(String.valueOf(metricValue));
+        }
     }
 
     /**
@@ -248,14 +255,13 @@ public class CassandraMonitor extends AManagedMonitor
             return _getTileCase(camelCase, CAMEL_CASE_REGEX);
         }
         else {
-            return _getTileCase(camelCase, "_");
+            return _getTileCase(camelCase, "_+");
         }
     }
 
     /**
      * @param camelCase
      * @param regEx
-     * @param caps
      * @return
      */
     public String _getTileCase(final String camelCase, final String regEx)
@@ -264,7 +270,9 @@ public class CassandraMonitor extends AManagedMonitor
         String[] tileWords = camelCase.split(regEx);
 
         for (String tileWord : tileWords) {
-            tileCase += Character.toUpperCase(tileWord.charAt(0)) + tileWord.substring(1) + " ";
+            if (tileWord.length() >= 1){
+                tileCase += Character.toUpperCase(tileWord.charAt(0)) + tileWord.substring(1) + " ";
+            }
         }
 
         return tileCase.trim();
