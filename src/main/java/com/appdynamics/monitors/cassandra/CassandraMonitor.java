@@ -118,7 +118,7 @@ public class CassandraMonitor extends AManagedMonitor
                                 }
                             }
 
-                            if (null != attr.getName()) {
+                            if (null != attr.getName() && null != attribute) {
                                 // Get the metrics name tiled.
                                 final String attributeNameTiled = getTileCase(attr.getName(), false);
 
@@ -131,9 +131,11 @@ public class CassandraMonitor extends AManagedMonitor
                                         + ((isNotEmpty(name)) ? ("|" + getTileCase(name, false)) : "")
                                         + ("|" + attributeNameTiled);
 
-                                    // Put the path and the value in case every thing is okay and not null.
-                                    cassandraMetrics.put(metricsKey, attribute);
-                                    System.out.println(metricsKey + "{" + String.valueOf(attribute) + "}");
+                                    // If it is any kinda number or stats then only print it.
+                                    if (Number.class.isAssignableFrom(attribute.getClass())) {
+                                        // Put the path and the value in case every thing is okay and not null.
+                                        cassandraMetrics.put(metricsKey, attribute);
+                                    }
                                 }
                             }
                         }
@@ -159,7 +161,6 @@ public class CassandraMonitor extends AManagedMonitor
      * Main execution method that uploads the metrics to the AppDynamics Controller
      * @see com.singularity.ee.agent.systemagent.api.ITask#execute(java.util.Map, com.singularity.ee.agent.systemagent.api.TaskExecutionContext)
      */
-    @Override
     public TaskOutput execute(final Map<String, String> args, final TaskExecutionContext arg1)
         throws TaskExecutionException
     {
