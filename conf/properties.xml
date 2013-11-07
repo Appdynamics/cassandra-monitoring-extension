@@ -1,0 +1,11 @@
+<cassandra-monitor>
+    <credentials>
+        <dbname></dbname>
+        <host></host>
+        <port></port>
+        <username></username>
+        <password></password>
+        <mbean></mbean>
+        <filter></filter>
+    </credentials>
+</cassandra-monitor>
