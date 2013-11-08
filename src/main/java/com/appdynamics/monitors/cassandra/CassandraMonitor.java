@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
  */
 public class CassandraMonitor extends AManagedMonitor {
     private static Logger logger = Logger.getLogger(CassandraMonitor.class);
+    private List<Credential> credentials;
 
     /**
      * Connects to JMX Remote Server to access Cassandra JMX Metrics
@@ -57,49 +58,51 @@ public class CassandraMonitor extends AManagedMonitor {
     public TaskOutput execute(final Map<String, String> args, final TaskExecutionContext arg1)
             throws TaskExecutionException {
         try {
-            List<Credential> credentials = new ArrayList<Credential>();
-            Credential credential = new Credential();
+            if (credentials == null){
+                credentials = new ArrayList<Credential>();
+                Credential credential = new Credential();
 
-            credential.dbname = args.get("dbname");
-            credential.host = args.get("host");
-            credential.port = args.get("port");
-            credential.username = args.get("user");
-            credential.password = args.get("pass");
-            credential.filter = args.get("filter");
-            credential.mBeanDomain = args.get("mbean");
+                credential.dbname = args.get("dbname");
+                credential.host = args.get("host");
+                credential.port = args.get("port");
+                credential.username = args.get("user");
+                credential.password = args.get("pass");
+                credential.filter = args.get("filter");
+                credential.mBeanDomain = args.get("mbean");
 
-            if (!isNotEmpty(credential.dbname)) {
-                credential.dbname = "DB 1";
-            }
+                if (!isNotEmpty(credential.dbname)) {
+                    credential.dbname = "DB 1";
+                }
 
-            credentials.add(credential);
+                credentials.add(credential);
 
-            String xmlPath = args.get("properties-path");
-            if (xmlPath != null && !xmlPath.isEmpty()) {
-                try {
-                    SAXReader reader = new SAXReader();
-                    Document doc = reader.read(xmlPath);
-                    Element root = doc.getRootElement();
+                String xmlPath = args.get("properties-path");
+                if (isNotEmpty(xmlPath)) {
+                    try {
+                        SAXReader reader = new SAXReader();
+                        Document doc = reader.read(xmlPath);
+                        Element root = doc.getRootElement();
 
-                    for (Element credElem : (List<Element>) root.elements("credentials")) {
-                        Credential cred = new Credential();
-                        cred.dbname = credElem.elementText("dbname");
-                        cred.host = credElem.elementText("host");
-                        cred.port = credElem.elementText("port");
-                        cred.username = credElem.elementText("username");
-                        cred.password = credElem.elementText("password");
-                        cred.mBeanDomain = credElem.elementText("mbean");
-                        cred.filter = credElem.elementText("filter");
+                        for (Element credElem : (List<Element>) root.elements("credentials")) {
+                            Credential cred = new Credential();
+                            cred.dbname = credElem.elementText("dbname");
+                            cred.host = credElem.elementText("host");
+                            cred.port = credElem.elementText("port");
+                            cred.username = credElem.elementText("username");
+                            cred.password = credElem.elementText("password");
+                            cred.mBeanDomain = credElem.elementText("mbean");
+                            cred.filter = credElem.elementText("filter");
 
-                        if (isNotEmpty(cred.host) && isNotEmpty(cred.port)) {
-                            if (!isNotEmpty(cred.dbname)) {
-                                cred.dbname = "DB " + (credentials.size() + 1);
+                            if (isNotEmpty(cred.host) && isNotEmpty(cred.port)) {
+                                if (!isNotEmpty(cred.dbname)) {
+                                    cred.dbname = "DB " + (credentials.size() + 1);
+                                }
+                                credentials.add(cred);
                             }
-                            credentials.add(cred);
                         }
+                    } catch (DocumentException e) {
+                        logger.error("Cannot read '" + xmlPath + "'. Monitor is running without additional credentials");
                     }
-                } catch (DocumentException e) {
-                    logger.error("Cannot read '" + xmlPath + "'. Monitor is running without additional credentials");
                 }
             }
 
