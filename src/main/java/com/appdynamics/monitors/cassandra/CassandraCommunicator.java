@@ -44,7 +44,7 @@ public class CassandraCommunicator implements Callable<Map<String, Object>> {
         this.username = username;
         this.password = password;
         this.filter = filter;
-        this.mBeanDomain = (mBeanDomain != null) ? mBeanDomain : CASSANDRA_METRICS_OBJECT;
+        this.mBeanDomain = (isNotEmpty(mBeanDomain)) ? mBeanDomain : CASSANDRA_METRICS_OBJECT;
 
         this.logger = logger;
         cassandraMetrics = new HashMap<String, Object>();
@@ -54,12 +54,16 @@ public class CassandraCommunicator implements Callable<Map<String, Object>> {
 
     @Override
     public Map<String, Object> call() throws Exception {
-        parseFilter();
+        if (isNotEmpty(host) && isNotEmpty(port)){
+            parseFilter();
 
-        connect();
-        populateMetrics();
+            connect();
+            populateMetrics();
 
-        return cassandraMetrics;
+            return cassandraMetrics;
+        } else {
+            return null;
+        }
     }
 
     private void connect() throws IOException {

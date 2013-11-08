@@ -69,7 +69,7 @@ public class CassandraMonitor extends AManagedMonitor {
             credential.mBeanDomain = args.get("mbean");
 
             if (!isNotEmpty(credential.dbname)) {
-                credential.dbname = "DB0";
+                credential.dbname = "DB_1";
             }
 
             credentials.add(credential);
@@ -91,10 +91,12 @@ public class CassandraMonitor extends AManagedMonitor {
                         cred.mBeanDomain = credElem.elementText("mbean");
                         cred.filter = credElem.elementText("filter");
 
-                        if (!isNotEmpty(cred.dbname)) {
-                            cred.dbname = "DB" + (credentials.size() + 1);
+                        if (isNotEmpty(cred.host) && isNotEmpty(cred.port)) {
+                            if (!isNotEmpty(cred.dbname)) {
+                                cred.dbname = "DB_" + (credentials.size() + 1);
+                            }
+                            credentials.add(cred);
                         }
-                        credentials.add(cred);
                     }
                 } catch (DocumentException e) {
                     logger.error("Cannot read '" + xmlPath + "'. Monitor is running without additional credentials");
@@ -103,34 +105,37 @@ public class CassandraMonitor extends AManagedMonitor {
 
             ExecutorService executor = Executors.newFixedThreadPool(credentials.size());
 
-            CompletionService<Map<String, Object>> threadPool =
-                    new ExecutorCompletionService<Map<String, Object>>(executor);
+            try {
+                CompletionService<Map<String, Object>> threadPool =
+                        new ExecutorCompletionService<Map<String, Object>>(executor);
 
-            for (Credential cred : credentials) {
-                threadPool.submit(new CassandraCommunicator(cred.dbname, cred.host, cred.port,
-                        cred.username, cred.password, cred.filter, cred.mBeanDomain, logger));
-            }
+                for (Credential cred : credentials) {
+                    threadPool.submit(new CassandraCommunicator(cred.dbname, cred.host, cred.port,
+                            cred.username, cred.password, cred.filter, cred.mBeanDomain, logger));
+                }
 
-            for (int i = 0; i < credentials.size(); i++) {
-                Map<String, Object> metrics = threadPool.take().get();
-                if (metrics != null) {
-                    String dbname = (String) metrics.remove(CassandraCommunicator.DBNAME_KEY);
+                for (int i = 0; i < credentials.size(); i++) {
+                    Map<String, Object> metrics = threadPool.take().get();
+                    if (metrics != null) {
+                        String dbname = (String) metrics.remove(CassandraCommunicator.DBNAME_KEY);
 
-                    printMetric(CassandraCommunicator.getMetricPrefix() + "|" + dbname + "|Uptime", 1,
-                            MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
-                            MetricWriter.METRIC_TIME_ROLLUP_TYPE_SUM,
-                            MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-
-                    for (final Entry<String, Object> metricMap : metrics.entrySet()) {
-                        printMetric(metricMap.getKey(), metricMap.getValue(),
+                        printMetric(CassandraCommunicator.getMetricPrefix() + "|" + dbname + "|Uptime", 1,
                                 MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
-                                MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
+                                MetricWriter.METRIC_TIME_ROLLUP_TYPE_SUM,
                                 MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
+
+                        for (final Entry<String, Object> metricMap : metrics.entrySet()) {
+                            printMetric(metricMap.getKey(), metricMap.getValue(),
+                                    MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
+                                    MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
+                                    MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
+                        }
                     }
                 }
+            } finally {
+                executor.shutdown();
             }
 
-            executor.shutdown();
 
             return new TaskOutput("Cassandra Metric Upload Complete");
         } catch (Exception e) {
