@@ -1,3 +1,20 @@
+<!--
+    DB credentials are to be placed in separate <credentials> elements.
+    <host> and <port> are required.
+
+    Example:
+
+    <credentials>
+        <dbname>TestDB</dbname>
+        <host>localhost</host>
+        <port>7199</port>
+        <username></username>
+        <password></password>
+        <mbean></mbean>
+        <filter></filter>
+    </credentials>
+-->
+
 <cassandra-monitor>
     <credentials>
         <dbname></dbname>

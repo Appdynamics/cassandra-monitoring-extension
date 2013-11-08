@@ -12,6 +12,11 @@
                 <type>java</type>
                 <execution-timeout-in-secs>60</execution-timeout-in-secs>
                 <task-arguments>
+                        <!-- Database name (RECOMMENDED)(OPTIONAL)
+                                Name of the database to be shown in Metric Browser.
+                                If left blank, database will have name of 'DB #', where # is the database order number in
+                                credentials list
+                        -->
                         <argument name="dbname" is-required="false" default-value="" />
                         <argument name="host" is-required="true" default-value="localhost" />
                         <argument name="port" is-required="true" default-value="7199" />
@@ -20,7 +25,9 @@
                         <argument name="mbean" is-required="false" default-value="org.apache.cassandra.metrics" />
                         <argument name="filter" is-required="false" default-value="" />
 
-                        <!-- additional db cred goes here -->
+                        <!-- Additional Cassandra DB credentials (OPTIONAL)
+                                Additional Cassandra DB credentials can be placed in properties.xml
+                         -->
                         <argument name="properties-path" is-required="false" default-value="monitors/CassandraMonitor/properties.xml" />
                 </task-arguments>
                 <java-task>
