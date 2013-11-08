@@ -69,7 +69,7 @@ public class CassandraMonitor extends AManagedMonitor {
             credential.mBeanDomain = args.get("mbean");
 
             if (!isNotEmpty(credential.dbname)) {
-                credential.dbname = "DB_1";
+                credential.dbname = "DB 1";
             }
 
             credentials.add(credential);
@@ -93,7 +93,7 @@ public class CassandraMonitor extends AManagedMonitor {
 
                         if (isNotEmpty(cred.host) && isNotEmpty(cred.port)) {
                             if (!isNotEmpty(cred.dbname)) {
-                                cred.dbname = "DB_" + (credentials.size() + 1);
+                                cred.dbname = "DB " + (credentials.size() + 1);
                             }
                             credentials.add(cred);
                         }

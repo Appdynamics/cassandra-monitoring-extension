@@ -147,7 +147,7 @@ public class CassandraCommunicator implements Callable<Map<String, Object>> {
                 }
             }
         } catch (Exception e) {
-            logger.error("Collecting statistics failed.", e);
+            logger.error("Collecting statistics failed for '" + host + ":" + port + " mbean=" + mBeanDomain + "'.", e);
         }
     }
 
