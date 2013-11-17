@@ -20,7 +20,7 @@ import java.util.concurrent.Callable;
 public class CassandraCommunicator implements Callable<Map<String, Object>> {
     private static final String CASSANDRA_METRICS_OBJECT = "org.apache.cassandra.metrics";
     private static final String CAMEL_CASE_REGEX = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])";
-    private static final String CUSTOM_METRICS_CASSANDRA_STATUS = "Custom Metrics|Cassandra|Status";
+    private static final String CUSTOM_METRICS_CASSANDRA_STATUS = "Custom Metrics|Cassandra|";
     public static final String DBNAME_KEY = "__DBNAME__";
     private Logger logger;
 
@@ -135,7 +135,7 @@ public class CassandraCommunicator implements Callable<Map<String, Object>> {
                             }
                         }
 
-                        String metricsKey = getMetricPrefix() + "|" + dbname
+                        String metricsKey = getMetricPrefix() + dbname
                                 + ((isNotEmpty(type)) ? ("|" + getTileCase(type)) : "")
                                 + ((isNotEmpty(keySpace)) ? ("|" + getTileCase(keySpace)) : "")
                                 + ((isNotEmpty(scope)) ? ("|" + getTileCase(scope)) : "")
