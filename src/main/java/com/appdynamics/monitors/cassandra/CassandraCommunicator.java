@@ -164,9 +164,9 @@ public class CassandraCommunicator implements Callable<Map<String, Object>> {
 
     private String getTileCase(String camelCase) {
         if (camelCase.contains("_")) {
-            return getTileCase(camelCase, CAMEL_CASE_REGEX);
-        } else {
             return getTileCase(camelCase, "_+");
+        } else {
+            return getTileCase(camelCase, CAMEL_CASE_REGEX);
         }
     }
 
