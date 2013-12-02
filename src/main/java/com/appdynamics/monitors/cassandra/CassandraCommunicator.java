@@ -175,7 +175,7 @@ public class CassandraCommunicator implements Callable<Map<String, Object>> {
         String[] tileWords = camelCase.split(regex);
 
         for (String tileWord : tileWords) {
-            if (!tileWord.isEmpty()) {
+            if (tileWord.length() > 0) {
                 tileCase += Character.toUpperCase(tileWord.charAt(0)) + tileWord.substring(1) + " ";
             }
         }
