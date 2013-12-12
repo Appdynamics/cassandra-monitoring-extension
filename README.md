@@ -33,30 +33,31 @@ Metrics include:
 2. Deploy the file CassandraMonitor.zip found in the 'dist' directory into \<machineagent install dir\>/monitors/
 3. Unzip the deployed file
 4. Open \<machineagent install dir\>/monitors/CassandraMonitor/monitor.xml and configure the Cassandra credentials
+5. If there are additional Cassandra servers that need to be monitored, add the additional credentials to \<machineagent install dir\>/monitors/CassandraMonitor/properties.xml
 5. Restart the machineagent
-6. In the AppDynamics Metric Browser, look for: Application Infrastructure Performance  | \<Tier\> | Custom Metrics | Cassandra | Status
+6. In the AppDynamics Metric Browser, look for: Application Infrastructure Performance  | \<Tier\> | Custom Metrics | Cassandra | \<DB name\>
 
 
 ##Directory Structure
 
 |**File/Folder** | **Description**|
 | ------------- |:-------------|
-|conf|Contains the monitor.xml|
+|conf|Contains the monitor.xml and properties.xml|
 |lib|Contains Third-party project references|
 |src|Contains source code to Cassandra Custom Monitor|
 |dist|Only obtained when using ant. Run 'ant build' to get binaries. Run 'ant package' to get the distributable .zip file|
 |build.xml|Ant build script to package the project (required only if changing Java code)|
 
 Main Java File:
-src/com/appdynamics/monitors/cassandra/CassandraMonitor.java  -\> This
-file contains the metric parsing and printing.
-
+src/main/java/com/appdynamics/monitors/cassandra/CassandraMonitor.java  -\> This file contains metric printing.
+src/main/java/com/appdynamics/monitors/cassandra/CassandraCommunicator.java -\> This file contains metric parsing.
 
 ##Configuration
 
 
 |**Parameter** | **Description**| **Optional**|
 | ------------- |:-------------|:-------------|
+|DBname|Custom name for database|Yes|
 |Host|Cassandra DB Host|No|
 |Port|Cassandra DB Port|No|
 |User|Username to access cassandra jmx server|Yes|
@@ -81,20 +82,30 @@ file contains the metric parsing and printing.
                 <type>java</type>
                 <execution-timeout-in-secs>60</execution-timeout-in-secs>
                 <task-arguments>
+                        <!-- Database name (RECOMMENDED)(OPTIONAL)
+                                Name of the database to be shown in Metric Browser.
+                                If left blank, database will have name of 'DB #', where # is the database order number in
+                                credentials list
+                        -->
+                        <argument name="dbname" is-required="false" default-value="" />
                         <argument name="host" is-required="true" default-value="localhost" />
-                        <argument name="port" is-required="true" default-value="80" />
-                        <argument name="user" is-required="true" default-value="username" />
-                        <argument name="pass" is-required="true" default-value="password" />
+                        <argument name="port" is-required="true" default-value="7199" />
+                        <argument name="user" is-required="false" default-value="" />
+                        <argument name="pass" is-required="false" default-value="" />
                         <argument name="mbean" is-required="false" default-value="org.apache.cassandra.metrics" />
                         <argument name="filter" is-required="false" default-value="" />
+
+                        <!-- Additional Cassandra DB credentials (OPTIONAL)
+                                Additional Cassandra DB credentials can be placed in properties.xml
+                         -->
+                        <argument name="properties-path" is-required="false" default-value="monitors/CassandraMonitor/properties.xml" />
                 </task-arguments>
                 <java-task>
-                        <classpath>CassandraMonitor.jar</classpath>
+                        <classpath>CassandraMonitor.jar;lib/dom4j/dom4j-1.6.1.jar</classpath>
                         <impl-class>com.appdynamics.monitors.cassandra.CassandraMonitor</impl-class>
                 </java-task>
         </monitor-run-task>
 </monitor>
-
 ```
 
 ##Metrics
