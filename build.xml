@@ -2,11 +2,9 @@
     <property name="build.dir" value="dist" />
     <property name="conf.dir" value="conf" />
     <property name="project.name" value="CassandraMonitor"/>
-    <property name="machine.agent.jar" value="lib/machineagent/machineagent.jar"/>
-    <property name="log.jar" value="lib/log4j/log4j-1.2.15.jar"/>
+    <property name="lib.dir" value="lib"/>
     <path id="cp">
-        <pathelement location="${machine.agent.jar}"/>
-        <pathelement location="${log.jar}"/>
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
     </path>
 
     <target name="build">
@@ -17,7 +15,10 @@
             <fileset dir="${build.dir}/classes"/>
         </jar>
         <copy todir="${build.dir}/CassandraMonitor">
-            <fileset dir="${conf.dir}" includes="monitor.xml"/>
+            <fileset dir="${conf.dir}" includes="*"/>
+        </copy>
+        <copy todir="${build.dir}/CassandraMonitor/lib/">
+            <fileset dir="${lib.dir}" includes="dom4j/*"/>
         </copy>
         <delete dir="${build.dir}/classes"/>
     </target>
