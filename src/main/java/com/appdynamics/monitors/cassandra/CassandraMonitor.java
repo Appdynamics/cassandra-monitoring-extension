@@ -138,10 +138,10 @@ public class CassandraMonitor extends AManagedMonitor {
                     if (metrics != null) {
                         String dbname = (String) metrics.remove(CassandraCommunicator.DBNAME_KEY);
 
-                        printMetric(CassandraCommunicator.getMetricPrefix() + "|" + dbname + "|Uptime", 1,
+                        /*printMetric(CassandraCommunicator.getMetricPrefix() + dbname + "|Uptime", 1,
                                 MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
                                 MetricWriter.METRIC_TIME_ROLLUP_TYPE_SUM,
-                                MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
+                                MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);*/
 
                         for (final Entry<String, Object> metricMap : metrics.entrySet()) {
                             printMetric(metricMap.getKey(), metricMap.getValue(),

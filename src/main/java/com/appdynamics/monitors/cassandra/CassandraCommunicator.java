@@ -68,13 +68,11 @@ public class CassandraCommunicator implements Callable<Map<String, Object>> {
         filters = new HashSet<String>();
     }
 
-    @Override
     public Map<String, Object> call() throws Exception {
         if (isNotEmpty(host) && isNotEmpty(port)){
             parseFilter();
 
-            connect();
-            populateMetrics();
+            connectAndPopulateMetrics();
 
             return cassandraMetrics;
         } else {
@@ -82,7 +80,7 @@ public class CassandraCommunicator implements Callable<Map<String, Object>> {
         }
     }
 
-    private void connect() throws IOException {
+    private void connectAndPopulateMetrics() throws IOException {
         final JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi");
         final Map<String, Object> env = new HashMap<String, Object>();
         JMXConnector connector;
@@ -96,6 +94,17 @@ public class CassandraCommunicator implements Callable<Map<String, Object>> {
         }
 
         connection = connector.getMBeanServerConnection();
+        
+        try {
+            populateMetrics();
+        } finally {
+            if(connector != null) {
+                if(logger.isDebugEnabled()) {
+                    logger.debug("Closing the connection");
+                }
+                connector.close();
+            }
+        }
     }
 
     private void populateMetrics() {
@@ -164,7 +173,7 @@ public class CassandraCommunicator implements Callable<Map<String, Object>> {
             }
         } catch (Exception e) {
             logger.error("Collecting statistics failed for '" + host + ":" + port + " mbean=" + mBeanDomain + "'.", e);
-        }
+        }  
     }
 
     private void parseFilter() {

@@ -1,4 +1,4 @@
-<monitor>
+    <monitor>
         <name>CassandraMonitor</name>
         <type>managed</type>
         <description>Cassandra monitor</description>
