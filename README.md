@@ -27,87 +27,68 @@ Apache Cassandra is an open source distributed database management system. The C
 * Total disk space used
 * Thread pool tasks: active, completed, blocked, pending
 
-
-##Installation
-
-1. Run 'ant package' from the cassandra-monitoring-extension directory
-2. Deploy the file CassandraMonitor.zip found in the 'dist' directory into \<machineagent install dir\>/monitors/
-3. Unzip the deployed file
-4. Open \<machineagent install dir\>/monitors/CassandraMonitor/monitor.xml and configure the Cassandra credentials
-5. If there are additional Cassandra servers that need to be monitored, add the additional credentials to \<machineagent install dir\>/monitors/CassandraMonitor/properties.xml
-5. Restart the machineagent
-6. In the AppDynamics Metric Browser, look for: Application Infrastructure Performance  | \<Tier\> | Custom Metrics | Cassandra | \<DB name\>
+In addition to the above metrics, we also add a metric called "Metrics Collection Successful" with a value -1 when an error occurs and 1 when the metrics collection is successful.
 
 
-##Directory Structure
+## Installation ##
 
-|**File/Folder** | **Description**|
-| ------------- |:-------------|
-|conf|Contains the monitor.xml and properties.xml|
-|lib|Contains Third-party project references|
-|src|Contains source code to Cassandra Custom Monitor|
-|dist|Only obtained when using ant. Run 'ant build' to get binaries. Run 'ant package' to get the distributable .zip file|
-|build.xml|Ant build script to package the project (required only if changing Java code)|
-
-Main Java File:
-src/main/java/com/appdynamics/monitors/cassandra/CassandraMonitor.java  -\> This file contains metric printing.
-src/main/java/com/appdynamics/monitors/cassandra/CassandraCommunicator.java -\> This file contains metric parsing.
-
-##Configuration
+1. Run "mvn clean install" and find the CassandraMonitor.zip file in the "target" folder. You can also download the CassandraMonitor.zip from [AppDynamics Exchange][].
+2. Unzip as "CassandraMonitor" and copy the "CassandraMonitor" directory to `<MACHINE_AGENT_HOME>/monitors`
 
 
-|**Parameter** | **Description**| **Optional**|
-| ------------- |:-------------|:-------------|
-|DBname|Custom name for database|Yes|
-|Host|Cassandra DB Host|No|
-|Port|Cassandra DB Port|No|
-|User|Username to access cassandra jmx server|Yes|
-|Pass|Password to access cassandra jmx server|Yes|
-|MBean|Statistics bean of cassandra jmx server|Yes|
-|Filter|Statistics which needs to be filtered|Yes|
+
+## Configuration ##
+1. Configure the cassandra instances by editing the config.yml file in `<MACHINE_AGENT_HOME>/monitors/CassandraMonitor/`.
+2. Configure the MBeans in the config.yml. By default, "org.apache.cassandra.metrics" is all that you may need. But you can add more mbeans as per your requirement.
+   You can also add excludePatterns (regex) to exclude any metric tree from showing up in the AppDynamics controller.
+
+   For eg.
+   ```
+        # List of cassandra servers
+        servers:
+          - host: "localhost"
+            port: 7199
+            username: ""
+            password: ""
+            displayName: "localhost"
 
 
-###Example Monitor XML
-```
-<monitor>
-        <name>CassandraMonitor</name>
-        <type>managed</type>
-        <description>Cassandra monitor</description>
-        <monitor-configuration></monitor-configuration>
-        <monitor-run-task>
-                <execution-style>periodic</execution-style>
-                <execution-frequency-in-seconds>60</execution-frequency-in-seconds>
-                <name>Cassandra Monitor Run Task</name>
-                <display-name>Cassandra Monitor Task</display-name>
-                <description>Cassandra Monitor Task</description>
-                <type>java</type>
-                <execution-timeout-in-secs>60</execution-timeout-in-secs>
-                <task-arguments>
-                        <!-- Database name (RECOMMENDED)(OPTIONAL)
-                                Name of the database to be shown in Metric Browser.
-                                If left blank, database will have name of 'DB #', where # is the database order number in
-                                credentials list
-                        -->
-                        <argument name="dbname" is-required="false" default-value="" />
-                        <argument name="host" is-required="true" default-value="localhost" />
-                        <argument name="port" is-required="true" default-value="7199" />
-                        <argument name="user" is-required="false" default-value="" />
-                        <argument name="pass" is-required="false" default-value="" />
-                        <argument name="mbean" is-required="false" default-value="org.apache.cassandra.metrics" />
-                        <argument name="filter" is-required="false" default-value="" />
+        # cassandra mbeans. Exclude patterns with regex can be used to exclude any unwanted metrics.
+        mbeans:
+          - domainName: "org.apache.cassandra.metrics"
+            excludePatterns: [
+              "Cache|.*",
+              "ClientRequest|RangeSlice|.*",
+              "Client|connectedNativeClients",
+              "ColumnFamily|system|IndexInfo|.*"
+            ]
 
-                        <!-- Additional Cassandra DB credentials (OPTIONAL)
-                                Additional Cassandra DB credentials can be placed in properties.xml
-                         -->
-                        <argument name="properties-path" is-required="false" default-value="monitors/CassandraMonitor/properties.xml" />
-                </task-arguments>
-                <java-task>
-                        <classpath>CassandraMonitor.jar;lib/dom4j/dom4j-1.6.1.jar</classpath>
-                        <impl-class>com.appdynamics.monitors.cassandra.CassandraMonitor</impl-class>
-                </java-task>
-        </monitor-run-task>
-</monitor>
-```
+          - domainName: "org.apache.cassandra.db"
+
+        # number of concurrent tasks
+        numberOfThreads: 10
+
+        #timeout for the thread
+        threadTimeout: 30
+
+        #prefix used to show up metrics in AppDynamics
+        metricPrefix:  "Custom Metrics|Cassandra|"
+
+   ```
+   In the above config file, metrics are being pulled from two mbean domains. Note that the patterns mentioned in the "excludePatterns" will be excluded from showing up in the AppDynamics dashboard.
+
+
+3. Configure the path to the config.yml file by editing the <task-arguments> in the monitor.xml file in the `<MACHINE_AGENT_HOME>/monitors/CassandraMonitor/` directory. Below is the sample
+
+     ```
+     <task-arguments>
+         <!-- config file-->
+         <argument name="config-file" is-required="true" default-value="monitors/CassandraMonitor/config.yml" />
+          ....
+     </task-arguments>
+    ```
+
+    ###NOTE : Please make sure to not use tab (\t) while editing yaml files. You may want to validate the yaml file using a yaml validator http://yamllint.com/
 
 ##Metrics
 
@@ -294,14 +275,21 @@ src/main/java/com/appdynamics/monitors/cassandra/CassandraCommunicator.java -\> 
 
 
 
-##Contributing
+## Contributing ##
 
-Always feel free to fork and contribute any changes directly via [GitHub](https://github.com/Appdynamics/cassandra-monitoring-extension).
+Always feel free to fork and contribute any changes directly via [GitHub][].
 
-##Community
+## Community ##
 
-Find out more in the [AppSphere](http://appsphere.appdynamics.com/t5/Extensions/Cassandra-Monitoring-Extension/idi-p/827) community.
+Find out more in the [AppDynamics Exchange][].
 
-##Support
+## Support ##
 
-For any questions or feature request, please contact [AppDynamics Center of Excellence](mailto:ace-request@appdynamics.com).
+For any questions or feature request, please contact [AppDynamics Center of Excellence][].
+
+**Version:** 1.0.0
+**Controller Compatibility:** 3.7+
+
+[Github]: https://github.com/Appdynamics/cassandra-monitoring-extension
+[AppDynamics Exchange]: http://community.appdynamics.com/t5/AppDynamics-eXchange/idb-p/extensions
+[AppDynamics Center of Excellence]: mailto:ace-request@appdynamics.com

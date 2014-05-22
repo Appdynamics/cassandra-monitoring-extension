@@ -1,3 +1,4 @@
+# List of cassandra servers
 servers:
   - host: "localhost"
     port: 7199
@@ -5,15 +6,25 @@ servers:
     password: ""
     displayName: "localhost"
 
+
+# cassandra mbeans. Exclude patterns with regex can be used to exclude any unwanted metrics.
 mbeans:
   - domainName: "org.apache.cassandra.metrics"
     excludePatterns: [
       "Cache|.*",
-      "ColumnFamily|system.*"
+      "ClientRequest|RangeSlice|.*",
+      "Client|connectedNativeClients",
+      "ColumnFamily|system|IndexInfo|.*"
     ]
 
-#  - domainName: "org.apache.cassandra.db"
+  - domainName: "org.apache.cassandra.db"
 
+# number of concurrent tasks
+numberOfThreads: 10
+
+#timeout for the thread
 threadTimeout: 30
+
+#prefix used to show up metrics in AppDynamics
 metricPrefix:  "Custom Metrics|Cassandra|"
 

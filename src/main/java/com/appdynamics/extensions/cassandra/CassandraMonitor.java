@@ -28,7 +28,7 @@ public class CassandraMonitor extends AManagedMonitor {
     public static final String CONFIG_ARG = "config-file";
     public static final String METRIC_SEPARATOR = "|";
     public static final String LOG_PREFIX = "log-prefix";
-    private static final int NUMBER_OF_THREADS = 10;
+    private static final int DEFAULT_NUMBER_OF_THREADS = 10;
     public static final int DEFAULT_THREAD_TIMEOUT = 10;
 
     private ExecutorService threadPool;
@@ -37,15 +37,12 @@ public class CassandraMonitor extends AManagedMonitor {
     //To load the config files
     private final static ConfigUtil<Configuration> configUtil = new ConfigUtil<Configuration>();
 
-    public CassandraMonitor(){
-        this(NUMBER_OF_THREADS);
-    }
 
-    public CassandraMonitor(int numOfThreads) {
+    public CassandraMonitor() {
         String msg = "Using Monitor Version [" + getImplementationVersion() + "]";
         logger.info(msg);
         System.out.println(msg);
-        threadPool = Executors.newFixedThreadPool(numOfThreads);
+
     }
 
     @Override
@@ -60,7 +57,7 @@ public class CassandraMonitor extends AManagedMonitor {
             try {
                 //read the config.
                 Configuration config = configUtil.readConfig(configFilename, Configuration.class);
-                //create parallel tasks to telnet into each server
+                threadPool = Executors.newFixedThreadPool(config.getNumberOfThreads() == 0 ? DEFAULT_NUMBER_OF_THREADS : config.getNumberOfThreads());
                 List<Future<CassandraMetrics>> parallelTasks = createConcurrentTasks(config);
                 //collect the metrics
                 List<CassandraMetrics> cMetrics = collectMetrics(parallelTasks,config.getThreadTimeout() == 0 ? DEFAULT_THREAD_TIMEOUT : config.getThreadTimeout());

@@ -14,7 +14,7 @@ public class CassandraMonitorTest {
 
     @Test
     public void testCassandraMonitorExtension() throws TaskExecutionException {
-        CassandraMonitor cassandraMonitor = new CassandraMonitor(NUMBER_OF_THREADS);
+        CassandraMonitor cassandraMonitor = new CassandraMonitor();
         Map<String, String> taskArgs = Maps.newHashMap();
         taskArgs.put(CONFIG_ARG, "src/test/resources/conf/config.yml");
         cassandraMonitor.execute(taskArgs, null);

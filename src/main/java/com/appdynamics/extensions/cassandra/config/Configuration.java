@@ -7,6 +7,7 @@ public class Configuration {
     private MBeanData[] mbeans;
     private String metricPrefix;
     private int threadTimeout;
+    private int numberOfThreads;
 
     public Server[] getServers() {
         return servers;
@@ -38,5 +39,13 @@ public class Configuration {
 
     public void setThreadTimeout(int threadTimeout) {
         this.threadTimeout = threadTimeout;
+    }
+
+    public int getNumberOfThreads() {
+        return numberOfThreads;
+    }
+
+    public void setNumberOfThreads(int numberOfThreads) {
+        this.numberOfThreads = numberOfThreads;
     }
 }
