@@ -17,7 +17,7 @@
                     <argument name="log-prefix" is-required="false" default-value="[CassandraAppDExt] " />
                 </task-arguments>
                 <java-task>
-                        <classpath>cassandra-monitoring-extension</classpath>
+                        <classpath>cassandra-monitoring-extension.jar</classpath>
                         <impl-class>com.appdynamics.extensions.cassandra.CassandraMonitor</impl-class>
                 </java-task>
         </monitor-run-task>
