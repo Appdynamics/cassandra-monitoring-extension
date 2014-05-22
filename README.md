@@ -88,7 +88,7 @@ In addition to the above metrics, we also add a metric called "Metrics Collectio
      </task-arguments>
     ```
 
-    ###NOTE : Please make sure to not use tab (\t) while editing yaml files. You may want to validate the yaml file using a yaml validator http://yamllint.com/
+    ###Note### : Please make sure to not use tab (\t) while editing yaml files. You may want to validate the yaml file using a yaml validator http://yamllint.com/
 
 ##Metrics
 
