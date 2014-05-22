@@ -45,7 +45,6 @@ public class CassandraMonitor extends AManagedMonitor {
 
     }
 
-    @Override
     public TaskOutput execute(Map<String, String> taskArgs, TaskExecutionContext taskExecutionContext) throws TaskExecutionException {
         if (taskArgs != null) {
             setLogPrefix(taskArgs.get(LOG_PREFIX));
@@ -77,6 +76,7 @@ public class CassandraMonitor extends AManagedMonitor {
 
     /**
      * Creates concurrent tasks
+     *
      * @param config
      * @return Handles to concurrent tasks.
      */
@@ -94,10 +94,11 @@ public class CassandraMonitor extends AManagedMonitor {
 
     /**
      * Collects the result from the thread.
+     *
      * @param parallelTasks
      * @return
      */
-    private List<CassandraMetrics> collectMetrics(List<Future<CassandraMetrics>> parallelTasks,int timeout) {
+    private List<CassandraMetrics> collectMetrics(List<Future<CassandraMetrics>> parallelTasks, int timeout) {
         List<CassandraMetrics> allMetrics = new ArrayList<CassandraMetrics>();
         for (Future<CassandraMetrics> aParallelTask : parallelTasks) {
             CassandraMetrics cMetric = null;
@@ -118,7 +119,7 @@ public class CassandraMonitor extends AManagedMonitor {
 
     private void printStats(Configuration config, List<CassandraMetrics> cMetrics) {
         for (CassandraMetrics cMetric : cMetrics) {
-            StringBuffer metricPath = new StringBuffer();
+            StringBuilder metricPath = new StringBuilder();
             metricPath.append(config.getMetricPrefix()).append(cMetric.getDisplayName()).append(METRIC_SEPARATOR);
             Map<String,String> metricsForAServer = cMetric.getMetrics();
             for(Map.Entry<String,String> entry : metricsForAServer.entrySet()){
@@ -144,13 +145,13 @@ public class CassandraMonitor extends AManagedMonitor {
      * @param timeRollupType
      * @param clusterRollupType
      */
-    private void printMetric(String metricPath,String metricValue,String aggType,String timeRollupType,String clusterRollupType){
+    private void printMetric(String metricPath,String metricValue,String aggType,String timeRollupType,String clusterRollupType) {
         MetricWriter metricWriter = getMetricWriter(metricPath,
                 aggType,
                 timeRollupType,
                 clusterRollupType
         );
-           System.out.println(getLogPrefix()+"Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
+        System.out.println(getLogPrefix()+"Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
                     + "] metric = " + metricPath + " = " + metricValue);
         if (logger.isDebugEnabled()) {
             logger.debug(getLogPrefix() + "Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType

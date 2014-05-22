@@ -29,7 +29,7 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
     private MBeanConnector mBeanConnector;
     public static final Logger logger = Logger.getLogger(CassandraMonitorTask.class);
 
-    public CassandraMonitorTask(Server server,MBeanData[] mbeansData){
+    public CassandraMonitorTask(Server server, MBeanData[] mbeansData) {
         this.server = server;
         this.mbeansData = mbeansData;
         createMBeansLookup(mbeansData);
@@ -49,10 +49,10 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
 
     /**
      * Connects to a remote/local JMX server, applies exclusion filters and collects the metrics
-     * @return CassandraMetrics. Incase of exception, the CassandraMonitorConstants.METRICS_COLLECTION_SUCCESSFUL is set with CassandraMonitorConstants.ERROR_VALUE.
+     *
+     * @return CassandraMetrics. In case of exception, the CassandraMonitorConstants.METRICS_COLLECTION_SUCCESSFUL is set with CassandraMonitorConstants.ERROR_VALUE.
      * @throws Exception
      */
-    @Override
     public CassandraMetrics call() throws Exception {
         CassandraMetrics cassandraMetrics = new CassandraMetrics();
         cassandraMetrics.setDisplayName(server.getDisplayName());
@@ -69,7 +69,7 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
             }
         }
         catch(Exception e){
-            logger.error("Error JMXing into the server :: " +cassandraMetrics.getDisplayName() + e);
+            logger.error("Error JMX-ing into the server :: " +cassandraMetrics.getDisplayName() + e);
             cassandraMetrics.getMetrics().put(CassandraMonitorConstants.METRICS_COLLECTION_SUCCESSFUL,CassandraMonitorConstants.ERROR_VALUE);
         }
         finally{
@@ -114,6 +114,7 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
 
     /**
      * Checks if the given metric key matches any exclude patterns
+     *
      * @param metricKey
      * @param excludePatterns
      * @return true if match, false otherwise
@@ -139,7 +140,7 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
         String scope = objectName.getKeyProperty(MBeanKeyPropertyEnum.SCOPE.toString());
         String name = objectName.getKeyProperty(MBeanKeyPropertyEnum.NAME.toString());
         String columnFamily = objectName.getKeyProperty(MBeanKeyPropertyEnum.COLUMNFAMILY.toString());
-        StringBuffer metricsKey = new StringBuffer();
+        StringBuilder metricsKey = new StringBuilder();
         metricsKey.append(Strings.isNullOrEmpty(type) ? "" : type + METRICS_SEPARATOR);
         metricsKey.append(Strings.isNullOrEmpty(keyspace) ? "" : keyspace + METRICS_SEPARATOR);
         metricsKey.append(Strings.isNullOrEmpty(path) ? "" : path + METRICS_SEPARATOR);
@@ -153,14 +154,8 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
 
 
     private boolean isDomainConfigured(ObjectName objectName) {
-        if(mbeanLookup.get(objectName.getDomain()) != null){
-            return true;
-        }
-        return false;
+        return (mbeanLookup.get(objectName.getDomain()) != null);
     }
-
-
-
 
 
 }
