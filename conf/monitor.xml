@@ -32,7 +32,7 @@
                 </task-arguments>
                 <java-task>
                         <classpath>CassandraMonitor.jar;lib/dom4j/dom4j-1.6.1.jar</classpath>
-                        <impl-class>com.appdynamics.monitors.cassandra.CassandraMonitor</impl-class>
+                        <impl-class>com.appdynamics.extensions.cassandra.CassandraMonitor</impl-class>
                 </java-task>
         </monitor-run-task>
 </monitor>

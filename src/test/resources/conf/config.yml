@@ -1,0 +1,17 @@
+servers:
+  - host: "localhost"
+    port: 7199
+    username: ""
+    password: ""
+    displayName: "localhost"
+
+mbeans:
+  - domainName: "org.apache.cassandra.metrics"
+    excludePatterns: [
+      "Cache|.*",
+      "ColumnFamily|system.*"
+    ]
+
+threadTimeout: 30
+metricPrefix:  "Custom Metrics|Cassandra|"
+
