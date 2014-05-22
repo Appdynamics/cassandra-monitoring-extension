@@ -38,6 +38,10 @@ In addition to the above metrics, we also add a metric called "Metrics Collectio
 
 
 ## Configuration ##
+
+    ###Note:
+          Please make sure to not use tab (\t) while editing yaml files. You may want to validate the yaml file using a yaml validator http://yamllint.com/
+
 1. Configure the cassandra instances by editing the config.yml file in `<MACHINE_AGENT_HOME>/monitors/CassandraMonitor/`.
 2. Configure the MBeans in the config.yml. By default, "org.apache.cassandra.metrics" is all that you may need. But you can add more mbeans as per your requirement.
    You can also add excludePatterns (regex) to exclude any metric tree from showing up in the AppDynamics controller.
