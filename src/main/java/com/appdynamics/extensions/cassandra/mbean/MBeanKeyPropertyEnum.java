@@ -6,7 +6,8 @@ public enum MBeanKeyPropertyEnum {
     SCOPE("scope"),
     NAME("name"),
     KEYSPACE("keyspace"),
-    PATH("path");
+    PATH("path"),
+    COLUMNFAMILY("columnfamily");
 
     private final String name;
 

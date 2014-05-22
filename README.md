@@ -1,12 +1,13 @@
-# AppDynamics Apache Cassandra - Monitoring Extension
+cassandra-monitoring-extension
+==============================
+An AppDynamics extension to be used with a stand alone Java machine agent to provide metrics for Cassandra servers.
 
-This extension works only with the standalone machine agent.
 
-##Use Case
+## Use Case ##
 
 Apache Cassandra is an open source distributed database management system. The Cassandra monitoring extension captures statistics from the Cassandra server and displays them in the AppDynamics Metric Browser.
 
-Metrics include:
+## Metrics Provided ##
 
 * Cache size, capacity, hit count, hit rate, request count
 * Total latency, statistics, timeout requests, unavailable requests

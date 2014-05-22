@@ -153,8 +153,8 @@ public class CassandraMonitor extends AManagedMonitor {
                 timeRollupType,
                 clusterRollupType
         );
-         //  System.out.println(getLogPrefix()+"Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
-         //           + "] metric = " + metricPath + " = " + metricValue);
+           System.out.println(getLogPrefix()+"Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
+                    + "] metric = " + metricPath + " = " + metricValue);
         if (logger.isDebugEnabled()) {
             logger.debug(getLogPrefix() + "Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
                     + "] metric = " + metricPath + " = " + metricValue);

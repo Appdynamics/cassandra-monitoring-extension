@@ -12,6 +12,8 @@ mbeans:
       "ColumnFamily|system.*"
     ]
 
+#  - domainName: "org.apache.cassandra.db"
+
 threadTimeout: 30
 metricPrefix:  "Custom Metrics|Cassandra|"
 

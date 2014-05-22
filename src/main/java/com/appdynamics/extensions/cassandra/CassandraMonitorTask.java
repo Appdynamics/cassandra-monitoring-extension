@@ -9,6 +9,7 @@ import com.appdynamics.extensions.cassandra.mbean.MBeanKeyPropertyEnum;
 import com.google.common.base.Strings;
 import org.apache.log4j.Logger;
 
+import javax.management.Attribute;
 import javax.management.MBeanAttributeInfo;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
@@ -93,7 +94,7 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
                             Object attribute = mBeanConnector.getMBeanAttribute(objectName, attr.getName());
                             //AppDynamics only considers number values
                             if (attribute != null && attribute instanceof Number) {
-                                String metricKey = getMetricsKey(objectName);
+                                String metricKey = getMetricsKey(objectName,attr);
                                 if (!isKeyExcluded(metricKey, excludePatterns)) {
                                     filteredMetrics.put(metricKey, attribute.toString());
                                 } else {
@@ -130,19 +131,23 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
         return excludePattern.replaceAll("\\|","\\\\|");
     }
 
-    private String getMetricsKey(ObjectName objectName) {
+    private String getMetricsKey(ObjectName objectName,MBeanAttributeInfo attr) {
         // Standard jmx keys. {type, scope, name, keyspace, path etc.}
         String type = objectName.getKeyProperty(MBeanKeyPropertyEnum.TYPE.toString());
         String keyspace = objectName.getKeyProperty(MBeanKeyPropertyEnum.KEYSPACE.toString());
         String path = objectName.getKeyProperty(MBeanKeyPropertyEnum.PATH.toString());
         String scope = objectName.getKeyProperty(MBeanKeyPropertyEnum.SCOPE.toString());
         String name = objectName.getKeyProperty(MBeanKeyPropertyEnum.NAME.toString());
+        String columnFamily = objectName.getKeyProperty(MBeanKeyPropertyEnum.COLUMNFAMILY.toString());
         StringBuffer metricsKey = new StringBuffer();
         metricsKey.append(Strings.isNullOrEmpty(type) ? "" : type + METRICS_SEPARATOR);
         metricsKey.append(Strings.isNullOrEmpty(keyspace) ? "" : keyspace + METRICS_SEPARATOR);
         metricsKey.append(Strings.isNullOrEmpty(path) ? "" : path + METRICS_SEPARATOR);
         metricsKey.append(Strings.isNullOrEmpty(scope) ? "" : scope + METRICS_SEPARATOR);
-        metricsKey.append(Strings.isNullOrEmpty(name) ? "" : name);
+        metricsKey.append(Strings.isNullOrEmpty(columnFamily) ? "" : columnFamily + METRICS_SEPARATOR);
+        metricsKey.append(Strings.isNullOrEmpty(name) ? "" : name + METRICS_SEPARATOR);
+        metricsKey.append(attr.getName());
+
         return metricsKey.toString();
     }
 
