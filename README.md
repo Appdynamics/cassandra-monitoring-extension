@@ -7,6 +7,11 @@ An AppDynamics extension to be used with a stand alone Java machine agent to pro
 
 Apache Cassandra is an open source distributed database management system. The Cassandra monitoring extension captures statistics from the Cassandra server and displays them in the AppDynamics Metric Browser.
 
+## Prerequisites ##
+
+By default, cassandra starts with remote JMX enabled. In case, you have a custom script that starts Cassandra, please make sure you have the JMX parameters enabled. For more information about JMX parameters see  http://docs.oracle.com/javase/6/docs/technotes/guides/management/agent.html
+
+
 ## Metrics Provided ##
 
 * Cache size, capacity, hit count, hit rate, request count
