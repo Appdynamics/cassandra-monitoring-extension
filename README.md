@@ -34,6 +34,7 @@ By default, cassandra starts with remote JMX enabled. In case, you have a custom
 
 In addition to the above metrics, we also add a metric called "Metrics Collection Successful" with a value -1 when an error occurs and 1 when the metrics collection is successful.
 
+Note : By default, a Machine agent or a AppServer agent can send a fixed number of metrics to the controller. To change this limit, please follow the instructions mentioned [here](http://docs.appdynamics.com/display/PRO14S/Metrics+Limits).
 
 ## Installation ##
 
@@ -44,8 +45,7 @@ In addition to the above metrics, we also add a metric called "Metrics Collectio
 
 ## Configuration ##
 
-###Note
-Please make sure to not use tab (\t) while editing yaml files. You may want to validate the yaml file using a yaml validator http://yamllint.com/
+Note : Please make sure to not use tab (\t) while editing yaml files. You may want to validate the yaml file using a [yaml validator](http://yamllint.com/)
 
 1. Configure the cassandra instances by editing the config.yml file in `<MACHINE_AGENT_HOME>/monitors/CassandraMonitor/`.
 2. Configure the MBeans in the config.yml. By default, "org.apache.cassandra.metrics" is all that you may need. But you can add more mbeans as per your requirement.

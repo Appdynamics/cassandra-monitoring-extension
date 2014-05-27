@@ -3,13 +3,12 @@ package com.appdynamics.extensions.cassandra;
 
 import com.appdynamics.extensions.cassandra.config.MBeanData;
 import com.appdynamics.extensions.cassandra.config.Server;
-import com.appdynamics.extensions.cassandra.mbean.MBeanConnectionConfig;
-import com.appdynamics.extensions.cassandra.mbean.MBeanConnector;
-import com.appdynamics.extensions.cassandra.mbean.MBeanKeyPropertyEnum;
+import com.appdynamics.extensions.jmx.JMXConnectionConfig;
+import com.appdynamics.extensions.jmx.JMXConnectionUtil;
+import com.appdynamics.extensions.jmx.MBeanKeyPropertyEnum;
 import com.google.common.base.Strings;
 import org.apache.log4j.Logger;
 
-import javax.management.Attribute;
 import javax.management.MBeanAttributeInfo;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
@@ -18,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.regex.Pattern;
 
 public class CassandraMonitorTask implements Callable<CassandraMetrics> {
 
@@ -26,7 +24,7 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
     private Server server;
     private MBeanData[] mbeansData;
     private Map<String,MBeanData> mbeanLookup;
-    private MBeanConnector mBeanConnector;
+    private JMXConnectionUtil jmxConnector;
     public static final Logger logger = Logger.getLogger(CassandraMonitorTask.class);
 
     public CassandraMonitorTask(Server server, MBeanData[] mbeansData) {
@@ -57,10 +55,10 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
         CassandraMetrics cassandraMetrics = new CassandraMetrics();
         cassandraMetrics.setDisplayName(server.getDisplayName());
         try{
-            mBeanConnector = new MBeanConnector(new MBeanConnectionConfig(server.getHost(),server.getPort(),server.getUsername(),server.getPassword()));
-            JMXConnector connector = mBeanConnector.connect();
+            jmxConnector = new JMXConnectionUtil(new JMXConnectionConfig(server.getHost(),server.getPort(),server.getUsername(),server.getPassword()));
+            JMXConnector connector = jmxConnector.connect();
             if(connector != null){
-                Set<ObjectInstance> allMbeans = mBeanConnector.getAllMBeans();
+                Set<ObjectInstance> allMbeans = jmxConnector.getAllMBeans();
                 if(allMbeans != null) {
                     Map<String, String> filteredMetrics = applyExcludePatternsAndExtractMetrics(allMbeans);
                     filteredMetrics.put(CassandraMonitorConstants.METRICS_COLLECTION_SUCCESSFUL, CassandraMonitorConstants.SUCCESS_VALUE);
@@ -73,7 +71,7 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
             cassandraMetrics.getMetrics().put(CassandraMonitorConstants.METRICS_COLLECTION_SUCCESSFUL,CassandraMonitorConstants.ERROR_VALUE);
         }
         finally{
-            mBeanConnector.close();
+            jmxConnector.close();
         }
         return cassandraMetrics;
     }
@@ -86,12 +84,12 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
             if(isDomainConfigured(objectName)){
                 MBeanData mBeanData = mbeanLookup.get(objectName.getDomain());
                 Set<String> excludePatterns = mBeanData.getExcludePatterns();
-                MBeanAttributeInfo[] attributes = mBeanConnector.fetchAllAttributesForMbean(objectName);
+                MBeanAttributeInfo[] attributes = jmxConnector.fetchAllAttributesForMbean(objectName);
                 if(attributes != null) {
                     for (MBeanAttributeInfo attr : attributes) {
                         // See we do not violate the security rules, i.e. only if the attribute is readable.
                         if (attr.isReadable()) {
-                            Object attribute = mBeanConnector.getMBeanAttribute(objectName, attr.getName());
+                            Object attribute = jmxConnector.getMBeanAttribute(objectName, attr.getName());
                             //AppDynamics only considers number values
                             if (attribute != null && attribute instanceof Number) {
                                 String metricKey = getMetricsKey(objectName,attr);

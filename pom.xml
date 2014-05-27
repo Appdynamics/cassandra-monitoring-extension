@@ -6,7 +6,7 @@
 
     <groupId>com.appdynamics.extensions</groupId>
     <artifactId>cassandra-monitoring-extension</artifactId>
-    <version>1.0.0</version>
+    <version>1.5.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>com.appdynamics</groupId>
             <artifactId>appd-exts-commons</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.7</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
