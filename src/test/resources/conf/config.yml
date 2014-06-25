@@ -10,12 +10,12 @@ servers:
 # cassandra mbeans. Exclude patterns with regex can be used to exclude any unwanted metrics.
 mbeans:
   - domainName: "org.apache.cassandra.metrics"
-    excludePatterns: [
-      "Cache|.*",
-      "ClientRequest|RangeSlice|.*",
-      "Client|connectedNativeClients",
-      "ColumnFamily|system|IndexInfo|.*"
-    ]
+#    excludePatterns: [
+#      "Cache|.*",
+#      "ClientRequest|RangeSlice|.*",
+#      "Client|connectedNativeClients",
+#      "ColumnFamily|system|IndexInfo|.*"
+#    ]
 
   - domainName: "org.apache.cassandra.db"
 

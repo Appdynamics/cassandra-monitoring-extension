@@ -94,7 +94,8 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
                             if (attribute != null && attribute instanceof Number) {
                                 String metricKey = getMetricsKey(objectName,attr);
                                 if (!isKeyExcluded(metricKey, excludePatterns)) {
-                                    filteredMetrics.put(metricKey, attribute.toString());
+                                    String attribStr = convertMetricValuesToString(attribute);
+                                    filteredMetrics.put(metricKey, attribStr);
                                 } else {
                                     if (logger.isDebugEnabled()) {
                                         logger.info(metricKey + " is excluded");
@@ -107,6 +108,21 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
             }
         }
         return filteredMetrics;
+    }
+
+    /**
+     * Currently, appD controller only supports Integer values. This function will round all the decimals into integers and convert them into strings.
+     * @param attribute
+     * @return
+     */
+    private String convertMetricValuesToString(Object attribute) {
+        if(attribute instanceof Double){
+            return String.valueOf(Math.round((Double) attribute));
+        }
+        else if(attribute instanceof Float){
+            return String.valueOf(Math.round((Float) attribute));
+        }
+        return attribute.toString();
     }
 
 
