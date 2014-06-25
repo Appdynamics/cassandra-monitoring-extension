@@ -297,6 +297,7 @@ For any questions or feature request, please contact [AppDynamics Center of Exce
 
 **Version:** 1.0.0
 **Controller Compatibility:** 3.7+
+**Cassandra Versions Tested On:** 2.0.7
 
 [Github]: https://github.com/Appdynamics/cassandra-monitoring-extension
 [AppDynamics Exchange]: http://community.appdynamics.com/t5/AppDynamics-eXchange/idb-p/extensions
