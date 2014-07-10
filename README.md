@@ -97,6 +97,49 @@ Note : Please make sure to not use tab (\t) while editing yaml files. You may wa
      </task-arguments>
     ```
 
+###Cluster level metrics : 
+
+As of 1.5.1 version of this extension, we support cluster level metrics only if each node in the cluster have a separate machine agent installed on it. There are two configurations required for this setup 
+
+1. Make sure that nodes belonging to the same cluster has the same <tier-name> in the <MACHINE_AGENT_HOME>/conf/controller-info.xml, we can gather cluster level metrics.  The tier-name here should be your cluster name. 
+
+2. Make sure that in every node in the cluster, the <MACHINE_AGENT_HOME>/monitors/CassandraMonitor/config.yaml should emit the same metric path. To achieve this make the displayName to be empty string and remove the trailing "|" in the metricPrefix.  The config.yaml should be something as below
+
+```
+# List of cassandra servers
+        servers:
+          - host: "localhost"
+            port: 7199
+            username: ""
+            password: ""
+            displayName: ""
+
+
+        # cassandra mbeans. Exclude patterns with regex can be used to exclude any unwanted metrics.
+        mbeans:
+          - domainName: "org.apache.cassandra.metrics"
+            excludePatterns: [
+              "Cache|.*",
+              "ClientRequest|RangeSlice|.*",
+              "Client|connectedNativeClients",
+              "ColumnFamily|system|IndexInfo|.*"
+            ]
+
+          - domainName: "org.apache.cassandra.db"
+
+        # number of concurrent tasks
+        numberOfThreads: 10
+
+        #timeout for the thread
+        threadTimeout: 30
+
+        #prefix used to show up metrics in AppDynamics
+        metricPrefix:  "Custom Metrics|Cassandra"
+ 
+```
+
+Please note that for now the cluster level metrics are obtained by the summing all the node level metrics in a cluster. Other operations like (average) will be supported in the future releases of the extension.
+
 
 ##Metrics
 
