@@ -6,7 +6,7 @@
 
     <groupId>com.appdynamics.extensions</groupId>
     <artifactId>cassandra-monitoring-extension</artifactId>
-    <version>1.5.4-SNAPSHOT</version>
+    <version>1.5.5</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -117,18 +117,18 @@
                         <phase>install</phase>
                         <configuration>
                             <target>
-                                <mkdir dir="${target.dir}"/>
-                                <copy todir="${target.dir}">
+                                <mkdir dir="${target.dir}-${project.version}"/>
+                                <copy todir="${target.dir}-${project.version}">
                                     <fileset dir="src/main/resources/conf" includes="monitor.xml"/>
                                     <fileset dir="src/main/resources/conf" includes="config.yml"/>
                                 </copy>
-                                <copy todir="${target.dir}">
+                                <copy todir="${target.dir}-${project.version}">
                                     <fileset dir="${build.directory}" includes="${project.artifactId}.${project.packaging}"/>
                                 </copy>
-                                <zip destfile="${target.dir}.zip">
-                                    <zipfileset dir="${target.dir}" filemode="755" prefix="CassandraMonitor/"/>
+                                <zip destfile="${target.dir}-${project.version}.zip">
+                                    <zipfileset dir="${target.dir}-${project.version}" filemode="755" prefix="CassandraMonitor/"/>
                                 </zip>
-                                <delete dir="${target.dir}"/>
+                                <delete dir="${target.dir}-${project.version}"/>
                             </target>
                         </configuration>
                         <goals>
