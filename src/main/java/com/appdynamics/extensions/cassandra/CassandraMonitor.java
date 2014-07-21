@@ -131,9 +131,9 @@ public class CassandraMonitor extends AManagedMonitor {
 
     private void printCollectiveObservedCurrent(String metricPath, String metricValue) {
         printMetric(metricPath, metricValue,
-                MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
-                MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
-                MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE
+                MetricWriter.METRIC_AGGREGATION_TYPE_AVERAGE,
+                MetricWriter.METRIC_TIME_ROLLUP_TYPE_AVERAGE,
+                MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_INDIVIDUAL
         );
     }
 

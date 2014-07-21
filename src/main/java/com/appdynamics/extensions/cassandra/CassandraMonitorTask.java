@@ -94,11 +94,14 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
                             if (attribute != null && attribute instanceof Number) {
                                 String metricKey = getMetricsKey(objectName,attr);
                                 if (!isKeyExcluded(metricKey, excludePatterns)) {
+                                    if (logger.isDebugEnabled()) {
+                                        logger.debug("Metric key:value before ceiling = "+ metricKey + ":" + String.valueOf(attribute));
+                                    }
                                     String attribStr = convertMetricValuesToString(attribute);
                                     filteredMetrics.put(metricKey, attribStr);
                                 } else {
                                     if (logger.isDebugEnabled()) {
-                                        logger.info(metricKey + " is excluded");
+                                        logger.debug(metricKey + " is excluded");
                                     }
                                 }
                             }
@@ -117,10 +120,10 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
      */
     private String convertMetricValuesToString(Object attribute) {
         if(attribute instanceof Double){
-            return String.valueOf(Math.round((Double) attribute));
+            return String.valueOf(Math.ceil((Double) attribute));
         }
         else if(attribute instanceof Float){
-            return String.valueOf(Math.round((Float) attribute));
+            return String.valueOf(Math.ceil((Float) attribute));
         }
         return attribute.toString();
     }
