@@ -35,6 +35,10 @@ By default, cassandra starts with remote JMX enabled. In case, you have a custom
 In addition to the above metrics, we also add a metric called "Metrics Collection Successful" with a value -1 when an error occurs and 1 when the metrics collection is successful.
 
 Note : By default, a Machine agent or a AppServer agent can send a fixed number of metrics to the controller. To change this limit, please follow the instructions mentioned [here](http://docs.appdynamics.com/display/PRO14S/Metrics+Limits).
+For eg.  
+```    
+    java -Dappdynamics.agent.maxMetrics=2500 -jar machineagent.jar
+```
 
 ## Installation ##
 
@@ -99,7 +103,7 @@ Note : Please make sure to not use tab (\t) while editing yaml files. You may wa
 
 ###Cluster level metrics : 
 
-As of 1.5.1 version of this extension, we support cluster level metrics only if each node in the cluster have a separate machine agent installed on it. There are two configurations required for this setup 
+As of 1.5.1+ version of this extension, we support cluster level metrics only if each node in the cluster have a separate machine agent installed on it. There are two configurations required for this setup 
 
 1. Make sure that nodes belonging to the same cluster has the same <tier-name> in the <MACHINE_AGENT_HOME>/conf/controller-info.xml, we can gather cluster level metrics.  The tier-name here should be your cluster name. 
 
@@ -138,8 +142,60 @@ As of 1.5.1 version of this extension, we support cluster level metrics only if 
  
 ```
 
-Please note that for now the cluster level metrics are obtained by the summing all the node level metrics in a cluster. Other operations like (average) will be supported in the future releases of the extension.
+To make it more clear,assume that Cassandra "Node A" and Cassandra "Node B" belong to the same cluster "ClusterAB". In order to achieve cluster level as well as node level metrics, you should do the following
+        
+1. Both Node A and Node B should have separate machine agents installed on them. Both the machine agent should have their own Cassandra extension.
+    
+2. In the Node A's and Node B's machine agents' controller-info.xml make sure that you have the tier name to be your cluster name , "ClusterAB" here. Also, nodeName in controller-info.xml is Node A and Node B resp.
+        
+3. The config.yaml for Node A and Node B should be
 
+```
+        
+        # List of cassandra servers 
+        servers: 
+        - host: "localhost" 
+        port: 7199 
+        username: "" 
+        password: "" 
+        displayName: ""
+        
+        # cassandra mbeans. Exclude patterns with regex can be used to exclude any unwanted metrics. 
+        mbeans: 
+        - domainName: "org.apache.cassandra.metrics" 
+        excludePatterns: [ 
+        ]
+        
+        # number of concurrent tasks 
+        numberOfThreads: 10
+        
+        #timeout for the thread 
+        threadTimeout: 30
+        
+        #prefix used to show up metrics in AppDynamics 
+        metricPrefix: "Custom Metrics|Cassandra"
+        
+```      
+
+( Note :: Cassandra extension would report a lot of metrics. If you don't want to show some metrics in your dashboard use the excludePatterns in the config.yaml to filter them. Also, by default, a Machine agent can send a fixed number of metrics to the controller. To change this limit, please follow the instructions mentioned http://docs.appdynamics.com/display/PRO14S/Metrics+Limits.)
+        
+Now, if Node A and Node B are reporting say a metric called ReadLatency to the controller, with the above configuration they will be reporting it using the same metric path.
+        
+Node A reports Custom Metrics | ClusterAB | ReadLatency = 50 
+Node B reports Custom Metrics | ClusterAB | ReadLatency = 500
+        
+The controller will automatically average out the metrics at the cluster (tier) level as well. So you should be able to see the cluster level metrics under
+        
+Application Performance Management | Custom Metrics | ClusterAB | ReadLatency = 225
+        
+Also, now if you want to see individual node metrics you can view it under
+        
+Application Performance Management | Custom Metrics | ClusterAB | Individual Nodes | Node A | ReadLatency = 50 
+Application Performance Management | Custom Metrics | ClusterAB | Individual Nodes | Node B | ReadLatency = 500
+
+
+
+Please note that for now the cluster level metrics are obtained by the averaging all the individual node level metrics in a cluster.
 
 ##Metrics
 
