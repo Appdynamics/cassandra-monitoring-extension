@@ -6,6 +6,7 @@ import com.appdynamics.extensions.cassandra.config.Server;
 import com.appdynamics.extensions.jmx.JMXConnectionConfig;
 import com.appdynamics.extensions.jmx.JMXConnectionUtil;
 import com.appdynamics.extensions.jmx.MBeanKeyPropertyEnum;
+import com.appdynamics.extensions.util.MetricUtils;
 import com.google.common.base.Strings;
 import org.apache.log4j.Logger;
 
@@ -13,6 +14,7 @@ import javax.management.MBeanAttributeInfo;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -97,7 +99,7 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
                                     if (logger.isDebugEnabled()) {
                                         logger.debug("Metric key:value before ceiling = "+ metricKey + ":" + String.valueOf(attribute));
                                     }
-                                    String attribStr = convertMetricValuesToString(attribute);
+                                    String attribStr = MetricUtils.toWholeNumberString(attribute);
                                     filteredMetrics.put(metricKey, attribStr);
                                 } else {
                                     if (logger.isDebugEnabled()) {
@@ -113,20 +115,6 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
         return filteredMetrics;
     }
 
-    /**
-     * Currently, appD controller only supports Integer values. This function will round all the decimals into integers and convert them into strings.
-     * @param attribute
-     * @return
-     */
-    private String convertMetricValuesToString(Object attribute) {
-        if(attribute instanceof Double){
-            return String.valueOf(Math.ceil((Double) attribute));
-        }
-        else if(attribute instanceof Float){
-            return String.valueOf(Math.ceil((Float) attribute));
-        }
-        return attribute.toString();
-    }
 
 
     /**

@@ -6,7 +6,7 @@
 
     <groupId>com.appdynamics.extensions</groupId>
     <artifactId>cassandra-monitoring-extension</artifactId>
-    <version>1.5.5</version>
+    <version>1.5.6</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>com.appdynamics</groupId>
             <artifactId>appd-exts-commons</artifactId>
-            <version>1.0.7</version>
+            <version>1.0.8</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -117,18 +117,18 @@
                         <phase>install</phase>
                         <configuration>
                             <target>
-                                <mkdir dir="${target.dir}-${project.version}"/>
-                                <copy todir="${target.dir}-${project.version}">
+                                <mkdir dir="${target.dir}"/>
+                                <copy todir="${target.dir}">
                                     <fileset dir="src/main/resources/conf" includes="monitor.xml"/>
                                     <fileset dir="src/main/resources/conf" includes="config.yml"/>
                                 </copy>
-                                <copy todir="${target.dir}-${project.version}">
+                                <copy todir="${target.dir}">
                                     <fileset dir="${build.directory}" includes="${project.artifactId}.${project.packaging}"/>
                                 </copy>
                                 <zip destfile="${target.dir}-${project.version}.zip">
-                                    <zipfileset dir="${target.dir}-${project.version}" filemode="755" prefix="CassandraMonitor/"/>
+                                    <zipfileset dir="${target.dir}" filemode="755" prefix="CassandraMonitor/"/>
                                 </zip>
-                                <delete dir="${target.dir}-${project.version}"/>
+                                <delete dir="${target.dir}"/>
                             </target>
                         </configuration>
                         <goals>
