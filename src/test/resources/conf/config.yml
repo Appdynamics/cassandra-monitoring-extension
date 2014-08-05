@@ -11,15 +11,7 @@ servers:
 mbeans:
   - domainName: "org.apache.cassandra.metrics"
     excludePatterns: [
-      "Cache|.*",
-      "ClientRequest|.*",
-      "Client|.*",
-      "ColumnFamily|stress|.*",
-      "CommitLog|.*",
-      "Compaction|.*",
-      "DroppedMessage|.*",
-      "Storage|.*",
-      "ThreadPools|.*"
+
 
     ]
 

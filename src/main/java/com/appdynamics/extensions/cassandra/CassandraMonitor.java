@@ -68,7 +68,12 @@ public class CassandraMonitor extends AManagedMonitor {
                 logger.error(getLogPrefix() + "Config file not found :: " + configFilename, e);
             } catch (Exception e) {
                 logger.error(getLogPrefix() + "Metrics collection failed", e);
+            } finally {
+                if(!threadPool.isShutdown()){
+                    threadPool.shutdown();
+                }
             }
+
         }
         throw new TaskExecutionException(getLogPrefix() + "Cassandra monitoring task completed with failures.");
     }
