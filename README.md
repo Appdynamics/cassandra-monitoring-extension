@@ -400,4 +400,4 @@ For any questions or feature request, please contact [AppDynamics Center of Exce
 
 [Github]: https://github.com/Appdynamics/cassandra-monitoring-extension
 [AppDynamics Exchange]: http://community.appdynamics.com/t5/AppDynamics-eXchange/idb-p/extensions
-[AppDynamics Center of Excellence]: mailto:ace-request@appdynamics.com
+[AppDynamics Center of Excellence]: mailto:help@appdynamics.com
