@@ -12,28 +12,28 @@
 				{
 					"name" : "execution-style",
 					"displayName" : "Execution Style",
-					"default" : "periodic",
+					"defaultValue" : "periodic",
 					"description" : "The execution style for the extension can be periodic or continuous.Periodic- Machine Agent will execute it every execution-frequency-in-seconds. Continuous- Machine Agent will execute it continuously.",
 					"isOptional" : false
 				},
 				{
 					"name" : "execution-frequency-in-seconds",
 					"displayName" : "Execution Frequency",
-					"default" : "60",
+					"defaultValue" : "60",
 					"description" : "Determines the execution frequency in seconds.",
 					"isOptional" : false
 				},
 				{
 					"name" : "execution-timeout-in-seconds",
 					"displayName" : "Execution Timeout",
-					"default" : "60",
+					"defaultValue" : "60",
 					"description" : "Determines the execution timeout in seconds.",
 					"isOptional" : false
 				},
 				{
 					"name" : "log-prefix",
 					"displayName" : "Prefix used in logs. Helpful in debugging.",
-					"default" : "[CassandraAppDExt] ",
+					"defaultValue" : "[CassandraAppDExt] ",
 					"description" : "Logging Prefix",
 					"isOptional" : true
 				}
