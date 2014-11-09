@@ -29,7 +29,7 @@
 					"default" : "60",
 					"description" : "Determines the execution timeout in seconds.",
 					"isOptional" : false
-				}
+				},
 				{
 					"name" : "log-prefix",
 					"displayName" : "Prefix used in logs. Helpful in debugging.",
