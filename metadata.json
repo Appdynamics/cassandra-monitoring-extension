@@ -14,28 +14,28 @@
                     "displayName" : "Execution Style",
                     "defaultValue" : "periodic",
                     "description" : "The data to be reported from system performance counters periodically.",
-                    "isOptional" : false
+                    "isRequired" : false
                 },
 				{
 					"name" : "execution-frequency-in-seconds",
 					"displayName" : "Execution Frequency",
 					"defaultValue" : "60",
 					"description" : "Determines the execution frequency in seconds.",
-					"isOptional" : false
+					"isRequired" : false
 				},
 				{
 					"name" : "execution-timeout-in-seconds",
 					"displayName" : "Execution Timeout",
 					"defaultValue" : "60",
 					"description" : "Determines the execution timeout in seconds.",
-					"isOptional" : false
+					"isRequired" : false
 				},
 				{
 					"name" : "log-prefix",
 					"displayName" : "Log Prefix",
 					"defaultValue" : "[CassandraAppDExt] ",
 					"description" : "Prefix used in logs. Helpful in debugging.",
-					"isOptional" : true
+					"isRequired" : true
 				}
 			]
 		},
