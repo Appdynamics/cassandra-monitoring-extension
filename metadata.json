@@ -24,7 +24,7 @@
 					"required" : true
 				},
 				{
-					"name" : "execution-timeout-in-seconds",
+					"name" : "execution-timeout-in-secs",
 					"displayName" : "Execution Timeout",
 					"defaultValue" : "60",
 					"description" : "Determines the execution timeout in seconds.",
