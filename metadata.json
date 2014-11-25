@@ -1,5 +1,6 @@
 {
 	"id" : "cassandra-monitoring-extension",
+	"displayName" : "Cassandra Extension",
 	"description" : "Cassandra Extension",
 	"version" : "1.5.7",
 	"repoLink" : "https://github.com/Appdynamics/cassandra-monitoring-extension",
