@@ -1,5 +1,6 @@
 {
 	"id" : "cassandra-monitoring-extension",
+	"type" : "monitor",
 	"displayName" : "Cassandra Extension",
 	"description" : "Cassandra Extension",
 	"version" : "1.5.7",
