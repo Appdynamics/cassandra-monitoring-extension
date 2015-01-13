@@ -1,4 +1,4 @@
-cassandra-monitoring-extension
+ cassandra-monitoring-extension
 ==============================
 An AppDynamics extension to be used with a stand alone Java machine agent to provide metrics for Cassandra servers.
 
