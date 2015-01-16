@@ -6,7 +6,7 @@
 	"version" : "1.5.7",
 	"downloadLink" : "https://github.com/Appdynamics/cassandra-monitoring-extension/releases/download/1.5.7/CassandraMonitor.zip",
 	"imageLink" : "https://no-cache.appdynamics-static.com/appsphere/logos/cassandra_128.png",
-	"configs" : [
+	"defaultConfigs" : [
 		{
 			"name" : "monitor.xml",
 			"link" : "https://raw.githubusercontent.com/CassandraAppDExtdynamics/cassandra-monitoring-extension/master/src/main/resources/conf/monitor.xml",
