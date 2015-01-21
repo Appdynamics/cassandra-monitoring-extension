@@ -5,6 +5,7 @@
 	"description" : "Cassandra Extension",
 	"version" : "1.5.7",
 	"downloadLink" : "https://github.com/Appdynamics/cassandra-monitoring-extension/releases/download/1.5.7/CassandraMonitor.zip",
+	"directoryName" : "CassandraMonitor",
 	"imageLink" : "https://no-cache.appdynamics-static.com/appsphere/logos/cassandra_128.png",
 	"defaultConfigs" : [
 		{
