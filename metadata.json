@@ -12,13 +12,6 @@
 			"link" : "https://raw.githubusercontent.com/CassandraAppDExtdynamics/cassandra-monitoring-extension/master/src/main/resources/conf/monitor.xml",
 			"args" : [
 				{
-                    "name" : "execution-style",
-                    "displayName" : "Execution Style",
-                    "defaultValue" : "periodic",
-                    "description" : "The data to be reported from system performance counters periodically.",
-                    "required" : true
-                },
-				{
 					"name" : "execution-frequency-in-seconds",
 					"displayName" : "Execution Frequency",
 					"defaultValue" : "60",
@@ -31,13 +24,6 @@
 					"defaultValue" : "60",
 					"description" : "Determines the execution timeout in seconds.",
 					"required" : true
-				},
-				{
-					"name" : "log-prefix",
-					"displayName" : "Log Prefix",
-					"defaultValue" : "[CassandraAppDExt] ",
-					"description" : "Prefix used in logs. Helpful in debugging.",
-					"required" : false
 				}
 			]
 		},
