@@ -22,3 +22,21 @@ threadTimeout: 30
 #prefix used to show up metrics in AppDynamics
 metricPrefix:  "Custom Metrics|Cassandra|"
 
+#Metric Overrides. Change this if you want to transform the metric key or value or its properties.
+metricOverides:
+  - metricKey: "Cache|KeyCache|Hits|MeanRate"
+    disabled: false
+    postfix: "Percent"
+    multiplier: 100
+    aggregator : ""
+    timeRollup : ""
+    clusterRollup : ""
+
+  - metricKey: "ColumnFamilies|.*"
+    disabled: true
+    multiplier: 100
+    aggregator : ""
+    timeRollup : ""
+    clusterRollup : ""
+    postfix: "Percent"
+

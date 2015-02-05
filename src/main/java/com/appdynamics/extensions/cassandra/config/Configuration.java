@@ -5,6 +5,7 @@ public class Configuration {
 
     private Server[] servers;
     private MBeanData[] mbeans;
+    private MetricOverride[] metricOverides;
     private String metricPrefix;
     private int threadTimeout;
     private int numberOfThreads;
@@ -47,5 +48,13 @@ public class Configuration {
 
     public void setNumberOfThreads(int numberOfThreads) {
         this.numberOfThreads = numberOfThreads;
+    }
+
+    public MetricOverride[] getMetricOverides() {
+        return metricOverides;
+    }
+
+    public void setMetricOverides(MetricOverride[] metricOverides) {
+        this.metricOverides = metricOverides;
     }
 }

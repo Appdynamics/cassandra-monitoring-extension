@@ -3,6 +3,7 @@
         <type>managed</type>
         <description>Cassandra monitor</description>
         <monitor-configuration></monitor-configuration>
+        <enabled>true</enabled>
         <monitor-run-task>
                 <execution-style>periodic</execution-style>
                 <execution-frequency-in-seconds>60</execution-frequency-in-seconds>
@@ -14,7 +15,6 @@
                 <task-arguments>
                     <!-- config file-->
                     <argument name="config-file" is-required="true" default-value="monitors/CassandraMonitor/config.yml" />
-                    <argument name="log-prefix" is-required="false" default-value="[CassandraAppDExt] " />
                 </task-arguments>
                 <java-task>
                         <classpath>cassandra-monitoring-extension.jar</classpath>

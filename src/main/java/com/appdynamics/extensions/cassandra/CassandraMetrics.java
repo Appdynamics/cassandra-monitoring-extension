@@ -7,7 +7,7 @@ import java.util.Map;
 public class CassandraMetrics {
 
     private String displayName;
-    private Map<String,String> metrics;
+    private Map<String,Object> metrics;
 
     public String getDisplayName() {
         return displayName;
@@ -17,14 +17,14 @@ public class CassandraMetrics {
         this.displayName = displayName;
     }
 
-    public Map<String, String> getMetrics() {
+    public Map<String, Object> getMetrics() {
         if(metrics == null){
-            metrics = new HashMap<String, String>();
+            metrics = new HashMap<String, Object>();
         }
         return metrics;
     }
 
-    public void setMetrics(Map<String, String> metrics) {
+    public void setMetrics(Map<String, Object> metrics) {
         this.metrics = metrics;
     }
 }

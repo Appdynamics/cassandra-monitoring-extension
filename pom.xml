@@ -6,7 +6,7 @@
 
     <groupId>com.appdynamics.extensions</groupId>
     <artifactId>cassandra-monitoring-extension</artifactId>
-    <version>1.5.7</version>
+    <version>1.5.8</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
