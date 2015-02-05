@@ -7,12 +7,6 @@ servers:
     displayName: "localhost"
 
 
-# cassandra mbeans. Exclude patterns with regex can be used to exclude any unwanted metrics.
-mbeans:
-  - domainName: "org.apache.cassandra.metrics"
-    excludePatterns: [
-    ]
-
 # number of concurrent tasks
 numberOfThreads: 10
 
@@ -24,19 +18,10 @@ metricPrefix:  "Custom Metrics|Cassandra|"
 
 #Metric Overrides. Change this if you want to transform the metric key or value or its properties.
 metricOverides:
-  - metricKey: "Cache|KeyCache|Hits|MeanRate"
-    disabled: false
+  - metricKey: ".*Ratio.*"
     postfix: "Percent"
     multiplier: 100
-    aggregator : ""
-    timeRollup : ""
-    clusterRollup : ""
 
-  - metricKey: "ColumnFamilies|.*"
-    disabled: true
-    multiplier: 100
-    aggregator : ""
-    timeRollup : ""
-    clusterRollup : ""
+  - metricKey: ".*Cache.*Rate.*"
     postfix: "Percent"
-
+    multiplier: 100
