@@ -3,8 +3,9 @@ package com.appdynamics.extensions.cassandra;
 import com.appdynamics.extensions.PathResolver;
 import com.appdynamics.extensions.cassandra.config.ConfigUtil;
 import com.appdynamics.extensions.cassandra.config.Configuration;
-import com.appdynamics.extensions.cassandra.config.MetricOverride;
 import com.appdynamics.extensions.cassandra.config.Server;
+import com.appdynamics.extensions.util.metrics.Metric;
+import com.appdynamics.extensions.util.metrics.MetricFactory;
 import com.google.common.base.Strings;
 import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.MetricWriter;
@@ -59,15 +60,15 @@ public class CassandraMonitor extends AManagedMonitor {
                 List<Future<CassandraMetrics>> parallelTasks = createConcurrentTasks(config);
                 //collect the metrics
                 List<CassandraMetrics> cMetrics = collectMetrics(parallelTasks,config.getThreadTimeout() == 0 ? DEFAULT_THREAD_TIMEOUT : config.getThreadTimeout());
-
-                //metric overrides
-                Map<String,MetricOverride> overrideMap = createOverrideLookup(config.getMetricOverides());
-                //build metrics
-                List<AMetric> allMetrics = new ArrayList<AMetric>();
+                // to override and print metrics
+                MetricFactory metricFactory = new MetricFactory(config.getMetricOverrides());
                 for(CassandraMetrics cMetric : cMetrics){
-                    allMetrics.addAll(initializeMetrics(getMetricPrefix(config, cMetric),cMetric.getMetrics(), overrideMap));
+                    cMetric.getAllMetrics().addAll(metricFactory.process(cMetric.getMetrics()));
                 }
-                printMetrics(allMetrics);
+                for(CassandraMetrics cMetric: cMetrics){
+                    printMetrics(cMetric.getAllMetrics(),config,cMetric);
+                }
+
                 logger.info("Cassandra monitoring task completed successfully.");
                 return new TaskOutput("Cassandra monitoring task completed successfully.");
             } catch (FileNotFoundException e) {
@@ -85,58 +86,20 @@ public class CassandraMonitor extends AManagedMonitor {
         throw new TaskExecutionException("Cassandra monitoring task completed with failures.");
     }
 
-    private void printMetrics(List<AMetric> allMetrics) {
-        for(AMetric aMetric:allMetrics){
-            if(!aMetric.isDisabled()) {
-                logger.debug("Original Metric Key =" + aMetric.getMetricKey() + ", Original Metric Value =" + aMetric.getMetricValue());
-                printMetric(aMetric.getMetricPath(), aMetric.getMetricValueAsBigString(), aMetric.getAggregator(), aMetric.getTimeRollup(), aMetric.getClusterRollup());
-            }
-            else{
-                logger.debug("Original Metric Key =" + aMetric.getMetricKey() + ", Original Metric Value =" + aMetric.getMetricValue() + " has reporting disabled from config file");
-            }
+    private void printMetrics(List<Metric> allMetrics,Configuration configuration,CassandraMetrics cMetric) {
+        String prefix = getMetricPathPrefix(configuration,cMetric);
+        for(Metric aMetric:allMetrics){
+            printMetric(prefix + aMetric.getMetricPath(),aMetric.getMetricValue().toString(),aMetric.getAggregator(),aMetric.getTimeRollup(),aMetric.getClusterRollup());
         }
     }
 
-    private String getMetricPrefix(Configuration config, CassandraMetrics cMetric) {
-        return config.getMetricPrefix() + cMetric.getDisplayName() + METRIC_SEPARATOR;
+    private String getMetricPathPrefix(Configuration config, CassandraMetrics cMetric) {
+        return config.getMetricPathPrefix() + cMetric.getDisplayName() + METRIC_SEPARATOR;
     }
 
-    private List<AMetric> initializeMetrics(String metricPrefix,Map<String, Object> metrics, Map<String, MetricOverride> overrideMap) {
-        List<AMetric> aMetricList = new ArrayList<AMetric>();
-        for(Map.Entry<String,Object> entry : metrics.entrySet()){
-            String metricKey = entry.getKey();
-            Object metricValue = entry.getValue();
-            MetricOverride override = overrideMap.get(metricKey);
-            AMetric.AMetricBuilder aMetricBuilder = createMetricBuilder(metricPrefix, metricKey, metricValue, override);
-            aMetricList.add(aMetricBuilder.build());
-        }
-        return aMetricList;
-    }
 
-    private AMetric.AMetricBuilder createMetricBuilder(String metricPrefix,String metricKey, Object metricValue, MetricOverride override) {
-        AMetric.AMetricBuilder aMetricBuilder = new AMetric.AMetricBuilder(metricKey,metricValue);
-        if(!Strings.isNullOrEmpty(metricPrefix)){
-            aMetricBuilder.metricPrefix(metricPrefix);
-        }
-        if(override != null){
-            aMetricBuilder.disabled(override.isDisabled());
-            aMetricBuilder.multiplier(override.getMultiplier());
-            if(!Strings.isNullOrEmpty(override.getAggregator())){
-                aMetricBuilder.aggregator(override.getAggregator());
-            }
-            if(!Strings.isNullOrEmpty(override.getClusterRollup())){
-                aMetricBuilder.clusterRollup(override.getClusterRollup());
-            }
-            if(!Strings.isNullOrEmpty(override.getTimeRollup())){
-                aMetricBuilder.timeRollup(override.getTimeRollup());
-            }
-            if(!Strings.isNullOrEmpty(override.getPostfix())){
-                aMetricBuilder.metricPostfix(override.getPostfix());
-            }
 
-        }
-        return aMetricBuilder;
-    }
+
 
 
     /**
@@ -198,8 +161,8 @@ public class CassandraMonitor extends AManagedMonitor {
                 timeRollupType,
                 clusterRollupType
         );
-      //  System.out.println("Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
-      //              + "] metric = " + metricPath + " = " + metricValue);
+        System.out.println("Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
+                    + "] metric = " + metricPath + " = " + metricValue);
         if (logger.isDebugEnabled()) {
             logger.debug("Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
                     + "] metric = " + metricPath + " = " + metricValue);
@@ -239,15 +202,7 @@ public class CassandraMonitor extends AManagedMonitor {
     }
 
 
-    private Map<String, MetricOverride> createOverrideLookup(MetricOverride[] metricOverides) {
-        Map<String,MetricOverride> overrideLookup = new RegexHashMap<MetricOverride>();
-        if(metricOverides != null){
-            for(MetricOverride override : metricOverides){
-                overrideLookup.put(override.getMetricKey(),override);
-            }
-        }
-        return overrideLookup;
-    }
+
 
 
 

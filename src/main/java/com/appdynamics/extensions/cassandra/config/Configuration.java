@@ -1,12 +1,13 @@
 package com.appdynamics.extensions.cassandra.config;
 
 
+import com.appdynamics.extensions.util.metrics.MetricOverride;
+
 public class Configuration {
 
     private Server[] servers;
-    private MBeanData[] mbeans;
-    private MetricOverride[] metricOverides;
-    private String metricPrefix;
+    private MetricOverride[] metricOverrides;
+    private String metricPathPrefix;
     private int threadTimeout;
     private int numberOfThreads;
 
@@ -18,20 +19,12 @@ public class Configuration {
         this.servers = servers;
     }
 
-    public String getMetricPrefix() {
-        return metricPrefix;
+    public String getMetricPathPrefix() {
+        return metricPathPrefix;
     }
 
-    public void setMetricPrefix(String metricPrefix) {
-        this.metricPrefix = metricPrefix;
-    }
-
-    public MBeanData[] getMbeans() {
-        return mbeans;
-    }
-
-    public void setMbeans(MBeanData[] mbeans) {
-        this.mbeans = mbeans;
+    public void setMetricPathPrefix(String metricPathPrefix) {
+        this.metricPathPrefix = metricPathPrefix;
     }
 
     public int getThreadTimeout() {
@@ -50,11 +43,11 @@ public class Configuration {
         this.numberOfThreads = numberOfThreads;
     }
 
-    public MetricOverride[] getMetricOverides() {
-        return metricOverides;
+    public MetricOverride[] getMetricOverrides() {
+        return metricOverrides;
     }
 
-    public void setMetricOverides(MetricOverride[] metricOverides) {
-        this.metricOverides = metricOverides;
+    public void setMetricOverrides(MetricOverride[] metricOverrides) {
+        this.metricOverrides = metricOverrides;
     }
 }

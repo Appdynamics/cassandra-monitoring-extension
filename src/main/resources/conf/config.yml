@@ -14,10 +14,10 @@ numberOfThreads: 10
 threadTimeout: 30
 
 #prefix used to show up metrics in AppDynamics
-metricPrefix:  "Custom Metrics|Cassandra|"
+metricPathPrefix:  "Custom Metrics|Cassandra|"
 
 #Metric Overrides. Change this if you want to transform the metric key or value or its properties.
-metricOverides:
+metricOverrides:
   - metricKey: ".*Ratio.*"
     postfix: "Percent"
     multiplier: 100
