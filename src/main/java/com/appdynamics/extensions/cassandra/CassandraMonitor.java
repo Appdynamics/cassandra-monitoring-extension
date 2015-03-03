@@ -61,7 +61,7 @@ public class CassandraMonitor extends AManagedMonitor {
                 //collect the metrics
                 List<CassandraMetrics> cMetrics = collectMetrics(parallelTasks,config.getThreadTimeout() == 0 ? DEFAULT_THREAD_TIMEOUT : config.getThreadTimeout());
                 // to override and print metrics
-                MetricFactory metricFactory = new MetricFactory(config.getMetricOverrides());
+                MetricFactory<Object> metricFactory = new MetricFactory<Object>(config.getMetricOverrides());
                 for(CassandraMetrics cMetric : cMetrics){
                     cMetric.getAllMetrics().addAll(metricFactory.process(cMetric.getMetrics()));
                 }
