@@ -52,8 +52,6 @@ For eg.
 Note : Please make sure to not use tab (\t) while editing yaml files. You may want to validate the yaml file using a [yaml validator](http://yamllint.com/)
 
 1. Configure the cassandra instances by editing the config.yml file in `<MACHINE_AGENT_HOME>/monitors/CassandraMonitor/`.
-2. Configure the MBeans in the config.yml. By default, "org.apache.cassandra.metrics" is all that you may need. But you can add more mbeans as per your requirement.
-   You can also add excludePatterns (regex) to exclude any metric tree from showing up in the AppDynamics controller.
 
    For eg.
    ```
@@ -66,29 +64,31 @@ Note : Please make sure to not use tab (\t) while editing yaml files. You may wa
             displayName: "localhost"
 
 
-        # cassandra mbeans. Exclude patterns with regex can be used to exclude any unwanted metrics.
-        mbeans:
-          - domainName: "org.apache.cassandra.metrics"
-            excludePatterns: [
-              "Cache|.*",
-              "ClientRequest|RangeSlice|.*",
-              "Client|connectedNativeClients",
-              "ColumnFamily|system|IndexInfo|.*"
-            ]
-
-          - domainName: "org.apache.cassandra.db"
-
         # number of concurrent tasks
         numberOfThreads: 10
 
         #timeout for the thread
         threadTimeout: 30
 
-        #prefix used to show up metrics in AppDynamics
-        metricPrefix:  "Custom Metrics|Cassandra|"
+         #prefix used to show up metrics in AppDynamics
+        metricPathPrefix:  "Custom Metrics|Cassandra|"
+
+        #Metric Overrides. Change this if you want to transform the metric key or value or its properties.
+        metricOverrides:
+          - metricKey: ".*Ratio.*"
+            postfix: "Percent"
+            multiplier: 100
+            disabled: false
+            timeRollup: "AVERAGE"
+            clusterRollup: "COLLECTIVE"
+            aggregator: "SUM"
+
+
+          - metricKey: ".*Cache.*Rate.*"
+            postfix: "Percent"
+            multiplier: 100
 
    ```
-   In the above config file, metrics are being pulled from two mbean domains. Note that the patterns mentioned in the "excludePatterns" will be excluded from showing up in the AppDynamics dashboard.
 
 
 3. Configure the path to the config.yml file by editing the <task-arguments> in the monitor.xml file in the `<MACHINE_AGENT_HOME>/monitors/CassandraMonitor/` directory. Below is the sample
@@ -119,17 +119,6 @@ As of 1.5.1+ version of this extension, we support cluster level metrics only if
             displayName: ""
 
 
-        # cassandra mbeans. Exclude patterns with regex can be used to exclude any unwanted metrics.
-        mbeans:
-          - domainName: "org.apache.cassandra.metrics"
-            excludePatterns: [
-              "Cache|.*",
-              "ClientRequest|RangeSlice|.*",
-              "Client|connectedNativeClients",
-              "ColumnFamily|system|IndexInfo|.*"
-            ]
-
-          - domainName: "org.apache.cassandra.db"
 
         # number of concurrent tasks
         numberOfThreads: 10
@@ -138,8 +127,22 @@ As of 1.5.1+ version of this extension, we support cluster level metrics only if
         threadTimeout: 30
 
         #prefix used to show up metrics in AppDynamics
-        metricPrefix:  "Custom Metrics|Cassandra"
- 
+        metricPathPrefix:  "Custom Metrics|Cassandra|"
+
+        #Metric Overrides. Change this if you want to transform the metric key or value or its properties.
+        metricOverrides:
+          - metricKey: ".*Ratio.*"
+            postfix: "Percent"
+            multiplier: 100
+            disabled: false
+            timeRollup: "AVERAGE"
+            clusterRollup: "COLLECTIVE"
+            aggregator: "SUM"
+
+
+          - metricKey: ".*Cache.*Rate.*"
+            postfix: "Percent"
+            multiplier: 100
 ```
 
 To make it more clear,assume that Cassandra "Node A" and Cassandra "Node B" belong to the same cluster "ClusterAB". In order to achieve cluster level as well as node level metrics, you should do the following
@@ -160,11 +163,7 @@ To make it more clear,assume that Cassandra "Node A" and Cassandra "Node B" belo
         password: "" 
         displayName: ""
         
-        # cassandra mbeans. Exclude patterns with regex can be used to exclude any unwanted metrics. 
-        mbeans: 
-        - domainName: "org.apache.cassandra.metrics" 
-        excludePatterns: [ 
-        ]
+
         
         # number of concurrent tasks 
         numberOfThreads: 10
@@ -172,9 +171,23 @@ To make it more clear,assume that Cassandra "Node A" and Cassandra "Node B" belo
         #timeout for the thread 
         threadTimeout: 30
         
-        #prefix used to show up metrics in AppDynamics 
-        metricPrefix: "Custom Metrics|Cassandra"
-        
+       #prefix used to show up metrics in AppDynamics
+       metricPathPrefix:  "Custom Metrics|Cassandra|"
+
+       #Metric Overrides. Change this if you want to transform the metric key or value or its properties.
+       metricOverrides:
+         - metricKey: ".*Ratio.*"
+           postfix: "Percent"
+           multiplier: 100
+           disabled: false
+           timeRollup: "AVERAGE"
+           clusterRollup: "COLLECTIVE"
+           aggregator: "SUM"
+
+
+         - metricKey: ".*Cache.*Rate.*"
+           postfix: "Percent"
+           multiplier: 100
 ```      
 
 ( Note :: Cassandra extension would report a lot of metrics. If you don't want to show some metrics in your dashboard use the excludePatterns in the config.yaml to filter them. Also, by default, a Machine agent can send a fixed number of metrics to the controller. To change this limit, please follow the instructions mentioned http://docs.appdynamics.com/display/PRO14S/Metrics+Limits.)
