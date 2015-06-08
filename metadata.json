@@ -3,7 +3,7 @@
 	"type" : "monitor",
 	"displayName" : "Cassandra Extension",
 	"description" : "An AppDynamics extension to be used with a stand alone Java machine agent to provide metrics for Cassandra servers.",
-	"version" : "1.5.9",
+	"version" : "1.6.0",
 	"downloadLink" : "https://github.com/Appdynamics/cassandra-monitoring-extension/releases/download/1.5.8/CassandraMonitor.zip",
 	"imageLink" : "https://no-cache.appdynamics-static.com/appsphere/logos/cassandra_128.png",
 	"defaultConfigs" : [
