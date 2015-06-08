@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 import org.apache.log4j.Logger;
 
 import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanServerConnection;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
@@ -38,11 +39,15 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
     public CassandraMetrics call() throws Exception {
         CassandraMetrics cassandraMetrics = new CassandraMetrics();
         cassandraMetrics.setDisplayName(server.getDisplayName());
+        long startTime = System.currentTimeMillis();
         try{
+            logger.debug("Starting cassandra thread at " + startTime);
             jmxConnector = new JMXConnectionUtil(new JMXConnectionConfig(server.getHost(),server.getPort(),server.getUsername(),server.getPassword()));
             JMXConnector connector = jmxConnector.connect();
             if(connector != null){
+                //MBeanServerConnection serverConnection = connector.getMBeanServerConnection();
                 Set<ObjectInstance> allMbeans = jmxConnector.getAllMBeans();
+                //Set<ObjectInstance> allMbeans = serverConnection.queryMBeans(new ObjectName("org.apache.cassandra.db*:*"),null);
                 if(allMbeans != null) {
                     Map<String, Object> allMetrics = gatherMetrics(allMbeans);
                     allMetrics.put(CassandraMonitorConstants.METRICS_COLLECTION_SUCCESSFUL, CassandraMonitorConstants.SUCCESS_VALUE);
@@ -52,6 +57,8 @@ public class CassandraMonitorTask implements Callable<CassandraMetrics> {
         }
         catch(Exception e){
             logger.error("Error JMX-ing into the server :: " +cassandraMetrics.getDisplayName() + e);
+            long diffTime = System.currentTimeMillis() - startTime;
+            logger.debug("Error in cassandra thread at " + diffTime);
             cassandraMetrics.getMetrics().put(CassandraMonitorConstants.METRICS_COLLECTION_SUCCESSFUL,CassandraMonitorConstants.ERROR_VALUE);
         }
         finally{
