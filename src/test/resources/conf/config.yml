@@ -18,6 +18,93 @@ metricPathPrefix:  "Custom Metrics|Cassandra|"
 
 #Metric Overrides. Change this if you want to transform the metric key or value or its properties.
 metricOverrides:
+  - metricKey: ".*FailureDetector.*"
+    disabled: true
+
+  - metricKey: ".*Gossiper.*"
+    disabled: true
+
+  - metricKey: ".*MessagingService.*"
+    disabled: true
+
+  - metricKey: ".*StreamManager.*"
+    disabled: true
+
+  - metricKey: ".*AntiEntropyStage.*"
+    disabled: true
+
+  - metricKey: ".*FlushWriter.*"
+    disabled: true
+
+  - metricKey: ".*GossipStage.*"
+    disabled: true
+
+  - metricKey: ".*HintedHandoff.*"
+    disabled: true
+
+  - metricKey: ".*InternalResponseStage.*"
+    disabled: true
+
+  - metricKey: ".*MemoryMeter.*"
+    disabled: true
+
+  - metricKey: ".*MemtablePostFlusher.*"
+    disabled: true
+
+  - metricKey: ".*MigrationStage.*"
+    disabled: true
+
+  - metricKey: ".*MiscStage.*"
+    disabled: true
+
+  - metricKey: ".*PendingRangeCalculator.*"
+    disabled: true
+
+  - metricKey: ".*commitlog_archiver.*"
+    disabled: true
+
+  - metricKey: ".*BatchlogManager.*"
+    disabled: true
+
+  - metricKey: ".*BlacklistedDirectories.*"
+    disabled: true
+
+  - metricKey: ".*Commitlog.*"
+    disabled: true
+
+  - metricKey: ".*CompactionManager.*"
+    disabled: true
+
+  - metricKey: ".*DynamicEndpointSnitch.*"
+    disabled: true
+
+  - metricKey: ".*EndpointSnitchInfo.*"
+    disabled: true
+
+  - metricKey: ".*HintedHandoffManager.*"
+    disabled: true
+
+  - metricKey: ".*NativeAccess.*"
+    disabled: true
+
+  - metricKey: ".*StorageProxy.*"
+    disabled: true
+
+  - metricKey: ".*StorageService.*"
+    disabled: true
+
+  - metricKey: ".*ColumnFamil.*system.*"
+    disabled: true
+
+  - metricKey: ".*ColumnFamil.*system_traces.*"
+    disabled: true
+
+  - metricKey: ".*ColumnFamil.*stress.*"
+    disabled: true
+
+  - metricKey: ".*StorageService.*"
+    disabled: true
+
   - metricKey: ".*Ratio.*"
     postfix: "Percent"
     multiplier: 100
@@ -30,11 +117,4 @@ metricOverrides:
   - metricKey: ".*Cache.*Rate.*"
     postfix: "Percent"
     multiplier: 100
-
-
-
-
-
-
-
 
