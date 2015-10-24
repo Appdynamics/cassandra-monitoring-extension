@@ -12,6 +12,21 @@ Apache Cassandra is an open source distributed database management system. The C
 By default, cassandra starts with remote JMX enabled. In case, you have a custom script that starts Cassandra, please make sure you have the JMX parameters enabled. For more information about JMX parameters see  http://docs.oracle.com/javase/6/docs/technotes/guides/management/agent.html
 
 
+## Troubleshooting steps ##
+Before configuring the extension, please make sure to run the below steps to check if the set up is correct.
+
+1. Telnet into your cassandra server from the box where the extension is deployed.
+       telnet <hostname> <port>
+
+       <port> - It is the jmxremote.port specified.
+        <hostname> - IP address
+
+    If telnet works, it confirm the access to the cassandra server.
+
+
+2. Start jconsole. Jconsole comes as a utitlity with installed jdk. After giving the correct host and port , check if cassandra
+mbean shows up.
+
 ## Metrics Provided ##
 
 * Cache size, capacity, hit count, hit rate, request count
@@ -90,8 +105,29 @@ Note : Please make sure to not use tab (\t) while editing yaml files. You may wa
 
    ```
 
+3. MetricOverrides can be given at each server level or at the global level. MetricOverrides given at the global level will
+   take precedence over server level.
 
-3. Configure the path to the config.yml file by editing the <task-arguments> in the monitor.xml file in the `<MACHINE_AGENT_HOME>/monitors/CassandraMonitor/` directory. Below is the sample
+   The following transformations can be done using the MetricOverrides
+
+   a. metricKey: The identifier to identify a metric or group of metrics. Metric Key supports regex.
+   b. metricPrefix: Text to be prepended before the raw metricPath. It gets appended after the displayName.
+         Eg. Custom Metrics|cassandra|<displayNameForServer>|<metricPrefix>|<metricName>|<metricPostfix>
+
+   c. metricPostfix: Text to be appended to the raw metricPath.
+         Eg. Custom Metrics|cassandra|<displayNameForServer>|<metricPrefix>|<metricName>|<metricPostfix>
+
+   d. multiplier: An integer or decimal to transform the metric value.
+
+   e. timeRollup, clusterRollup, aggregator: These are AppDynamics specific fields. More info about them can be found
+        https://docs.appdynamics.com/display/PRO41/Build+a+Monitoring+Extension+Using+Java
+
+   f. disabled: This boolean value can be used to turn off reporting of metrics.
+
+   #Please note that if more than one regex specified in metricKey satisfies a given metric, the metricOverride specified later will win.
+
+
+4. Configure the path to the config.yml file by editing the <task-arguments> in the monitor.xml file in the `<MACHINE_AGENT_HOME>/monitors/CassandraMonitor/` directory. Below is the sample
 
      ```
      <task-arguments>

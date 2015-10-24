@@ -1,13 +1,25 @@
 package com.appdynamics.extensions.cassandra.config;
 
 
+import com.appdynamics.extensions.util.metrics.MetricOverride;
+
 public class Server {
 
     private String host;
     private int port;
+    private String serviceUrl;
     private String username;
     private String password;
     private String displayName;
+    private MetricOverride[] metricOverrides;
+
+    public String getServiceUrl() {
+        return serviceUrl;
+    }
+
+    public void setServiceUrl(String serviceUrl) {
+        this.serviceUrl = serviceUrl;
+    }
 
     public String getHost() {
         return host;
@@ -47,5 +59,13 @@ public class Server {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public MetricOverride[] getMetricOverrides() {
+        return metricOverrides;
+    }
+
+    public void setMetricOverrides(MetricOverride[] metricOverrides) {
+        this.metricOverrides = metricOverrides;
     }
 }

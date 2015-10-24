@@ -9,7 +9,6 @@ import java.util.Map;
 
 public class CassandraMonitorTest {
 
-    private static final int NUMBER_OF_THREADS = 1;
     public static final String CONFIG_ARG = "config-file";
 
     @Test
