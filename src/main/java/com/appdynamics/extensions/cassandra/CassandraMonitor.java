@@ -1,5 +1,6 @@
 package com.appdynamics.extensions.cassandra;
 
+import com.appdynamics.extensions.PathResolver;
 import com.appdynamics.extensions.cassandra.config.Configuration;
 import com.appdynamics.extensions.cassandra.config.Server;
 import com.appdynamics.extensions.jmx.JMXConnectionConfig;
@@ -46,7 +47,8 @@ public class CassandraMonitor extends AManagedMonitor {
             }
             try {
                 //read the config.
-                Configuration config = YmlReader.readFromFile(new File(taskArgs.get(CONFIG_ARG)), Configuration.class);
+                File configFile = PathResolver.getFile(taskArgs.get(CONFIG_ARG),AManagedMonitor.class);
+                Configuration config = YmlReader.readFromFile(configFile, Configuration.class);
                 threadPool = Executors.newFixedThreadPool(config.getNumberOfThreads() == 0 ? DEFAULT_NUMBER_OF_THREADS : config.getNumberOfThreads());
                 //parallel execution for each server.
                 runConcurrentTasks(config);

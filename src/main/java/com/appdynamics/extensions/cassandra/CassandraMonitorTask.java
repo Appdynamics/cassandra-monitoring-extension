@@ -45,6 +45,7 @@ public class CassandraMonitorTask implements Callable<Void> {
 
     public Void call() throws Exception {
         Map<String, Object> allMetrics = extractJMXMetrics();
+        logger.debug("Total number of metrics extracted from server " + displayName + " " + allMetrics.size());
         // to get overridden properties for a metric.
         MetricFactory<Object> metricFactory = new MetricFactory<Object>(metricOverrides);
         List<Metric> decoratedMetrics = metricFactory.process(allMetrics);
