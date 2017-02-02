@@ -12,7 +12,7 @@ public class CassandraMonitorTest {
     public static final String CONFIG_ARG = "config-file";
 
     @Test
-    public void testCassandraMonitorExtension() throws TaskExecutionException {
+    public void testCassandraMonitorExtension () throws TaskExecutionException {
         CassandraMonitor cassandraMonitor = new CassandraMonitor();
         Map<String, String> taskArgs = Maps.newHashMap();
         taskArgs.put(CONFIG_ARG, "src/test/resources/conf/config.yml");

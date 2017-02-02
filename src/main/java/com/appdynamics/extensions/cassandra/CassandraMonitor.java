@@ -1,126 +1,134 @@
 package com.appdynamics.extensions.cassandra;
 
-import com.appdynamics.extensions.PathResolver;
-import com.appdynamics.extensions.cassandra.config.Configuration;
-import com.appdynamics.extensions.cassandra.config.Server;
-import com.appdynamics.extensions.jmx.JMXConnectionConfig;
-import com.appdynamics.extensions.jmx.JMXConnectionUtil;
-import com.appdynamics.extensions.util.metrics.MetricOverride;
-import com.appdynamics.extensions.yml.YmlReader;
+import com.appdynamics.TaskInputArgs;
+import com.appdynamics.extensions.conf.MonitorConfiguration;
+import com.appdynamics.extensions.crypto.CryptoUtil;
+import com.appdynamics.extensions.util.MetricWriteHelper;
+import com.appdynamics.extensions.util.MetricWriteHelperFactory;
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
 import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+
+import static com.appdynamics.TaskInputArgs.PASSWORD_ENCRYPTED;
+import static com.appdynamics.extensions.cassandra.CassandraUtil.convertToString;
 
 /**
- * This extension will extract out metrics from Cassandra through the JMX protocol.
+ * This extension will extract metrics from Cassandra through the JMX protocol.
  */
 public class CassandraMonitor extends AManagedMonitor {
 
-    public static final Logger logger = Logger.getLogger(CassandraMonitor.class);
-    public static final String CONFIG_ARG = "config-file";
-    private static final int DEFAULT_NUMBER_OF_THREADS = 10;
-    public static final int DEFAULT_THREAD_TIMEOUT = 10;
-    private ExecutorService threadPool;
+    private static final Logger logger = LoggerFactory.getLogger(CassandraMonitor.class);
+    private MonitorConfiguration configuration;
 
-
-
-    public CassandraMonitor() {
-        System.out.println(logVersion());
+    public CassandraMonitor () {
+        logger.info(getLogVersion());
     }
 
-
-    public TaskOutput execute(Map<String, String> taskArgs, TaskExecutionContext taskExecutionContext) throws TaskExecutionException {
-        logVersion();
-        if (taskArgs != null) {
-            logger.info("Starting the Cassandra Monitoring task.");
-            if (logger.isDebugEnabled()) {
-                logger.debug("Task Arguments Passed ::" + taskArgs);
+    public TaskOutput execute (Map<String, String> map, TaskExecutionContext taskExecutionContext) throws
+            TaskExecutionException {
+        logger.info(getLogVersion());
+        logger.debug("The raw arguments are {}", map);
+        try {
+            initialize(map);
+            configuration.executeTask();
+        } catch (Exception ex) {
+            if (configuration != null && configuration.getMetricWriter() != null) {
+                configuration.getMetricWriter().registerError(ex.getMessage(), ex);
             }
-            try {
-                //read the config.
-                File configFile = PathResolver.getFile(taskArgs.get(CONFIG_ARG),AManagedMonitor.class);
-                Configuration config = YmlReader.readFromFile(configFile, Configuration.class);
-                threadPool = Executors.newFixedThreadPool(config.getNumberOfThreads() == 0 ? DEFAULT_NUMBER_OF_THREADS : config.getNumberOfThreads());
-                //parallel execution for each server.
-                runConcurrentTasks(config);
-                logger.info("Cassandra monitoring task completed successfully.");
-                return new TaskOutput("Cassandra monitoring task completed successfully.");
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.error("Metrics collection failed", e);
-            } finally {
-                if(!threadPool.isShutdown()){
-                    threadPool.shutdown();
+        }
+        return null;
+    }
+
+    protected void initialize (Map<String, String> argsMap) {
+        if (configuration == null) {
+            MetricWriteHelper metricWriter = MetricWriteHelperFactory.create(this);
+            MonitorConfiguration conf = new MonitorConfiguration("Custom Metrics|Cassandra|", new TaskRunner(),
+                    metricWriter);
+            final String configFilePath = argsMap.get("config-file");
+            conf.setConfigYml(configFilePath);
+            conf.checkIfInitialized(MonitorConfiguration.ConfItem.METRIC_PREFIX, MonitorConfiguration.ConfItem
+                    .CONFIG_YML, MonitorConfiguration.ConfItem.HTTP_CLIENT, MonitorConfiguration.ConfItem
+                    .EXECUTOR_SERVICE);
+            this.configuration = conf;
+        }
+    }
+
+    private class TaskRunner implements Runnable {
+        public void run () {
+            Map<String, ?> config = configuration.getConfigYml();
+            if (config != null) {
+                List<Map> servers = (List) config.get("servers");
+                if (servers != null && !servers.isEmpty()) {
+                    for (Map server : servers) {
+                        try {
+                            CassandraMonitorTask task = createTask(server);
+                            configuration.getExecutorService().execute(task);
+                        } catch (IOException e) {
+                            logger.error("Cannot construct JMX uri for {}", convertToString(server.get("displayName")
+                                    , ""));
+                        }
+                    }
+                } else {
+                    logger.error("There are no servers configured");
                 }
-            }
-
-        }
-        throw new TaskExecutionException("Cassandra monitoring task completed with failures.");
-    }
-
-
-    /**
-     * Executes concurrent tasks
-     *
-     * @param config
-     * @return Handles to concurrent tasks.
-     */
-    private void runConcurrentTasks(Configuration config) {
-        List<Future<Void>> parallelTasks = new ArrayList<Future<Void>>();
-        if (config != null && config.getServers() != null) {
-            for (Server server : config.getServers()) {
-                MetricOverride[] metricOverrides = (server.getMetricOverrides() != null) ? server.getMetricOverrides() : config.getMetricOverrides();
-                JMXConnectionUtil jmxConnector = createJMXConnector(server);
-                //passing the context to the task.
-                CassandraMonitorTask cassandraTask = new CassandraMonitorTask(config.getMetricPathPrefix(),server.getDisplayName(),metricOverrides,jmxConnector,this);
-                parallelTasks.add(threadPool.submit(cassandraTask));
-            }
-        }
-        for (Future<Void> aTask : parallelTasks) {
-            try {
-                aTask.get(config.getThreadTimeout(), TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                logger.error("Task interrupted.", e);
-            } catch (ExecutionException e) {
-                logger.error("Task execution failed.", e);
-            } catch (TimeoutException e) {
-                logger.error("Task timed out.",e);
+            } else {
+                logger.error("The config.yml is not loaded due to previous errors.The task will not run");
             }
         }
     }
 
-    private JMXConnectionUtil createJMXConnector(Server server) {
-        JMXConnectionUtil jmxConnector = null;
-        if(Strings.isNullOrEmpty(server.getServiceUrl())) {
-            jmxConnector = new JMXConnectionUtil(new JMXConnectionConfig(server.getHost(), server.getPort(), server.getUsername(), server.getPassword()));
-        }
-        else {
-            jmxConnector = new JMXConnectionUtil(new JMXConnectionConfig(server.getServiceUrl(), server.getUsername(), server.getPassword()));
-        }
-        return jmxConnector;
-    }
-
-
-    public static String getImplementationVersion() {
+    public static String getImplementationVersion () {
         return CassandraMonitor.class.getPackage().getImplementationTitle();
     }
 
-
-    private String logVersion() {
-        String msg = "Using Monitor Version [" + getImplementationVersion() + "]";
-        logger.info(msg);
-        return msg;
+    private String getLogVersion () {
+        return "Using Cassandra Monitor Version [" + getImplementationVersion() + "]";
     }
 
+    private CassandraMonitorTask createTask (Map server) throws IOException {
+        String serviceUrl = convertToString(server.get("serviceURL"), "");
+        String host = convertToString(server.get("host"), "");
+        String portStr = convertToString(server.get("port"), "");
+        int port = (portStr == null) ? -1 : Integer.parseInt(portStr);
+        String username = convertToString(server.get("username"), "");
+        String password = getPassword(server);
+        JMXConnectionAdapter adapter = JMXConnectionAdapter.create(serviceUrl, host, port, username, password);
+        return new CassandraMonitorTask.Builder().metricPrefix(configuration.getMetricPrefix()).metricWriter
+                (configuration.getMetricWriter()).jmxConnectionAdapter(adapter).server(server).mbeans((List<Map>)
+                configuration.getConfigYml().get("mbeans")).build();
+    }
 
+    private String getPassword (Map server) {
+        String password = convertToString(server.get("password"), "");
+        if (!Strings.isNullOrEmpty(password)) {
+            return password;
+        }
+        String encryptionKey = convertToString(configuration.getConfigYml().get("encryptionKey"), "");
+        String encryptedPassword = convertToString(server.get("encryptedPassword"), "");
+        if (!Strings.isNullOrEmpty(encryptionKey) && !Strings.isNullOrEmpty(encryptedPassword)) {
+            java.util.Map<String, String> cryptoMap = Maps.newHashMap();
+            cryptoMap.put(PASSWORD_ENCRYPTED, encryptedPassword);
+            cryptoMap.put(TaskInputArgs.ENCRYPTION_KEY, encryptionKey);
+            return CryptoUtil.getPassword(cryptoMap);
+        }
+        return null;
+    }
 
+    public static void main (String[] args) throws TaskExecutionException {
+        CassandraMonitor cassandraMonitor = new CassandraMonitor();
+        Map<String, String> argsMap = new HashMap<String, String>();
+        argsMap.put("config-file", "/Users/adityajagtiani/repos/appdynamics/extensions/cassandra-monitoring-extension" +
+                "" + "" + "/src/main/resources/conf/config.yml");
+        cassandraMonitor.execute(argsMap, null);
+    }
 }

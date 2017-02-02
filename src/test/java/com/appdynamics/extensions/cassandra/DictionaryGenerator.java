@@ -1,0 +1,31 @@
+package com.appdynamics.extensions.cassandra;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import java.util.List;
+import java.util.Map;
+
+public class DictionaryGenerator {
+
+    public static List<Map> createIncludeDictionary () {
+        List<Map> dictionary = Lists.newArrayList();
+        Map metric1 = Maps.newLinkedHashMap();
+        metric1.put("Capacity", "CapacityAlias");
+        dictionary.add(metric1);
+        Map metric2 = Maps.newLinkedHashMap();
+        metric2.put("Size", "SizeAlias");
+        dictionary.add(metric2);
+        Map metric3 = Maps.newLinkedHashMap();
+        metric3.put("Hits", "HitsAlias");
+        dictionary.add(metric3);
+        Map metric4 = Maps.newLinkedHashMap();
+        metric4.put("Requests", "RequestsAlias");
+        dictionary.add(metric4);
+        return dictionary;
+    }
+
+    public static List<String> createExcludeDictionary () {
+        return Lists.newArrayList("Capacity", "Load", "99thPercentile");
+    }
+}

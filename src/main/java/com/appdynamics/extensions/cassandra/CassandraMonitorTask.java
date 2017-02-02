@@ -1,167 +1,125 @@
 package com.appdynamics.extensions.cassandra;
 
-
-import com.appdynamics.extensions.jmx.JMXConnectionUtil;
-import com.appdynamics.extensions.jmx.MBeanKeyPropertyEnum;
-import com.appdynamics.extensions.util.metrics.Metric;
-import com.appdynamics.extensions.util.metrics.MetricFactory;
-import com.appdynamics.extensions.util.metrics.MetricOverride;
-import com.google.common.base.Strings;
-import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
+import com.appdynamics.extensions.cassandra.metrics.*;
+import com.appdynamics.extensions.util.MetricWriteHelper;
 import com.singularity.ee.agent.systemagent.api.MetricWriter;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.management.MBeanAttributeInfo;
-import javax.management.ObjectInstance;
-import javax.management.ObjectName;
+import javax.management.MalformedObjectNameException;
 import javax.management.remote.JMXConnector;
 import java.io.IOException;
-import java.util.HashMap;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
 
-import static com.appdynamics.extensions.util.metrics.MetricConstants.METRICS_SEPARATOR;
+import static com.appdynamics.extensions.cassandra.Constants.DISPLAY_NAME;
 
-public class CassandraMonitorTask implements Callable<Void> {
+/**
+ * Created by adityajagtiani on 1/31/17.
+ */
+class CassandraMonitorTask implements Runnable {
 
+    private static final Logger logger = LoggerFactory.getLogger(CassandraMonitorTask.class);
+    private static final BigDecimal ERROR_VALUE = BigDecimal.ZERO;
+    private static final BigDecimal SUCCESS_VALUE = BigDecimal.ONE;
+    private static final String METRICS_COLLECTION_SUCCESSFUL = "Metrics Collection Successful";
     private String metricPrefix;
-    private String displayName;
-    private AManagedMonitor monitor;
-    private MetricOverride[] metricOverrides;
-    private JMXConnectionUtil jmxConnector;
-    public static final Logger logger = Logger.getLogger(CassandraMonitorTask.class);
+    private MetricWriteHelper metricWriter;
+    private Map server;
+    private JMXConnectionAdapter jmxConnectionAdapter;
+    private List<Map> configMBeans;
+    private String serverName;
 
-
-    public CassandraMonitorTask(String metricPrefix,String displayName,MetricOverride[] metricOverrides,JMXConnectionUtil jmxConnector,AManagedMonitor monitor) {
-        this.metricPrefix = metricPrefix;
-        this.displayName = displayName;
-        this.metricOverrides = metricOverrides;
-        this.jmxConnector = jmxConnector;
-        this.monitor = monitor;
+    private CassandraMonitorTask () {
     }
 
+    public void run () {
+        serverName = CassandraUtil.convertToString(server.get(DISPLAY_NAME), "");
+        MetricPrinter metricPrinter = new MetricPrinter(metricPrefix, serverName, metricWriter);
+        try {
+            logger.debug("Cassandra monitoring task initiated for server {}", serverName);
+            BigDecimal status = populateAndPrintStats(metricPrinter);
 
-    public Void call() throws Exception {
-        Map<String, Object> allMetrics = extractJMXMetrics();
-        logger.debug("Total number of metrics extracted from server " + displayName + " " + allMetrics.size());
-        // to get overridden properties for a metric.
-        MetricFactory<Object> metricFactory = new MetricFactory<Object>(metricOverrides);
-        List<Metric> decoratedMetrics = metricFactory.process(allMetrics);
-        reportMetrics(decoratedMetrics);
-        return null;
+            metricPrinter.printMetric(metricPrinter.formMetricPath(METRICS_COLLECTION_SUCCESSFUL), status,
+                    MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
+                    MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_INDIVIDUAL);
+        } catch (Exception e) {
+            logger.error("Error in Cassandra Monitoring Task for Server {}", serverName, e);
+            metricPrinter.printMetric(metricPrinter.formMetricPath(METRICS_COLLECTION_SUCCESSFUL), BigDecimal.ZERO,
+                    MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
+                    MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_INDIVIDUAL);
+        } finally {
+            logger.debug("Cassandra Monitoring Task Complete. Total number of metrics reported = {}", metricPrinter
+                    .getTotalMetricsReported());
+        }
     }
 
-
-    /**
-     * Connects to a remote/local JMX server, applies exclusion filters and collects the metrics
-     *
-     * @return Void. In case of exception, the CassandraMonitorConstants.METRICS_COLLECTION_SUCCESSFUL is set with CassandraMonitorConstants.ERROR_VALUE.
-     * @throws Exception
-     */
-    private Map<String, Object> extractJMXMetrics() throws IOException {
-        Map<String, Object> allMetrics = new HashMap<String, Object>();
-        long startTime = System.currentTimeMillis();
-        logger.debug("Starting Cassandra monitor thread at " + startTime + " for server " + displayName);
-        try{
-            JMXConnector connector = jmxConnector.connect();
-            if(connector != null){
-                Set<ObjectInstance> allMbeans = jmxConnector.getAllMBeans();
-                if(allMbeans != null) {
-                    mapMetrics(allMbeans, allMetrics);
-                    allMetrics.put(CassandraMonitorConstants.METRICS_COLLECTION_SUCCESSFUL, CassandraMonitorConstants.SUCCESS_VALUE);
+    private BigDecimal populateAndPrintStats (MetricPrinter metricPrinter) throws IOException {
+        JMXConnector jmxConnector = null;
+        try {
+            jmxConnector = jmxConnectionAdapter.open();
+            logger.debug("JMX Connection is now open");
+            MetricPropertiesBuilder propertiesBuilder = new MetricPropertiesBuilder();
+            for (Map mBean : configMBeans) {
+                String configObjName = CassandraUtil.convertToString(mBean.get("objectName"), "");
+                logger.debug("Processing mBean {} from the config file", configObjName);
+                try {
+                    Map<String, MetricProperties> metricProperties = propertiesBuilder.build(mBean);
+                    NodeMetricsProcessor nodeMetricsProcessor = new NodeMetricsProcessor(jmxConnectionAdapter,
+                            jmxConnector);
+                    List<Metric> nodeMetrics = nodeMetricsProcessor.getNodeMetrics(mBean, metricProperties);
+                    if (nodeMetrics.size() > 0) {
+                        metricPrinter.reportNodeMetrics(nodeMetrics);
+                    }
+                } catch (MalformedObjectNameException e) {
+                    logger.error("Illegal Object Name {}" + configObjName, e);
+                } catch (Exception e) {
+                    logger.error("Error fetching JMX metrics for {} and mBean = {}", serverName, configObjName, e);
                 }
             }
-        }
-        catch(Exception e){
-            logger.error("Error JMX-ing into the server :: " + displayName, e);
-            long diffTime = System.currentTimeMillis() - startTime;
-            logger.debug("Error in Cassandra thread at " + diffTime);
-            allMetrics.put(CassandraMonitorConstants.METRICS_COLLECTION_SUCCESSFUL, CassandraMonitorConstants.ERROR_VALUE);
-        }
-        finally{
-            jmxConnector.close();
-        }
-        return allMetrics;
-    }
-
-    private void mapMetrics(Set<ObjectInstance> allMbeans, Map<String, Object> allMetrics) {
-        for(ObjectInstance mbean : allMbeans){
-            ObjectName objectName = mbean.getObjectName();
-            MBeanAttributeInfo[] attributes = jmxConnector.fetchAllAttributesForMbean(objectName);
-            if (attributes != null) {
-                for (MBeanAttributeInfo attr : attributes) {
-                    try {
-                        // See we do not violate the security rules, i.e. only if the attribute is readable.
-                        if (attr.isReadable()) {
-                            Object attribute = jmxConnector.getMBeanAttribute(objectName, attr.getName());
-                            //AppDynamics only considers number values
-                            if (attribute != null && attribute instanceof Number) {
-                                String metricKey = getMetricsKey(objectName, attr);
-                                allMetrics.put(metricKey, attribute);
-                            }
-                        }
-                    }
-                    catch(Exception e){
-                        logger.warn("Error fetching attribute " + attr.getName(), e);
-                    }
-                }
+        } finally {
+            try {
+                jmxConnectionAdapter.close(jmxConnector);
+                logger.debug("JMX connection is closed");
+            } catch (IOException ioe) {
+                logger.error("Unable to close the connection.");
+                return ERROR_VALUE;
             }
         }
+        return SUCCESS_VALUE;
     }
 
-    private void reportMetrics(List<Metric> decoratedMetrics) {
-        StringBuffer pathPrefixBuffer = new StringBuffer();
-        pathPrefixBuffer.append(metricPrefix);
-        if(!metricPrefix.endsWith("|")){
-            pathPrefixBuffer.append(METRICS_SEPARATOR);
+    public static class Builder {
+        private CassandraMonitorTask task = new CassandraMonitorTask();
+
+        Builder metricPrefix (String metricPrefix) {
+            task.metricPrefix = metricPrefix;
+            return this;
         }
-        pathPrefixBuffer.append(displayName).append(METRICS_SEPARATOR);
-        String pathPrefix = pathPrefixBuffer.toString();
-        for(Metric aMetric:decoratedMetrics){
-            printMetric(pathPrefix + aMetric.getMetricPath(),aMetric.getMetricValue().toString(),aMetric.getAggregator(),aMetric.getTimeRollup(),aMetric.getClusterRollup());
+
+        Builder metricWriter (MetricWriteHelper metricWriter) {
+            task.metricWriter = metricWriter;
+            return this;
+        }
+
+        Builder server (Map server) {
+            task.server = server;
+            return this;
+        }
+
+        Builder jmxConnectionAdapter (JMXConnectionAdapter adapter) {
+            task.jmxConnectionAdapter = adapter;
+            return this;
+        }
+
+        Builder mbeans (List<Map> mBeans) {
+            task.configMBeans = mBeans;
+            return this;
+        }
+
+        CassandraMonitorTask build () {
+            return task;
         }
     }
-
-    private void printMetric(String metricPath,String metricValue,String aggType,String timeRollupType,String clusterRollupType) {
-        MetricWriter metricWriter = monitor.getMetricWriter(metricPath,
-                aggType,
-                timeRollupType,
-                clusterRollupType
-        );
-        System.out.println("Sending [" + aggType + METRICS_SEPARATOR + timeRollupType + METRICS_SEPARATOR + clusterRollupType
-        		+ "] metric = " + metricPath + " = " + metricValue);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Sending [" + aggType + METRICS_SEPARATOR + timeRollupType + METRICS_SEPARATOR + clusterRollupType
-                    + "] metric = " + metricPath + " = " + metricValue);
-        }
-        metricWriter.printMetric(metricValue);
-    }
-
-
-    private String getMetricsKey(ObjectName objectName,MBeanAttributeInfo attr) {
-        // Standard jmx keys. {type, scope, name, keyspace, path etc.}
-        String type = objectName.getKeyProperty(MBeanKeyPropertyEnum.TYPE.toString());
-        String keyspace = objectName.getKeyProperty(MBeanKeyPropertyEnum.KEYSPACE.toString());
-        String path = objectName.getKeyProperty(MBeanKeyPropertyEnum.PATH.toString());
-        String scope = objectName.getKeyProperty(MBeanKeyPropertyEnum.SCOPE.toString());
-        String name = objectName.getKeyProperty(MBeanKeyPropertyEnum.NAME.toString());
-        String columnFamily = objectName.getKeyProperty(MBeanKeyPropertyEnum.COLUMNFAMILY.toString());
-        StringBuilder metricsKey = new StringBuilder();
-        metricsKey.append(Strings.isNullOrEmpty(type) ? "" : type + METRICS_SEPARATOR);
-        metricsKey.append(Strings.isNullOrEmpty(keyspace) ? "" : keyspace + METRICS_SEPARATOR);
-        metricsKey.append(Strings.isNullOrEmpty(path) ? "" : path + METRICS_SEPARATOR);
-        metricsKey.append(Strings.isNullOrEmpty(scope) ? "" : scope + METRICS_SEPARATOR);
-        metricsKey.append(Strings.isNullOrEmpty(columnFamily) ? "" : columnFamily + METRICS_SEPARATOR);
-        metricsKey.append(Strings.isNullOrEmpty(name) ? "" : name + METRICS_SEPARATOR);
-        metricsKey.append(attr.getName());
-
-        return metricsKey.toString();
-    }
-
-
-
-
-
 }
