@@ -267,7 +267,7 @@ mbeans:
 
    f. disabled: This boolean value can be used to turn off reporting of metrics.
 
-   #Please note that if more than one regex specified in metricKey satisfies a given metric, the metricOverride specified later will win.
+   # Please note that if more than one regex specified in metricKey satisfies a given metric, the metricOverride specified later will win.
 
 
 4. Configure the path to the config.yml file by editing the <task-arguments> in the monitor.xml file in the `<MACHINE_AGENT_HOME>/monitors/CassandraMonitor/` directory. Below is the sample
@@ -280,7 +280,7 @@ mbeans:
      </task-arguments>
     ```
 
-###Cluster level metrics : 
+### Cluster level metrics ###
 
 As of 1.5.1+ version of this extension, we support cluster level metrics only if each node in the cluster have a separate machine agent installed on it. There are two configurations required for this setup 
 
@@ -288,7 +288,8 @@ As of 1.5.1+ version of this extension, we support cluster level metrics only if
 
 2. Make sure that in every node in the cluster, the <MACHINE_AGENT_HOME>/monitors/CassandraMonitor/config.yaml should emit the same metric path. To achieve this make the displayName to be empty string and remove the trailing "|" in the metricPrefix.  The config.yaml should be something as below
 
-```# List of cassandra servers
+```
+# List of cassandra servers
 servers:
   - host: "localhost"
     port: 7199
@@ -309,7 +310,7 @@ numberOfThreads: 10
 threadTimeout: 30
 
 # prefix used to show up metrics in AppDynamics
-#metricPathPrefix:  "Custom Metrics|Cassandra|"
+# metricPathPrefix:  "Custom Metrics|Cassandra|"
 
 metricPathPrefix: "Server|Component:8|Custom Metrics|Cassandra"
 
@@ -463,9 +464,6 @@ mbeans:
     metrics:
       include:
         - Value : "IntegralValue"
-
-
-
 ```
 
 To make it more clear,assume that Cassandra "Node A" and Cassandra "Node B" belong to the same cluster "ClusterAB". In order to achieve cluster level as well as node level metrics, you should do the following
@@ -491,13 +489,13 @@ To make it more clear,assume that Cassandra "Node A" and Cassandra "Node B" belo
         # number of concurrent tasks 
         numberOfThreads: 10
         
-        #timeout for the thread 
+        # timeout for the thread 
         threadTimeout: 30
         
-       #prefix used to show up metrics in AppDynamics
+       # prefix used to show up metrics in AppDynamics
        metricPathPrefix:  "Custom Metrics|Cassandra|"
 
-       #Metric Overrides. Change this if you want to transform the metric key or value or its properties.
+       # Metric Overrides. Change this if you want to transform the metric key or value or its properties.
        metricOverrides:
          - metricKey: ".*Ratio.*"
            postfix: "Percent"
