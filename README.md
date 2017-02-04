@@ -267,7 +267,7 @@ mbeans:
 
    f. disabled: This boolean value can be used to turn off reporting of metrics.
 
-   # Please note that if more than one regex specified in metricKey satisfies a given metric, the metricOverride specified later will win.
+#  Please note that if more than one regex specified in metricKey satisfies a given metric, the metricOverride specified later  will win.
 
 
 4. Configure the path to the config.yml file by editing the <task-arguments> in the monitor.xml file in the `<MACHINE_AGENT_HOME>/monitors/CassandraMonitor/` directory. Below is the sample
