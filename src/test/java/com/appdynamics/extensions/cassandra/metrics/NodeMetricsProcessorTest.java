@@ -54,7 +54,7 @@ public class NodeMetricsProcessorTest {
         Map<String, MetricProperties> metricPropertiesMap = metricPropertiesBuilder.build(mBeans.get(0));
 
         List<Metric> metrics = nodeMetricsProcessor.getNodeMetrics(mBeans.get(0), metricPropertiesMap);
-        Assert.assertTrue(metrics.get(0).getMetricKey().equals("Cache|KeyCache|Capacity|Value"));
+        Assert.assertTrue(metrics.get(0).getMetricKey().equals("Cache|KeyCache|Capacity|Cache Capacity (MB)"));
         Assert.assertTrue(metrics.get(0).getInstanceKey().equals("Cache|KeyCache|Capacity|"));
         Assert.assertTrue(metrics.get(0).getMetricValue().equals(new BigDecimal(100)));
         Assert.assertTrue(metrics.get(0).getProperties().equals(metricPropertiesMap.get("Value")));

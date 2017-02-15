@@ -74,11 +74,11 @@ public class NodeMetricsProcessor {
                 if (metricValue != null) {
                     String instanceKey = metricKeyFormatter.getInstanceKey(instance);
                     Metric nodeMetric = new Metric();
+                    nodeMetric.setProperties(props);
                     nodeMetric.setMetricName(attributeName);
                     nodeMetric.setInstanceKey(instanceKey);
                     String metricName = nodeMetric.getMetricNameOrAlias();
                     String nodeMetricKey = metricKeyFormatter.getNodeKey(instance, metricName, instanceKey);
-                    nodeMetric.setProperties(props);
                     nodeMetric.setMetricKey(nodeMetricKey);
                     nodeMetric.setMetricValue(metricValue);
                     nodeMetrics.add(nodeMetric);

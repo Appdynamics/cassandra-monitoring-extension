@@ -33,4 +33,4 @@ mbeans:
   - objectName: "org.apache.cassandra.metrics:type=Cache,scope=KeyCache,name=Capacity"
     metrics:
       include:
-        - Value : "IntegralValue"
+        - Value : "Cache Capacity (MB)"
