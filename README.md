@@ -3,7 +3,7 @@
 An AppDynamics extension to be used with a stand alone Java machine agent to provide metrics for Cassandra servers.
 #### Use case
 
-**Apache Cassandra**, is a distributed open source database management system which can handle a large amount of data with high availability. Cassandra is a highly scalable, decentralized system and does not have a single point of failure.  
+**Apache Cassandra** is a distributed open source database management system which can handle a large amount of data with high availability. Cassandra is a highly scalable, decentralized system and does not have a single point of failure.  
 
 The AppDynamics Monitoring Extension for Cassandra can monitor multiple Cassandra nodes and their resources (caches, client requests etc) as well as the changes in CPU and system data as a result of using Cassandra.  
 
