@@ -1,8 +1,8 @@
 package com.appdynamics.extensions.cassandra;
 
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import javax.management.*;
 import javax.management.remote.JMXConnector;
@@ -10,10 +10,7 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class JMXConnectionAdapter {
 
@@ -83,13 +80,13 @@ public class JMXConnectionAdapter {
         return attrNames;
     }
 
-    public List<Attribute> getAttributes (JMXConnector jmxConnection, ObjectName objectName, String[] strings) throws
+    public Set<Attribute> getAttributes (JMXConnector jmxConnection, ObjectName objectName, String[] strings) throws
             IOException, ReflectionException, InstanceNotFoundException {
         MBeanServerConnection connection = jmxConnection.getMBeanServerConnection();
         AttributeList list = connection.getAttributes(objectName, strings);
         if (list != null) {
-            return list.asList();
+            return new HashSet<Attribute>((List)list);
         }
-        return Lists.newArrayList();
+        return Sets.newHashSet();
     }
 }

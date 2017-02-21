@@ -5,7 +5,8 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 
-import static com.appdynamics.extensions.cassandra.Constants.*;
+import static com.appdynamics.extensions.cassandra.Constants.INCLUDE;
+import static com.appdynamics.extensions.cassandra.Constants.METRICS;
 
 public class MetricPropertiesBuilder {
 

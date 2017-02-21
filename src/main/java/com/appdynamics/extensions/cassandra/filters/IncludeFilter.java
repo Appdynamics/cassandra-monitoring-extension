@@ -1,5 +1,7 @@
 package com.appdynamics.extensions.cassandra.filters;
 
+import com.appdynamics.extensions.cassandra.CassandraUtil;
+
 import java.util.*;
 
 public class IncludeFilter {
@@ -18,9 +20,14 @@ public class IncludeFilter {
             Map metric = (Map) obj;
             Map.Entry firstEntry = (Map.Entry) metric.entrySet().iterator().next();
             String metricName = firstEntry.getKey().toString();
+            if (CassandraUtil.isCompositeObject(metricName)) {
+                metricName = CassandraUtil.getMetricNameFromCompositeObject(metricName);
+            }
+
             if (allMetrics.contains(metricName)) {
                 filteredSet.add(metricName);
             }
         }
     }
 }
+

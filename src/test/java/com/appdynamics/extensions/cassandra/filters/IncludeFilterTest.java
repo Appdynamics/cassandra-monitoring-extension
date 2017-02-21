@@ -1,3 +1,4 @@
+
 package com.appdynamics.extensions.cassandra.filters;
 
 import com.appdynamics.extensions.cassandra.DictionaryGenerator;
@@ -41,5 +42,19 @@ public class IncludeFilterTest {
         Set<String> filteredSet = Sets.newHashSet("Hits");
         filter.applyFilter(filteredSet,metrics);
         Assert.assertTrue(filteredSet.size() == 1);
+    }
+
+    @Test
+    public void whenCompositeAttribsMatch_thenIncludeMetrics() {
+        List dictionary = DictionaryGenerator.createIncludeDictionaryWithCompositeObject();
+        List<String> metrics = Lists.newArrayList("Verbose",
+                "ObjectPendingFinalizationCount",
+                "HeapMemoryUsage",
+                "NonHeapMemoryUsage",
+                "ObjectName");
+        IncludeFilter filter = new IncludeFilter(dictionary);
+        Set<String> filteredSet = Sets.newHashSet();
+        filter.applyFilter(filteredSet, metrics);
+        Assert.assertTrue(filteredSet.contains("HeapMemoryUsage"));
     }
 }

@@ -26,13 +26,13 @@ public class MetricKeyFormatterTest {
         Assert.assertTrue(prefix.equals("Cache|KeyCache|Capacity|"));
     }
 
-/*   @Test
+   @Test
     public void whenAllArgsValid_thenReturnNodeKey() throws MalformedObjectNameException {
         ObjectInstance instance = new ObjectInstance(new ObjectName("org.apache.cassandra.metrics:type=Cache,scope=KeyCache,name=Capacity"),this.getClass().getName());
         String prefix = metricKeyFormatter.getInstanceKey(instance);
-        String nodeKey = metricKeyFormatter.getNodeKey(instance, "Capacity", prefix);
-        Assert.assertTrue(nodeKey.equals("Cache|DistributedCache|Java|Nodes|back|Capacity"));
-    }*/
+        String nodeKey = metricKeyFormatter.getNodeKey(instance, "Cache Capacity (MB)", prefix);
+        Assert.assertTrue(nodeKey.equals("Cache|KeyCache|Capacity|Cache Capacity (MB)"));
+    }
 
    @Test
     public void whenSomeArgsValid_thenShouldNotThrowExceptions() throws MalformedObjectNameException {

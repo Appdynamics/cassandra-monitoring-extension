@@ -25,7 +25,14 @@ public class DictionaryGenerator {
         return dictionary;
     }
 
-    public static List<String> createExcludeDictionary () {
-        return Lists.newArrayList("Capacity", "Load", "99thPercentile");
+    public static List<Map> createIncludeDictionaryWithCompositeObject() {
+        List<Map> dictionary = Lists.newArrayList();
+        Map metric1 = Maps.newLinkedHashMap();
+        metric1.put("HeapMemoryUsage.max", "maxAlias");
+        dictionary.add(metric1);
+        Map metric2 = Maps.newLinkedHashMap();
+        metric2.put("HeapMemoryUsage.used", "usedAlias");
+        dictionary.add(metric2);
+        return dictionary;
     }
 }

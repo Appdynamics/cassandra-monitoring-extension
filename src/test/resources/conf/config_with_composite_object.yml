@@ -1,0 +1,6 @@
+mbeans:
+  - objectName: "java.lang:type=Memory"
+    metrics:
+      include:
+        - HeapMemoryUsage.max : "Heap Memory Usage|Max Heap Memory"
+        - HeapMemoryUsage.used : "Heap Memory Usage|Used Heap Memory"

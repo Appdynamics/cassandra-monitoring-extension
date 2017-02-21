@@ -1,0 +1,7 @@
+
+mbeans:
+  - objectName: "java.lang:type=Memory"
+    metrics:
+      include:
+        - ObjectPendingFinalizationCount : "ObjectPendingFinalizationCount"
+        - HeapMemoryUsage.used : "Heap Memory Usage|Heap Memory Used"

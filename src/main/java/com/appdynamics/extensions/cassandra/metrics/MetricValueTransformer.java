@@ -36,7 +36,7 @@ class MetricValueTransformer {
             bigD = bigD.multiply(new BigDecimal(multiplier));
             return bigD;
         } catch (NumberFormatException nfe) {
-            logger.error("Cannot convert into BigDecimal {} value for metric {}.", metricValue, metricName, nfe);
+            logger.debug("Cannot convert into BigDecimal {} value for metric {}.", metricValue, metricName, nfe);
         }
         throw new IllegalArgumentException("Cannot convert into BigInteger " + metricValue);
     }
@@ -59,5 +59,3 @@ class MetricValueTransformer {
         return metricValue;
     }
 }
-
-
