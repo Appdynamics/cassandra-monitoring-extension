@@ -9,6 +9,13 @@ The AppDynamics Monitoring Extension for Cassandra can monitor multiple Cassandr
 
 The metrics reported by the extension can be modified as per a user's requirements. The extension was built using Cassandra 3.0.10 but it would work with previous and future releases as well.
 
+#### Smart Dashboards
+
+We now provide new, smart dashboards with this extension. These dashboards can be customized by users to include/exclude metrics of their choosing at any level of the metric tree. 
+Here is a screenshot of a sample smart dashboard using the Cassandra Extension: 
+
+<img width="1438" alt="screen shot 2017-02-22 at 1 35 12 pm" src="https://cloud.githubusercontent.com/assets/21226110/23234006/8de200da-f905-11e6-9798-3addfc482565.png">
+
 #### Prerequisites
 
 1.  This extension requires a AppDynamics Java Machine Agent installed and running.
