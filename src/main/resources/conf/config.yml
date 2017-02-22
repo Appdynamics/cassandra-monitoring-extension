@@ -178,32 +178,19 @@ mbeans:
   - objectName: "java.lang:type=OperatingSystem"
     metrics:
       include:
-        - TotalPhysicalMemorySize : "Total Physical Memory (MB)"
+        - TotalPhysicalMemorySize : "Total Physical Memory"
         - SystemCpuLoad : "Total CPU System Load"
         - ProcessCpuLoad : "Process CPU Load"
         - AvailableProcessors : "Number of Available Processors"
-        - FreePhysicalMemorySize : "Free Physical Memory (MB)"
+        - FreePhysicalMemorySize : "Free Physical Memory"
         - OpenFileDescriptorCount : "Open File Descriptor Count"
         - MaxFileDescriptorCount : "Maximum File Descriptor Count"
         - TotalSwapSpaceSize : "Total Swap Size"
         - FreeSwapSpaceSize : "Free Swap Size"
 
-  - objectName: "java.lang:type=Runtime"
-    metrics:
-      include:
-        - Uptime : "System Uptime"
-  - objectName: "java.lang:type=Threading"
-    metrics:
-      include:
-        - PeakThreadCount : "Peak Thread Count"
-        - DaemonThreadCount : "Daemon Thread Count"
-        - TotalStartedThreadCount : "Total Started Thread Count"
-
 #mBeans for JVM Metrics
   - objectName: "java.lang:type=Memory"
     metrics:
       include:
-        - ObjectPendingFinalizationCount : "ObjectPendingFinalizationCount"
         - HeapMemoryUsage.max : "Heap Memory Usage|Max Heap Memory Available"
         - HeapMemoryUsage.used : "Heap Memory Usage|Heap Memory Used"
-        - NonHeapMemoryUsage.max : "Non Heap Memory Usage|Max"

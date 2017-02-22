@@ -27,8 +27,4 @@ public class CassandraUtil {
     public static String getMetricNameFromCompositeObject(String objectName) {
         return objectName.split("\\.")[0];
     }
-
-    public static String getAttributeNameFromCompositeObject(String objectName) {
-        return objectName.split("\\.")[1];
-    }
 }

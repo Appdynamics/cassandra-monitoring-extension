@@ -34,7 +34,6 @@ public class NodeMetricsProcessor {
     public List<Metric> getNodeMetrics (Map mBean, Map<String, MetricProperties> metricsPropertiesMap) throws
             MalformedObjectNameException, IOException, IntrospectionException, InstanceNotFoundException,
             ReflectionException {
-        Set<Attribute> attributes = Sets.newHashSet();
         List<Metric> nodeMetrics = Lists.newArrayList();
         String configObjectName = CassandraUtil.convertToString(mBean.get(OBJECT_NAME), "");
         Set<ObjectInstance> objectInstances = jmxConnectionAdapter.queryMBeans(jmxConnector, ObjectName.getInstance
@@ -42,7 +41,7 @@ public class NodeMetricsProcessor {
         for (ObjectInstance instance : objectInstances) {
             List<String> metricNamesDictionary = jmxConnectionAdapter.getReadableAttributeNames(jmxConnector, instance);
             List<String> metricNamesToBeExtracted = applyFilters(mBean, metricNamesDictionary);
-            attributes = jmxConnectionAdapter.getAttributes(jmxConnector, instance.getObjectName(),
+            Set<Attribute> attributes = jmxConnectionAdapter.getAttributes(jmxConnector, instance.getObjectName(),
                     metricNamesToBeExtracted.toArray(new String[metricNamesToBeExtracted.size()]));
             collect(nodeMetrics, attributes, instance, metricsPropertiesMap);
         }
