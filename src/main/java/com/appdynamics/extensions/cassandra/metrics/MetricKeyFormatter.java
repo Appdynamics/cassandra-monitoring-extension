@@ -26,6 +26,7 @@ class MetricKeyFormatter {
         String scope = getKeyProperty(instance, CassandraMBeansKeyPropertiesEnum.SCOPE.toString());
         String cache = getKeyProperty(instance, CassandraMBeansKeyPropertiesEnum.CACHE.toString());
         String path = getKeyProperty(instance, CassandraMBeansKeyPropertiesEnum.PATH.toString());
+        String keyspace = getKeyProperty(instance, CassandraMBeansKeyPropertiesEnum.KEYSPACE.toString());
 
         StringBuilder metricsKey = new StringBuilder();
         metricsKey.append(Strings.isNullOrEmpty(type) ? "" : type + "|");
@@ -34,6 +35,7 @@ class MetricKeyFormatter {
         metricsKey.append(Strings.isNullOrEmpty(service) ? "" : service + "|");
         metricsKey.append(Strings.isNullOrEmpty(path) ? "" : path + "|");
         metricsKey.append(Strings.isNullOrEmpty(scope) ? "" : scope + "|");
+        metricsKey.append(Strings.isNullOrEmpty(keyspace) ? "" : keyspace + "|");
         metricsKey.append(Strings.isNullOrEmpty(name) ? "" : name + "|");
         metricsKey.append(Strings.isNullOrEmpty(cache) ? "" : cache + "|");
 
