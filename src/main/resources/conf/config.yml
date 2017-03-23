@@ -21,7 +21,8 @@ threadTimeout: 30
 #prefix used to show up metrics in AppDynamics
 #metricPathPrefix:  "Custom Metrics|Cassandra|"
 
-metricPathPrefix: "Server|Component:8|Custom Metrics|Cassandra"
+#This will report metrics only to the specified tier. Please refer to the 'metric path' section of this document https://docs.appdynamics.com/display/PRO42/Build+a+Monitoring+Extension+Using+Java  for instructions on how to obtain the component ID.  
+metricPrefix: "Server|Component:<ComponentID>|Custom Metrics|Cassandra"
 
 #Metric Overrides. Change this if you want to transform the metric key or value or its properties.
 #metricOverrides:
