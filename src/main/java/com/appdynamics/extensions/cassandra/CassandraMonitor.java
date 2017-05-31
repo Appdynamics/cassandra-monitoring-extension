@@ -127,7 +127,7 @@ public class CassandraMonitor extends AManagedMonitor {
     public static void main (String[] args) throws TaskExecutionException {
         CassandraMonitor cassandraMonitor = new CassandraMonitor();
         Map<String, String> argsMap = new HashMap<String, String>();
-        argsMap.put("config-file", "/Users/adityajagtiani/repos/appdynamics/extensions/cassandra-monitoring-extension" +
+        argsMap.put("config-file", "/Users/aditya.jagtiani/repos/appdynamics/extensions/cassandra-monitoring-extension" +
                 "" + "" + "/src/main/resources/conf/config.yml");
         cassandraMonitor.execute(argsMap, null);
     }

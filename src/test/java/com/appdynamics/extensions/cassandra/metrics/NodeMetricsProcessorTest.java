@@ -57,7 +57,7 @@ public class NodeMetricsProcessorTest {
 
         Map<String, MetricProperties> metricPropertiesMap = metricPropertiesBuilder.build(mBeans.get(0));
 
-        List<Metric> metrics = nodeMetricsProcessor.getNodeMetrics(mBeans.get(0), metricPropertiesMap);
+        List<Metric> metrics = nodeMetricsProcessor.getNodeMetrics(mBeans.get(0), metricPropertiesMap, "");
         Assert.assertTrue(metrics.get(0).getMetricKey().equals("ClientRequest|Read|Latency|Max Latency"));
         Assert.assertTrue(metrics.get(0).getInstanceKey().equals("ClientRequest|Read|Latency|"));
         Assert.assertTrue(metrics.get(0).getMetricValue().equals(new BigDecimal(200)));
@@ -94,7 +94,7 @@ public class NodeMetricsProcessorTest {
         MetricPropertiesBuilder metricPropertiesBuilder = new MetricPropertiesBuilder();
         NodeMetricsProcessor nodeMetricsProcessor = new NodeMetricsProcessor(jmxConnectionAdapter, jmxConnector);
         Map<String, MetricProperties> metricPropertiesMap = metricPropertiesBuilder.build(mBeans.get(0));
-        List<Metric> metrics = nodeMetricsProcessor.getNodeMetrics(mBeans.get(0), metricPropertiesMap);
+        List<Metric> metrics = nodeMetricsProcessor.getNodeMetrics(mBeans.get(0), metricPropertiesMap, "");
 
         Assert.assertTrue(metrics.get(0).getMetricKey().equals("Memory|Heap Memory Usage|Max Heap Memory"));
         Assert.assertTrue(metrics.get(0).getInstanceKey().equals("Memory|"));
@@ -136,7 +136,7 @@ public class NodeMetricsProcessorTest {
 
         Map<String, MetricProperties> metricPropertiesMap = metricPropertiesBuilder.build(mBeans.get(0));
 
-        List<Metric> metrics = nodeMetricsProcessor.getNodeMetrics(mBeans.get(0), metricPropertiesMap);
+        List<Metric> metrics = nodeMetricsProcessor.getNodeMetrics(mBeans.get(0), metricPropertiesMap, "");
         Assert.assertTrue(metrics.get(0).getMetricKey().equals("Memory|ObjectPendingFinalizationCount"));
         Assert.assertTrue(metrics.get(0).getInstanceKey().equals("Memory|"));
         Assert.assertTrue(metrics.get(0).getMetricValue().equals(new BigDecimal(0)));

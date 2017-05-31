@@ -46,4 +46,19 @@ public class MetricValueTransformerTest {
         props.setConversionValues(conversionValues);
         BigDecimal retValue = mvc.transform("StatusHA", "ENDANGERED", props);
     }
+
+    @Test
+    public void applyDeltaTest() {
+        String metricPath = "metricPrefix|testMetric";
+        Object metricValue = new BigDecimal(5);
+        MetricProperties props = new MetricProperties();
+        props.setConversionValues(null);
+        props.setDelta(true);
+        props.setMultiplier(1);
+        BigDecimal result = mvc.transform(metricPath, metricValue, props);
+        Assert.assertNull(result);
+        metricValue = new BigDecimal(10);
+        result = mvc.transform(metricPath, metricValue, props);
+        Assert.assertTrue(result.equals(new BigDecimal(5)));
+    }
 }

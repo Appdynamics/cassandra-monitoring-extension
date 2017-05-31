@@ -31,7 +31,7 @@ public class NodeMetricsProcessor {
         this.jmxConnector = jmxConnector;
     }
 
-    public List<Metric> getNodeMetrics (Map mBean, Map<String, MetricProperties> metricsPropertiesMap) throws
+    public List<Metric> getNodeMetrics (Map mBean, Map<String, MetricProperties> metricsPropertiesMap, String metricPrefix) throws
             MalformedObjectNameException, IOException, IntrospectionException, InstanceNotFoundException,
             ReflectionException {
         List<Metric> nodeMetrics = Lists.newArrayList();
@@ -43,7 +43,7 @@ public class NodeMetricsProcessor {
             List<String> metricNamesToBeExtracted = applyFilters(mBean, metricNamesDictionary);
             Set<Attribute> attributes = jmxConnectionAdapter.getAttributes(jmxConnector, instance.getObjectName(),
                     metricNamesToBeExtracted.toArray(new String[metricNamesToBeExtracted.size()]));
-            collect(nodeMetrics, attributes, instance, metricsPropertiesMap);
+            collect(metricPrefix, nodeMetrics, attributes, instance, metricsPropertiesMap);
         }
         return nodeMetrics;
     }
@@ -57,7 +57,7 @@ public class NodeMetricsProcessor {
         return Lists.newArrayList(filteredSet);
     }
 
-    private void collect (List<Metric> nodeMetrics, Set<Attribute> attributes, ObjectInstance instance, Map<String,
+    private void collect (String metricPrefix, List<Metric> nodeMetrics, Set<Attribute> attributes, ObjectInstance instance, Map<String,
             MetricProperties> metricPropsPerMetricName) {
         for (Attribute attribute : attributes) {
             try {
@@ -68,11 +68,11 @@ public class NodeMetricsProcessor {
                         String key = attribute.getName() + "." + str;
                         if (metricPropsPerMetricName.containsKey(key)) {
                             Object attributeValue = ((CompositeDataSupport) attribute.getValue()).get(str);
-                            setMetricDetails(key, attributeValue, instance, metricPropsPerMetricName, nodeMetrics);
+                            setMetricDetails(metricPrefix, key, attributeValue, instance, metricPropsPerMetricName, nodeMetrics);
                         }
                     }
                 } else {
-                    setMetricDetails(attribute.getName(), attribute.getValue(), instance, metricPropsPerMetricName,
+                    setMetricDetails(metricPrefix, attribute.getName(), attribute.getValue(), instance, metricPropsPerMetricName,
                             nodeMetrics);
                 }
             } catch (Exception e) {
@@ -81,15 +81,15 @@ public class NodeMetricsProcessor {
         }
     }
 
-    private void setMetricDetails (String attributeName, Object attributeValue, ObjectInstance instance, Map<String,
+    private void setMetricDetails (String metricPrefix, String attributeName, Object attributeValue, ObjectInstance instance, Map<String,
             MetricProperties> metricPropsPerMetricName, List<Metric> nodeMetrics) {
         MetricProperties props = metricPropsPerMetricName.get(attributeName);
         if (props == null) {
             logger.error("Could not find metric properties for {} ", attributeName);
         }
-        BigDecimal metricValue = valueConverter.transform(attributeName, attributeValue, props);
+        String instanceKey = metricKeyFormatter.getInstanceKey(instance);
+        BigDecimal metricValue = valueConverter.transform(metricPrefix + "|" + instanceKey + attributeName, attributeValue, props);
         if (metricValue != null) {
-            String instanceKey = metricKeyFormatter.getInstanceKey(instance);
             Metric nodeMetric = new Metric();
             nodeMetric.setProperties(props);
             nodeMetric.setMetricName(attributeName);
@@ -106,45 +106,3 @@ public class NodeMetricsProcessor {
         return attribute.getValue().getClass().equals(CompositeDataSupport.class);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*            compositeAttributeNames = Lists.newArrayList();
-            for(String str : metricNamesToBeExtracted) {
-                if(CassandraUtil.isCompositeObject(str)) {
-                    String[] temp = str.split("\\.");
-                    String compositeMetricName = temp[0];
-                    compositeAttributeNames.add(temp[1]);
-                    compositeMetricNamesToBeExtracted.add(compositeMetricName);
-                    isCurrentMetricComposite = true;
-                    attributes = jmxConnectionAdapter.getAttributes(jmxConnector, instance.getObjectName(),
-                            compositeMetricNamesToBeExtracted.toArray(new String[metricNamesToBeExtracted.size()]));
-                }
-            }
-            if(!isCurrentMetricComposite) {
-                attributes = jmxConnectionAdapter.getAttributes(jmxConnector, instance.getObjectName(),
-                metricNamesToBeExtracted.toArray(new String[metricNamesToBeExtracted.size()]));
-            }*/
-
-/*for (String compositeAttributeName : compositeAttributeNames) {
-                        String attributeName = attribute.getName();
-                        attributeName += "." + compositeAttributeName;
-                        attributeValue = ((CompositeDataSupport) attribute.getValue()).get(compositeAttributeName);
-                        setMetricDetails(attributeName, attributeValue, instance, metricPropsPerMetricName,
-                        nodeMetrics);
-                    }*/

@@ -68,7 +68,7 @@ class CassandraMonitorTask implements Runnable {
                     Map<String, MetricProperties> metricProperties = propertiesBuilder.build(mBean);
                     NodeMetricsProcessor nodeMetricsProcessor = new NodeMetricsProcessor(jmxConnectionAdapter,
                             jmxConnector);
-                    List<Metric> nodeMetrics = nodeMetricsProcessor.getNodeMetrics(mBean, metricProperties);
+                    List<Metric> nodeMetrics = nodeMetricsProcessor.getNodeMetrics(mBean, metricProperties, metricPrefix);
                     if (nodeMetrics.size() > 0) {
                         metricPrinter.reportNodeMetrics(nodeMetrics);
                     }
