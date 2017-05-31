@@ -22,7 +22,7 @@ threadTimeout: 30
 #metricPrefix:  "Custom Metrics|Cassandra|"
 
 #This will report metrics only to the specified tier. Please refer to the 'metric path' section of this document https://docs.appdynamics.com/display/PRO42/Build+a+Monitoring+Extension+Using+Java  for instructions on how to obtain the component ID.  
-metricPrefix: "Server|Component:<ComponentID>|Custom Metrics|Cassandra|"
+metricPrefix: "Server|Component:<ComponentID>|Custom Metrics|Cassandra"
 
 mbeans:
 #mBeans for Cache Metrics
@@ -32,3 +32,163 @@ mbeans:
     metrics:
       include:
         - Value : "Cache Capacity"
+  - objectName: "org.apache.cassandra.metrics:type=Cache,scope=*,name=Size"
+    metrics:
+      include:
+        - Value : "Cache Size"
+  - objectName: "org.apache.cassandra.metrics:type=Cache,scope=*,name=Hits"
+    metrics:
+      include:
+        - Count : "Number of Hits"
+  - objectName: "org.apache.cassandra.metrics:type=Cache,scope=*,name=Requests"
+    metrics:
+      include:
+        - Count : "Number of Requests"
+
+#mBeans for ClientRequest Metrics
+  - objectName: "org.apache.cassandra.metrics:type=ClientRequest,scope=*,name=Latency"
+    metrics:
+      include:
+        - Count : "Latency"
+        - OneMinuteRate : "One Minute Rate"
+  - objectName: "org.apache.cassandra.metrics:type=ClientRequest,scope=*,name=Timeouts"
+    metrics:
+      include:
+        - Count : "Number of Timeouts"
+        - OneMinuteRate : "One Minute Rate"
+  - objectName: "org.apache.cassandra.metrics:type=ClientRequest,scope=*,name=Unavailables"
+    metrics:
+      include:
+        - Count : "Number of Unavailables"
+        - OneMinuteRate : "One Minute Rate"
+
+#mBeans for ColumnFamily Metrics
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=TotalDiskSpaceUsed"
+    metrics:
+      include:
+        - Value : "Total Disk Space Used "
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=BloomFilterDiskSpaceUsed"
+    metrics:
+      include:
+        - Value : "Bloom Filter Disk Space Used "
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=BloomFilterFalsePositives"
+    metrics:
+      include:
+        - Value : "Bloom Filter False Positives"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=BloomFilterFalseRatio"
+    metrics:
+      include:
+        - Value : "Bloom Filter False Ratio"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=CompressionRatio"
+    metrics:
+      include:
+        - Value : "Compression Ratio"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=LiveDiskSpaceUsed"
+    metrics:
+      include:
+        - Value : "Live Disk Space Used "
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=LiveSSTableCount"
+    metrics:
+      include:
+        - Value : "Live SS Table Count"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MaxRowSize"
+    metrics:
+      include:
+        - Value : "Max Row Size"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MeanRowSize"
+    metrics:
+      include:
+        - Value : "Mean Row Size"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MemtableColumnsCount"
+    metrics:
+      include:
+        - Value : "Number of Memtable Columns"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MemtableLiveDataSize"
+    metrics:
+      include:
+        - Value : "Memtable Data Size"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MemtableSwitchCount"
+    metrics:
+      include:
+        - Value : "Memtable Switch Count"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MinRowSize"
+    metrics:
+      include:
+        - Value : "Min Row Size"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=ReadLatency"
+    metrics:
+      include:
+        - Count : "Latency"
+        - Mean : "Mean"
+        - Max : "Max"
+        - 99thPercentile : "99thPercentile"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=WriteLatency"
+    metrics:
+      include:
+        - Count : "Latency"
+        - Mean : "Mean"
+        - Max : "Max"
+        - 99thPercentile : "99thPercentile"
+
+# mBeans for Storage Metrics
+  - objectName: "org.apache.cassandra.metrics:type=Storage,name=Load"
+    metrics:
+      include:
+        - Count : "System Load"
+  - objectName: "org.apache.cassandra.metrics:type=Storage,name=Exceptions"
+    metrics:
+      include:
+        - Count : "Number of Exceptions"
+
+# mBeans for ThreadPool Metrics
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,path=*,scope=*,name=ActiveTasks"
+    metrics:
+      include:
+        - Value : "Number of Active Tasks"
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,path=*,scope=*,name=CompletedTasks"
+    metrics:
+      include:
+        - Value : "Number of Completed Tasks"
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,path=*,scope=*,name=PendingTasks"
+    metrics:
+      include:
+        - Value : "Number of Pending Tasks"
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,path=*,scope=*,name=CurrentlyBlockedTasks"
+    metrics:
+      include:
+        - Value : "Number of Currently Blocked Tasks"
+
+# mBeans for CommitLog Metrics
+  - objectName: "org.apache.cassandra.metrics:type=CommitLog,name=CompletedTasks"
+    metrics:
+      include:
+        - Value : "Number of Completed Tasks"
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,name=PendingTasks"
+    metrics:
+      include:
+        - Value : "Number of Pending Tasks"
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,name=TotalCommitLogSize"
+    metrics:
+      include:
+        - Value : "Total Commit Log Size "
+
+#mBeans for Memory and System Metrics
+  - objectName: "java.lang:type=OperatingSystem"
+    metrics:
+      include:
+        - TotalPhysicalMemorySize : "Total Physical Memory"
+        - SystemCpuLoad : "Total CPU System Load"
+        - ProcessCpuLoad : "Process CPU Load"
+        - AvailableProcessors : "Number of Available Processors"
+        - FreePhysicalMemorySize : "Free Physical Memory"
+        - OpenFileDescriptorCount : "Open File Descriptor Count"
+        - MaxFileDescriptorCount : "Maximum File Descriptor Count"
+        - TotalSwapSpaceSize : "Total Swap Size"
+        - FreeSwapSpaceSize : "Free Swap Size"
+
+#mBeans for JVM Metrics
+  - objectName: "java.lang:type=Memory"
+    metrics:
+      include:
+        - HeapMemoryUsage.max : "Heap Memory Usage|Max Heap Memory Available"
+        - HeapMemoryUsage.used : "Heap Memory Usage|Heap Memory Used"
