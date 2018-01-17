@@ -9,7 +9,7 @@
 	"configs" : [
 		{
 			"name" : "monitor.xml",
-			"link" : "https://raw.githubusercontent.com/CassandraAppDExtdynamics/cassandra-monitoring-extension/master/src/main/resources/conf/monitor.xml",
+			"link" : "https://raw.githubusercontent.com/Appdynamics/cassandra-monitoring-extension/master/src/main/resources/conf/monitor.xml",
 			
 		},
 		{
