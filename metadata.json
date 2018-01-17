@@ -1,31 +1,16 @@
 {
-	"id" : "cassandra-monitoring-extension",
+	"id" : "cassandra-monitor",
 	"type" : "monitor",
-	"displayName" : "Cassandra Extension",
+	"displayName" : "Cassandra Monitoring Extension",
 	"description" : "An AppDynamics extension to be used with a stand alone Java machine agent to provide metrics for Cassandra servers.",
 	"version" : "1.6.0",
 	"downloadLink" : "https://github.com/Appdynamics/cassandra-monitoring-extension/releases/download/1.6.0/CassandraMonitor.zip",
-	"imageLink" : "https://no-cache.appdynamics-static.com/appsphere/logos/cassandra_128.png",
-	"defaultConfigs" : [
+	"imageLink" : "https:///www.appdynamics.com/media/uploaded-images/1439426150/.thumbnails/cassandra_128-52x0.png",
+	"configs" : [
 		{
 			"name" : "monitor.xml",
 			"link" : "https://raw.githubusercontent.com/CassandraAppDExtdynamics/cassandra-monitoring-extension/master/src/main/resources/conf/monitor.xml",
-			"args" : [
-				{
-					"name" : "execution-frequency-in-seconds",
-					"displayName" : "Execution Frequency",
-					"defaultValue" : "60",
-					"description" : "Determines the execution frequency in seconds.",
-					"required" : true
-				},
-				{
-					"name" : "execution-timeout-in-secs",
-					"displayName" : "Execution Timeout",
-					"defaultValue" : "60",
-					"description" : "Determines the execution timeout in seconds.",
-					"required" : true
-				}
-			]
+			
 		},
 		{
 			"name" : "config.yml",
