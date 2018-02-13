@@ -22,7 +22,7 @@ threadTimeout: 30
 #metricPrefix:  "Custom Metrics|Cassandra|"
 
 #This will report metrics only to the specified tier. Please refer to the 'metric path' section of this document https://docs.appdynamics.com/display/PRO42/Build+a+Monitoring+Extension+Using+Java  for instructions on how to obtain the component ID.  
-metricPrefix: "Server|Component:<ComponentID>|Custom Metrics|Cassandra"
+metricPrefix: "Server|Component:<TIER NAME OR TIER ID>|Custom Metrics|Cassandra"
 
 mbeans:
 #mBeans for Cache Metrics
