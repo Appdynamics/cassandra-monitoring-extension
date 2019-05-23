@@ -1,0 +1,21 @@
+mbeans:
+  - objectName: "org.apache.activemq.metricsold:type=ClientRequest,scope=Read,name=Latency"
+    mbeanKeys: ["type", "scope","name"]
+    metrics:
+      include:
+        # List Metrics
+        - name: "listOfString.metric one"
+          alias: "listOfString|metric one"
+        - name: "listOfString.metric two"
+          alias: "listOfString|metric two"
+        - name: "listOfString.metric three"
+          alias: "listOfString|metric three"
+        - name: "Max"
+          alias: "Max"
+          aggregationType: "OBSERVATION"
+          timeRollUpType: "AVERAGE"
+          clusterRollUpType: "INDIVIDUAL"
+        - name: "HeapMemoryUsage.max"
+          alias: "Heap Memory Usage|Max"
+          multiplier: "10"
+          delta: false

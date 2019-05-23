@@ -1,132 +1,143 @@
 /*
- * Copyright 2018. AppDynamics LLC and its affiliates.
- * All Rights Reserved.
- * This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
- * The copyright notice above does not evidence any actual or intended publication of such source code.
+ *   Copyright 2019 . AppDynamics LLC and its affiliates.
+ *   All Rights Reserved.
+ *   This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+ *   The copyright notice above does not evidence any actual or intended publication of such source code.
+ *
  */
 
 package com.appdynamics.extensions.cassandra;
 
-import com.appdynamics.extensions.cassandra.metrics.*;
-import com.appdynamics.extensions.util.MetricWriteHelper;
-import com.singularity.ee.agent.systemagent.api.MetricWriter;
+import com.appdynamics.extensions.AMonitorTaskRunnable;
+import com.appdynamics.extensions.MetricWriteHelper;
+import com.appdynamics.extensions.cassandra.commons.JMXConnectionAdapter;
+import com.appdynamics.extensions.conf.MonitorContextConfiguration;
+import com.appdynamics.extensions.cassandra.metrics.JMXMetricsProcessor;
+import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
+import com.appdynamics.extensions.metrics.Metric;
+import com.appdynamics.extensions.util.CryptoUtils;
+import com.google.common.base.Strings;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.management.MalformedObjectNameException;
+import javax.management.JMException;
 import javax.management.remote.JMXConnector;
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
 
-import static com.appdynamics.extensions.cassandra.Constants.DISPLAY_NAME;
+import static com.appdynamics.extensions.cassandra.utils.Constants.*;
 
 /**
- * Created by adityajagtiani on 1/31/17.
+ * Created by bhuvnesh.kumar on 2/23/18.
  */
-class CassandraMonitorTask implements Runnable {
-
-    private static final Logger logger = LoggerFactory.getLogger(CassandraMonitorTask.class);
-    private static final BigDecimal ERROR_VALUE = BigDecimal.ZERO;
-    private static final BigDecimal SUCCESS_VALUE = BigDecimal.ONE;
-    private static final String METRICS_COLLECTION_SUCCESSFUL = "Metrics Collection Successful";
-    private String metricPrefix;
+public class CassandraMonitorTask implements AMonitorTaskRunnable {
+    private static final Logger logger = ExtensionsLoggerFactory.getLogger(CassandraMonitorTask.class);
+    private Boolean heartBeatStatus = true;
+    private String metricPrefix; // take from context
     private MetricWriteHelper metricWriter;
-    private Map server;
-    private JMXConnectionAdapter jmxConnectionAdapter;
-    private List<Map> configMBeans;
+    private Map<String, ?> server;
+    private JMXConnectionAdapter jmxConnectionAdapter; // build here instead of
+    private List<Map<String, ?>> configMBeans;
+    private MonitorContextConfiguration monitorContextConfiguration;
+
     private String serverName;
 
-    private CassandraMonitorTask () {
+    public CassandraMonitorTask(MetricWriteHelper metricWriter, Map<String, ?> server, MonitorContextConfiguration monitorContextConfiguration) {
+        this.metricWriter = metricWriter;
+        this.server = server;
+        this.monitorContextConfiguration = monitorContextConfiguration;
+        metricPrefix = monitorContextConfiguration.getMetricPrefix();
+        configMBeans = (List<Map<String, ?>>) monitorContextConfiguration.getConfigYml().get(MBEANS);
     }
 
-    public void run () {
-        serverName = CassandraUtil.convertToString(server.get(DISPLAY_NAME), "");
-        MetricPrinter metricPrinter = new MetricPrinter(metricPrefix, serverName, metricWriter);
-        try {
-            logger.debug("Cassandra monitoring task initiated for server {}", serverName);
-            BigDecimal status = populateAndPrintStats(metricPrinter);
+    private void getJMXConnectionAdapter() throws MalformedURLException {
+        String serviceUrl = (String) server.get(SERVICEURL);
+        String host = (String) server.get(HOST);
+        String portStr = (String) server.get(PORT);
+        int port = NumberUtils.toInt(portStr, -1);
+        String username = (String) server.get(USERNAME);
+        String password = getPassword(server);
 
-            metricPrinter.printMetric(metricPrinter.formMetricPath(METRICS_COLLECTION_SUCCESSFUL), status,
-                    MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
-                    MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_INDIVIDUAL);
-        } catch (Exception e) {
-            logger.error("Error in Cassandra Monitoring Task for Server {}", serverName, e);
-            metricPrinter.printMetric(metricPrinter.formMetricPath(METRICS_COLLECTION_SUCCESSFUL), BigDecimal.ZERO,
-                    MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION, MetricWriter.METRIC_TIME_ROLLUP_TYPE_CURRENT,
-                    MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_INDIVIDUAL);
-        } finally {
-            logger.debug("Cassandra Monitoring Task Complete. Total number of metrics reported = {}", metricPrinter
-                    .getTotalMetricsReported());
+        if (!Strings.isNullOrEmpty(serviceUrl) || !Strings.isNullOrEmpty(host)) {
+            jmxConnectionAdapter = JMXConnectionAdapter.create(serviceUrl, host, port, username, password);
+        } else {
+            throw new MalformedURLException();
         }
     }
 
-    private BigDecimal populateAndPrintStats (MetricPrinter metricPrinter) throws IOException {
+    private String getPassword(Map server) {
+        if (monitorContextConfiguration.getConfigYml().get(ENCRYPTION_KEY) != null) {
+            String encryptionKey = (String) monitorContextConfiguration.getConfigYml().get(ENCRYPTION_KEY);
+            server.put(ENCRYPTION_KEY, encryptionKey);
+        }
+        return CryptoUtils.getPassword(server);
+    }
+
+
+    public void run() {
+        serverName = (String) server.get(DISPLAY_NAME);
+        try {
+            getJMXConnectionAdapter();
+            logger.debug("JMX monitoring task initiated for server {}", serverName);
+            populateAndPrintStats();
+        } catch (MalformedURLException e) {
+            logger.error("Cannot construct JMX uri for " + server.get(DISPLAY_NAME).toString(), e);
+            heartBeatStatus = false;
+        } catch (Exception e) {
+            logger.error("Error in JMX Monitoring Task for Server {}", serverName, e);
+            heartBeatStatus = false;
+        } finally {
+            logger.debug("JMX Monitoring Task Complete for Server {}", serverName);
+        }
+    }
+
+    private void populateAndPrintStats() {
         JMXConnector jmxConnector = null;
         try {
+            long previousTimestamp = System.currentTimeMillis();
             jmxConnector = jmxConnectionAdapter.open();
-            logger.debug("JMX Connection is now open");
-            MetricPropertiesBuilder propertiesBuilder = new MetricPropertiesBuilder();
-            for (Map mBean : configMBeans) {
-                String configObjName = CassandraUtil.convertToString(mBean.get("objectName"), "");
+            long currentTimestamp = System.currentTimeMillis();
+            logger.debug("Time to open connection for " + serverName + " in milliseconds: " + (currentTimestamp - previousTimestamp));
+
+            for (Map<String, ?> mBean : configMBeans) {
+                String configObjName = (String) mBean.get(OBJECT_NAME);
                 logger.debug("Processing mBean {} from the config file", configObjName);
                 try {
-                    Map<String, MetricProperties> metricProperties = propertiesBuilder.build(mBean);
-                    NodeMetricsProcessor nodeMetricsProcessor = new NodeMetricsProcessor(jmxConnectionAdapter,
-                            jmxConnector);
-                    List<Metric> nodeMetrics = nodeMetricsProcessor.getNodeMetrics(mBean, metricProperties, metricPrefix);
+                    JMXMetricsProcessor jmxMetricsProcessor = new JMXMetricsProcessor(monitorContextConfiguration,
+                            jmxConnectionAdapter, jmxConnector);
+                    List<Metric> nodeMetrics = jmxMetricsProcessor.getJMXMetrics(mBean,
+                            metricPrefix, serverName);
                     if (nodeMetrics.size() > 0) {
-                        metricPrinter.reportNodeMetrics(nodeMetrics);
+                        metricWriter.transformAndPrintMetrics(nodeMetrics);
+                    } else {
+                        logger.debug("No metricsold being sent from mBean : {} and server: {}",configObjName, serverName);
                     }
-                } catch (MalformedObjectNameException e) {
-                    logger.error("Illegal Object Name {}" + configObjName, e);
-                } catch (Exception e) {
-                    logger.error("Error fetching JMX metrics for {} and mBean = {}", serverName, configObjName, e);
+                } catch (JMException e) {
+                    logger.error("JMException Occurred for {} " + configObjName, e);
+                    heartBeatStatus = false;
+                }catch (IOException e) {
+                    logger.error("IOException occurred while getting metricsold for mBean : {} and server: {} ", configObjName,serverName, e);
+                    heartBeatStatus = false;
                 }
             }
+        }  catch (Exception e) {
+            logger.error("Error occurred while fetching metricsold from Server : " + serverName, e);
+            heartBeatStatus = false;
         } finally {
             try {
                 jmxConnectionAdapter.close(jmxConnector);
-                logger.debug("JMX connection is closed");
-            } catch (IOException ioe) {
-                logger.error("Unable to close the connection.");
-                return ERROR_VALUE;
+                logger.debug("JMX connection is closed for " + serverName);
+            } catch (IOException e) {
+                logger.error("Unable to close the JMX connection.", e);
             }
         }
-        return SUCCESS_VALUE;
     }
 
-    public static class Builder {
-        private CassandraMonitorTask task = new CassandraMonitorTask();
-
-        Builder metricPrefix (String metricPrefix) {
-            task.metricPrefix = metricPrefix;
-            return this;
-        }
-
-        Builder metricWriter (MetricWriteHelper metricWriter) {
-            task.metricWriter = metricWriter;
-            return this;
-        }
-
-        Builder server (Map server) {
-            task.server = server;
-            return this;
-        }
-
-        Builder jmxConnectionAdapter (JMXConnectionAdapter adapter) {
-            task.jmxConnectionAdapter = adapter;
-            return this;
-        }
-
-        Builder mbeans (List<Map> mBeans) {
-            task.configMBeans = mBeans;
-            return this;
-        }
-
-        CassandraMonitorTask build () {
-            return task;
-        }
+    public void onTaskComplete() {
+        logger.debug("Task Complete");
+        String metricValue = heartBeatStatus ? "1" : "0";
+        metricWriter.printMetric(metricPrefix + METRICS_SEPARATOR + server.get(DISPLAY_NAME).toString() + METRICS_SEPARATOR + HEARTBEAT, metricValue, "AVERAGE", "AVERAGE", "INDIVIDUAL");
     }
 }

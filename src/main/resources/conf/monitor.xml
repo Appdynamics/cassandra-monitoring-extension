@@ -25,7 +25,7 @@
                 </task-arguments>
                 <java-task>
                         <classpath>cassandra-monitoring-extension.jar</classpath>
-                        <impl-class>com.appdynamics.extensions.cassandra.CassandraMonitor</impl-class>
+                        <impl-class>com.appdynamics.extensions.cassandra.CassandraMonitorOld</impl-class>
                 </java-task>
         </monitor-run-task>
 </monitor>
