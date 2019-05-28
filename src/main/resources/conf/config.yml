@@ -7,13 +7,15 @@ metricPrefix: "Server|Component:<TIER NAME OR TIER ID>|Custom Metrics|Cassandra"
 
 # List of JMX Servers
 servers:
-  -   displayName: "Cassandra Server 1"
+  -  displayName: "Cassandra Server 1"
     #     displayName is a required field. This will be your server name that will show up in metric path.
+
     #     You can either use just a host and port to connect or use your full serviceURL to make the connection
     #     Do not choose both, comment one out and only use the other.
      host: ""
      port:
 #     serviceUrl: ""
+
 #     username: ""
 #     password: ""
 

@@ -10,7 +10,6 @@
         <type>managed</type>
         <description>Cassandra monitor</description>
         <monitor-configuration></monitor-configuration>
-        <enabled>true</enabled>
         <monitor-run-task>
                 <execution-style>periodic</execution-style>
                 <execution-frequency-in-seconds>60</execution-frequency-in-seconds>
@@ -25,7 +24,7 @@
                 </task-arguments>
                 <java-task>
                         <classpath>cassandra-monitoring-extension.jar</classpath>
-                        <impl-class>com.appdynamics.extensions.cassandra.CassandraMonitorOld</impl-class>
+                        <impl-class>com.appdynamics.extensions.cassandra.CassandraMonitor</impl-class>
                 </java-task>
         </monitor-run-task>
 </monitor>
