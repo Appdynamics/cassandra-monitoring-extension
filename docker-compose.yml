@@ -1,0 +1,71 @@
+version: '2'
+services:
+
+  cassandra1:
+    image: cassandra:3.11.2
+    container_name: cassandra1
+        build:
+          context: .
+          dockerfile: Dockerfile_Cassandra
+    ports:
+      - "7199:7199"
+
+    environment:
+      JMX_HOST: `ipconfig getifaddr en0`
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  controller:
+    image: dtr.corp.appdynamics.com/appdynamics/enterprise-console:latest
+    container_name: controller
+    ports:
+      - "8080:8080"
+      - "9080:9080"
+      - "9200:9200"
+
+  machine:
+    container_name: machine
+    environment:
+      - APPDYNAMICS_AGENT_ACCOUNT_NAME=customer1
+      - APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY=SJ5b2m7d1$$354
+      - APPDYNAMICS_CONTROLLER_HOST_NAME=controller
+      - APPDYNAMICS_CONTROLLER_SSL_ENABLED=false
+      - APPDYNAMICS_CONTROLLER_PORT=8080
+      - EVENTS_SERVICE_HOST=controller
+      - MACHINE_AGENT_PROPERTIES=-Dappdynamics.sim.enabled=true -Dappdynamics.docker.enabled=false
+
+
+    build:
+      context: .
+      dockerfile: Dockerfile_MA
+      args:
+        - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+        - PLAINTEXT_PWD=${PLAINTEXT_PWD}
+
+    volumes:
+      - /:/hostroot:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  workbench:
+    environment:
+      - APPDYNAMICS_AGENT_ACCOUNT_NAME=customer1
+      - APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY=SJ5b2m7d1$$354
+      - APPDYNAMICS_CONTROLLER_HOST_NAME=controller
+      - APPDYNAMICS_CONTROLLER_SSL_ENABLED=false
+      - APPDYNAMICS_CONTROLLER_PORT=8080
+      - EVENTS_SERVICE_HOST=controller
+      - MACHINE_AGENT_PROPERTIES=-Dappdynamics.sim.enabled=true -Dappdynamics.docker.enabled=false
+
+    build:
+      context: .
+      dockerfile: Dockerfile_Workbench
+      args:
+        - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+        - PLAINTEXT_PWD=${PLAINTEXT_PWD}
+
+    ports:
+      - "9089:9089"
+
+    volumes:
+      - /:/hostroot:ro
+      - /var/run/docker.sock:/var/run/docker.sock

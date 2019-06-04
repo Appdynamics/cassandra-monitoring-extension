@@ -15,6 +15,16 @@ object Project : Project({
 
     vcsRoot(cassandramonitoringextension)
 
+    buildType(Cassandra_Setup)
+    buildType(Cassandra_Stop)
+    buildType(Cassandra_IntegrationTests)
+    buildType(Cassandra_Build)
+
+    buildTypesOrder = arrayListOf(Cassandra_Build,
+            Cassandra_Setup,
+            Cassandra_IntegrationTests,
+            Cassandra_Stop)
+
     features {
         versionedSettings {
             id = "PROJECT_EXT_2"
