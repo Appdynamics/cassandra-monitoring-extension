@@ -1,19 +1,33 @@
 version: '2'
 services:
-
   cassandra1:
     image: cassandra:3.11.2
     container_name: cassandra1
-        build:
-          context: .
-          dockerfile: Dockerfile_Cassandra
     ports:
       - "7199:7199"
+    build:
+      context: .
+      dockerfile: Dockerfile_Cassandra
 
     environment:
-      JMX_HOST: `ipconfig getifaddr en0`
+      JMX_HOST: localhost
+
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+
+#  cassandra1:
+#    image: cassandra:3.11.2
+#    container_name: cassandra1
+#      build:
+#        context: .
+#        dockerfile: Dockerfile_Cassandra
+#    ports:
+#      - "7199:7199"
+
+#    environment:
+#      JMX_HOST: `ipconfig getifaddr en0`
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
 
   controller:
     image: dtr.corp.appdynamics.com/appdynamics/enterprise-console:latest
