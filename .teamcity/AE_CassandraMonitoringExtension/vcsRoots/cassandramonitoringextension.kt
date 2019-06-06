@@ -11,4 +11,8 @@ object cassandramonitoringextension : GitVcsRoot({
     authMethod = uploadedKey {
         uploadedKey = "TeamCity BitBucket Key"
     }
+    branchSpec = """
+        +:refs/heads/(2.1)
+        +:refs/(pull-requests/*)/from
+    """.trimIndent()
 })
