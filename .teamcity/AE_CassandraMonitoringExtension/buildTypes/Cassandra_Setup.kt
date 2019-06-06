@@ -6,7 +6,7 @@
  *
  */
 
-package ExtensionsJMX_KafkaMonitoringExtension.buildTypes
+package AE_CassandraMonitoringExtension.buildTypes
 
 import jetbrains.buildServer.configs.kotlin.v2018_2.*
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.maven
@@ -15,16 +15,16 @@ import jetbrains.buildServer.configs.kotlin.v2018_2.triggers.vcs
 
 import jetbrains.buildServer.configs.kotlin.v2018_2.BuildType
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.exec
-import ExtensionsJMX_KafkaMonitoringExtension.vcsRoots.*
+import AE_CassandraMonitoringExtension.vcsRoots.*
 
 
 
 object Cassandra_Setup : BuildType({
     uuid = "129f1153-3e0f-4794-a46b-8a1600da7692"
-    name = "Setup Kafka Controller and Machine Agent in Docker Containers"
+    name = "Setup Cassandra Controller and Machine Agent in Docker Containers"
 
     vcs {
-        root(kafkamonitoringextensionci)
+        root(cassandramonitoringextension)
     }
 
     steps {
@@ -42,14 +42,14 @@ object Cassandra_Setup : BuildType({
     }
 
     dependencies {
-        dependency(ExtensionsJMX_KafkaMonitoringExtension_Build) {
+        dependency(Cassandra_Build) {
             snapshot {
 
             }
 
 artifacts {
                 artifactRules = """
-                target/KafkaMonitor-*.zip => target
+                target/CassandraMonitor-*.zip => target
             """.trimIndent()
             }
         }

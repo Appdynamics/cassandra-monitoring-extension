@@ -6,12 +6,12 @@
  *
  */
 
-package ExtensionsJMX_KafkaMonitoringExtension.buildTypes
+package AE_CassandraMonitoringExtension.buildTypes
 
 import jetbrains.buildServer.configs.kotlin.v2018_2.*
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.maven
 import jetbrains.buildServer.configs.kotlin.v2018_2.triggers.vcs
-import ExtensionsJMX_KafkaMonitoringExtension.vcsRoots.*
+import AE_CassandraMonitoringExtension.vcsRoots.*
 
 
 import jetbrains.buildServer.configs.kotlin.v2018_2.BuildType
@@ -25,7 +25,7 @@ object Cassandra_Build : BuildType({
     name = "Run Unit Tests and Build Extension"
 
     vcs {
-        root(kafkamonitoringextensionci)
+        root(cassandramonitoringextension)
     }
 
     steps {
@@ -42,6 +42,6 @@ object Cassandra_Build : BuildType({
     }
 
     artifactRules = """
-       +:target/KafkaMonitor-*.zip => target
+       +:target/CassandraMonitor-*.zip => target
     """.trimIndent()
 })

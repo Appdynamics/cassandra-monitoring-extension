@@ -6,7 +6,7 @@
  *
  */
 
-package ExtensionsJMX_KafkaMonitoringExtension.buildTypes
+package AE_CassandraMonitoringExtension.buildTypes
 
 import jetbrains.buildServer.configs.kotlin.v2018_2.*
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.dockerCommand
@@ -14,15 +14,15 @@ import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.dockerCompose
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.maven
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.v2018_2.triggers.vcs
-import ExtensionsJMX_KafkaMonitoringExtension.vcsRoots.*
-import ExtensionsJMX_KafkaMonitoringExtension.buildTypes.*;
+import AE_CassandraMonitoringExtension.vcsRoots.*
+import AE_CassandraMonitoringExtension.buildTypes.*;
 
 object Cassandra_IntegrationTests : BuildType({
     uuid = "7BE210AD-581F-42A3-9938-FD5482212236"
     name = "Run Integration Tests - Linux"
 
     vcs {
-        root(kafkamonitoringextensionci)
+        root(cassandramonitoringextension)
     }
 
     steps {
@@ -35,7 +35,7 @@ object Cassandra_IntegrationTests : BuildType({
     }
 
     dependencies {
-        dependency(ExtensionsJMX_KafkaMonitoringExtension_SetupKafka) {
+        dependency(Cassandra_Setup) {
             snapshot {
                 runOnSameAgent = true
             }

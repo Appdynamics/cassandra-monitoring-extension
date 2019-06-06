@@ -6,7 +6,7 @@
  *
  */
 
-package ExtensionsJMX_KafkaMonitoringExtension.buildTypes
+package AE_CassandraMonitoringExtension.buildTypes
 
 import jetbrains.buildServer.configs.kotlin.v2018_2.*
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.maven
@@ -15,8 +15,8 @@ import jetbrains.buildServer.configs.kotlin.v2018_2.triggers.vcs
 
 import jetbrains.buildServer.configs.kotlin.v2018_2.BuildType
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.exec
-import ExtensionsJMX_KafkaMonitoringExtension.vcsRoots.*
-import ExtensionsJMX_KafkaMonitoringExtension.buildTypes.*
+import AE_CassandraMonitoringExtension.vcsRoots.*
+import AE_CassandraMonitoringExtension.buildTypes.*
 
 
 object Cassandra_Stop : BuildType({
@@ -24,7 +24,7 @@ object Cassandra_Stop : BuildType({
     name = "Stop and Remove all Docker Containers"
 
     vcs {
-        root(kafkamonitoringextensionci)
+        root(cassandramonitoringextension)
     }
 
     steps {
@@ -40,7 +40,7 @@ object Cassandra_Stop : BuildType({
     }
 
     dependencies {
-        dependency(ExtensionsJMX_KafkaMonitoringExtension_SetupKafka) {
+        dependency(Cassandra_Setup) {
             snapshot{
                 runOnSameAgent = true
             }
