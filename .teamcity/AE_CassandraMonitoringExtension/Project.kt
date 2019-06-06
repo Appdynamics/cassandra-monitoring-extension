@@ -1,6 +1,7 @@
 package AE_CassandraMonitoringExtension
 
 import AE_CassandraMonitoringExtension.vcsRoots.*
+import AE_CassandraMonitoringExtension.buildTypes.*
 import AE_CassandraMonitoringExtension.vcsRoots.cassandramonitoringextension
 import jetbrains.buildServer.configs.kotlin.v2018_2.*
 import jetbrains.buildServer.configs.kotlin.v2018_2.Project
@@ -14,6 +15,15 @@ object Project : Project({
     name = "Cassandra Monitoring Extension"
 
     vcsRoot(cassandramonitoringextension)
+    buildType(Cassandra_Setup)
+    buildType(Cassandra_Stop)
+    buildType(Cassandra_IntegrationTests)
+    buildType(Cassandra_Build)
+
+    buildTypesOrder = arrayListOf(Cassandra_Build,
+            Cassandra_Setup,
+            Cassandra_IntegrationTests,
+            Cassandra_Stop)
 
     features {
         versionedSettings {
