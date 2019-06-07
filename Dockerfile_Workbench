@@ -1,0 +1,24 @@
+FROM dtr.corp.appdynamics.com/appdynamics/machine-agent:latest AS MA
+RUN pwd
+RUN apt-get update && \
+    apt-get install -y openjdk-8-jdk && \
+    apt-get install -y ant && \
+    apt-get clean;
+
+# Fix certificate issues
+RUN apt-get update && \
+    apt-get install ca-certificates-java && \
+    apt-get clean && \
+    update-ca-certificates -f;
+
+# Setup JAVA_HOME
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
+RUN export JAVA_HOME
+
+ADD target/CassandraMonitor-*.zip /opt/appdynamics/machine-agent/monitors
+RUN unzip -q "/opt/appdynamics/machine-agent/monitors/CassandraMonitor-*.zip" -d /opt/appdynamics/machine-agent/monitors
+RUN find /opt/appdynamics/machine-agent/monitors/ -name '*.zip' -delete
+CMD ["sh", "-c" , "java  -jar  /opt/appdynamics/machine-agent/monitors/CassandraMonitor/cassandra-monitoring-extension.jar localhost 9089"]
+
+
+
