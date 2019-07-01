@@ -22,8 +22,8 @@ dockerStop:
 	## stop and remove all containers
 	sleep 60
 	@echo remove containers and images
-	docker stop machine controller zookeeper kafka1 kafka2
-	docker rm machine controller zookeeper kafka1 kafka2
+	docker stop machine controller cassandra1
+	docker rm machine controller cassandra1
 	docker rmi dtr.corp.appdynamics.com/appdynamics/machine-agent:latest
 	docker rmi dtr.corp.appdynamics.com/appdynamics/enterprise-console:latest
 	@echo remove containers and images
