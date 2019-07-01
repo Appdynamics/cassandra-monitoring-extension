@@ -9,11 +9,11 @@ DOCKER_STOP=docker-compose --file docker-compose.yml down
 
 dockerRun: ## Run MA in docker
 	@echo starting container ##################%%%%%%%%%%%%%%%%%%%&&&&&&&&&&&&&&&&&&&&&&
-	@echo docker-compose --file docker-compose.yml up --force-recreate -d --build cassandra1
+	docker-compose --file docker-compose.yml up --force-recreate -d --build cassandra1
 	## start controller
-	@echo docker-compose --file docker-compose.yml up --force-recreate -d --build controller
+	docker-compose --file docker-compose.yml up --force-recreate -d --build controller
 	## wait until it installs controller and ES
-	@echo sleep 600
+	sleep 600
 	## start machine agent
 	docker-compose --verbose --file docker-compose.yml up --force-recreate -d --build  -t 120 machine
 	@echo started container ##################%%%%%%%%%%%%%%%%%%%&&&&&&&&&&&&&&&&&&&&&&
