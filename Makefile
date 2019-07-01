@@ -15,7 +15,7 @@ dockerRun: ## Run MA in docker
 	## wait until it installs controller and ES
 	sleep 600
 	## start machine agent
-	docker-compose --verbose --file docker-compose.yml up --force-recreate -d --build machine
+	docker-compose --verbose --file docker-compose.yml up --force-recreate -d --build  -t 120 machine
 	@echo started container ##################%%%%%%%%%%%%%%%%%%%&&&&&&&&&&&&&&&&&&&&&&
 
 dockerStop:
