@@ -48,13 +48,9 @@ services:
       - EVENTS_SERVICE_HOST=controller
       - MACHINE_AGENT_PROPERTIES=-Dappdynamics.sim.enabled=true -Dappdynamics.docker.enabled=false
 
-
     build:
       context: .
       dockerfile: Dockerfile_MA
-      args:
-        - ENCRYPTION_KEY=${ENCRYPTION_KEY}
-        - PLAINTEXT_PWD=${PLAINTEXT_PWD}
 
     volumes:
       - /:/hostroot:ro
