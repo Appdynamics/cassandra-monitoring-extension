@@ -1,9 +1,9 @@
 ### ANY CHANGES TO THIS FILE DOES NOT REQUIRE A RESTART ###
 #This will create this metric in all the tiers, under this path
-#metricPrefix: Custom Metrics|JMXMonitor
+metricPrefix: Custom Metrics|Cassandra
 
 #This will create it in specific Tier. Replace <TIER_NAME>
-metricPrefix: "Server|Component:<TIER NAME OR TIER ID>|Custom Metrics|Cassandra"
+#metricPrefix: "Server|Component:<TIER NAME OR TIER ID>|Custom Metrics|Cassandra"
 
 # List of JMX Servers
 servers:
@@ -12,8 +12,8 @@ servers:
 
     #     You can either use just a host and port to connect or use your full serviceURL to make the connection
     #     Do not choose both, comment one out and only use the other.
-     host: ""
-     port:
+     host: "${CASSANDRA_HOST_1}"
+     port: "${CASSANDRA_PORT_1}"
 #     serviceUrl: ""
 
 #     username: ""
@@ -24,7 +24,7 @@ servers:
 #      encryptedPassword: ""
 
 # The encryptionKey is global and the same key is used for all the servers listed in the extension
-#encryptionKey: ""
+#encryptionKey: "${ENCRYPTION_KEY}"
 
 # number of concurrent tasks.
 # Each server would require its own thread to process. Please provide adequate threads accordingly.
@@ -297,17 +297,47 @@ mbeans:
           alias: "Non Heap Memory Usage|Used"
 
 
+
+separatorForMetricLists: ":"
+
+
+# Generate a custom dashboard based on the provided template
+customDashboard:
+  enabled: true
+  dashboardName: "Cassandra BTD Dashboard"
+  # Update the path to the dashboard file.
+  pathToSIMDashboard: "monitors/CassandraMonitor/CustomDashboard_Cassandra.json"
+  pathToNormalDashboard: "monitors/CassandraMonitor/CustomDashboard_Cassandra.json"
+
+controllerInfo:
+  controllerHost: "controller"
+  controllerPort: 8080
+  account: "customer1"
+  username: "user1"
+  password: "welcome"
+  encryptedPassword: ""
+  encryptionKey: ""
+  controllerSslEnabled: false
+  enableOrchestration: false
+  uniqueHostId: ""
+  accountAccessKey: "${APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY}"
+  machinePath: ""
+  simEnabled: true
+  applicationName: ""
+  tierName: ""
+  nodeName: ""
+
 # Note: If the current "metricPathReplacements" is not working on your current machine,
 # please add escape charaters "\\" before your value. It changes from OS to OS, some need it, some don't
 # For Example, replace: "%" -> Becomes -> replace: "\\%"
 metricPathReplacements:
-  - replace: "%"
-    replaceWith: ""
+  - replace: "Percent"
+    replaceWith: "%"
+  - replace: "OneMinuteRate"
+    replaceWith: "1 min Rate"
   - replace: ","
     replaceWith: "-"
   - replace: "."
     replaceWith: "-"
   - replace: "ms"
     replaceWith: ""
-
-separatorForMetricLists: ":"

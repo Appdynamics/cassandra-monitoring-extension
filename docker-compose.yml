@@ -47,6 +47,8 @@ services:
       - APPDYNAMICS_CONTROLLER_PORT=8080
       - EVENTS_SERVICE_HOST=controller
       - MACHINE_AGENT_PROPERTIES=-Dappdynamics.sim.enabled=true -Dappdynamics.docker.enabled=false
+      - CASSANDRA_HOST_1=localhost
+      - CASSANDRA_PORT_1=7199
 
     build:
       context: .
@@ -65,6 +67,8 @@ services:
       - APPDYNAMICS_CONTROLLER_PORT=8080
       - EVENTS_SERVICE_HOST=controller
       - MACHINE_AGENT_PROPERTIES=-Dappdynamics.sim.enabled=true -Dappdynamics.docker.enabled=false
+      - CASSANDRA_HOST_1=localhost
+      - CASSANDRA_PORT_1=7199
 
     build:
       context: .

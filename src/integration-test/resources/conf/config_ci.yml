@@ -1,335 +1,343 @@
-#If SIM is enabled, use this
-metricPrefix: 'Custom Metrics|Kafka'
+### ANY CHANGES TO THIS FILE DOES NOT REQUIRE A RESTART ###
+#This will create this metric in all the tiers, under this path
+metricPrefix: Custom Metrics|Cassandra
 
-#If SIM is not enabled, then use this
-#metricPrefix: 'Server|Component:<Component-ID>|Custom Metrics|Kafka'
+#This will create it in specific Tier. Replace <TIER_NAME>
+#metricPrefix: "Server|Component:<TIER NAME OR TIER ID>|Custom Metrics|Cassandra"
 
-# To know your Component-ID, Please refer the link
-# https://community.appdynamics.com/t5/Knowledge-Base/How-to-troubleshoot-missing-custom-metrics-or-extensions-metrics/ta-p/28695
-
-# Add your Kafka Instances below
+# List of JMX Servers
 servers:
-  - host: "${KAFKA_HOST_1}"
-    port: "${KAFKA_PORT_1}"
-    username: "${KAFKA_USERNAME}"
-    password: ""
-    encryptedPassword: "old"
-    displayName: 'Local Kafka Server'
-    useSsl: true # set to true if you're using SSL for this server
+  -  displayName: "Local Cassandra Server 1"
+    #     displayName is a required field. This will be your server name that will show up in metric path.
 
-  - host: "${KAFKA_HOST_2}"
-    port: "${KAFKA_PORT_2}"
-    username: ""
-    password: ""
-    encryptedPassword: ""
-    displayName: 'Local Kafka Server2'
-    useSsl: false # set to true if you're using SSL for this server
+    #     You can either use just a host and port to connect or use your full serviceURL to make the connection
+    #     Do not choose both, comment one out and only use the other.
+     host: "${CASSANDRA_HOST_1}"
+     port: "${CASSANDRA_PORT_1}"
+#     serviceUrl: ""
 
+#     username: ""
+#     password: ""
 
-  # Provide the encryption key for the encrypted password
-encryptionKey: "${ENCRYPTION_KEY}"
+#     You can either use the normal password or encrypt your password and provide the encrypted Password and encryptionKey.
+#     Do not provide both, only provide one and comment out the other.
+#      encryptedPassword: ""
 
-# Configure the following connection section ONLY if:
-# the config property [useSsl] is set to true in any of the servers in the 'servers' section
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#  Please REMOVE/COMMENT OUT the connection section below if:
-#  SSL is not being used for ANY of the Kafka servers listed in the 'servers' section
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# The encryptionKey is global and the same key is used for all the servers listed in the extension
+#encryptionKey: "${ENCRYPTION_KEY}"
 
-# If you are using the connection section,
-# any change to the connection section below requires a machine agent restart for the changes to reflect
-connection:
-  socketTimeout: 3000
-  connectTimeout: 1000
-  sslProtocols: 'TLSv1.2'
-  sslCipherSuites: ''
-  sslTrustStorePath: '/opt/appdynamics/kafka.client.truststore.jks' #if [sslTrustStorePath]: '' empty, it defaults to <MachineAgent_Home>/conf/cacerts.jks
-  sslTrustStorePassword: 'test1234' # [sslTrustStorePassword: ""] defaults to ''
-  sslTrustStoreEncryptedPassword: '' #provide encrypted Password if encryption is needed
+# number of concurrent tasks.
+# Each server would require its own thread to process. Please provide adequate threads accordingly.
+numberOfThreads: 5
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#                                      List of metrics
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Glossary of terms(These terms are used as properties for each metric):
+#   alias
+#   aggregationType
+#   timeRollUpType
+#   clusterRollUpType
+#   multiplier -->not for derived metrics
+#   convert --> not for derived metrics
+#   delta --> not for derived metrics
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
+#prefix used to show metricsold in AppDynamics
+#metricPrefix:  "Custom Metrics|Cassandra|"
+
+#This will report metricsold only to the specified tier. Please refer to the 'metric path' section of this document https://docs.appdynamics.com/display/PRO42/Build+a+Monitoring+Extension+Using+Java  for instructions on how to obtain the component ID.
+mbeans:
+  # This Mbean will extract out Broker metrics
+  - objectName: "org.apache.cassandra.metrics:type=Cache,scope=*,name=Capacity"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Store Percent Usage"
+          multiplier : 100
+          delta : true
+  - objectName: "org.apache.cassandra.metrics:type=Cache,scope=*,name=Size"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Cache Size"
+  - objectName: "org.apache.cassandra.metrics:type=Cache,scope=*,name=Hits"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Count"
+          alias: "Number Of Hits"
+  - objectName: "org.apache.cassandra.metrics:type=Cache,scope=*,name=Requests"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Count"
+          alias: "Number Of Requests"
+
+
+  #mBeans for ClientRequest Metrics
+  - objectName: "org.apache.cassandra.metrics:type=ClientRequest,scope=*,name=Latency"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Count"
+          alias: "Latency"
+        - name: "OneMinuteRate"
+          alias: "One Minute Rate"
+  - objectName: "org.apache.cassandra.metrics:type=ClientRequest,scope=*,name=Unavailables"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Count"
+          alias: "Number of Unavailables"
+        - name: "OneMinuteRate"
+          alias: "One Minute Rate"
+
+  #mBeans for ColumnFamily Metrics
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=TotalDiskSpaceUsed"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Total Disk Space Used"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=BloomFilterDiskSpaceUsed"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Bloom Filter Disk Space Used"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=BloomFilterFalsePositives"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Bloom Filter False Positives"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=BloomFilterFalseRatio"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Bloom Filter False Ratio"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=CompressionRatio"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Compression Ratio"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=LiveDiskSpaceUsed"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Live Disk Space Used"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=LiveSSTableCount"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Live SS Table Count"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MaxRowSize"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Max Row Size"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MeanRowSize"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Mean Row Size"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MemtableLiveDataSize"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Memtable Data Size"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MemtableColumnsCount"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Number of Memtable Columns"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MemtableSwitchCount"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Memtable Switch Count"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MinRowSize"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Min Row Size"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=ReadLatency"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Count"
+          alias: "Latency"
+        - name: "Mean"
+          alias: "Mean"
+        - name: "Max"
+          alias: "Max"
+        - name: "99thPercentile"
+          alias: "99th Percentile"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=WriteLatency"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Count"
+          alias: "Latency"
+        - name: "Mean"
+          alias: "Mean"
+        - name: "Max"
+          alias: "Max"
+        - name: "99thPercentile"
+          alias: "99th Percentile"
+
+  # mBeans for Storage Metrics
+  - objectName: "org.apache.cassandra.metrics:type=Storage,name=Load"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Count"
+          alias: "System Load"
+  - objectName: "org.apache.cassandra.metrics:type=Storage,name=Exceptions"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Count"
+          alias: "Number of Exceptions"
+
+  # mBeans for ThreadPool Metrics
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,path=*,scope=*,name=ActiveTasks"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Number of Active Tasks"
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,path=*,scope=*,name=CompletedTasks"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Number of Completed Tasks"
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,path=*,scope=*,name=PendingTasks"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Number of Pending Tasks"
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,path=*,scope=*,name=CurrentlyBlockedTasks"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Number of Currently Blocked Tasks"
+
+  # mBeans for CommitLog Metrics
+  - objectName: "org.apache.cassandra.metrics:type=CommitLog,name=CompletedTasks"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Number of Completed Tasks"
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,name=PendingTasks"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Number of Pending Tasks"
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,name=TotalCommitLogSize"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Total Commit Log Size"
+  #mBeans for Memory and System Metrics
+  - objectName: "java.lang:type=OperatingSystem"
+    mbeanKeys: ["type"]
+    metrics:
+      include:
+        - name: "TotalPhysicalMemorySize"
+          alias: "Total Physical Memory"
+        - name: "SystemCpuLoad"
+          alias: "Total CPU System Load"
+        - name: "ProcessCpuLoad"
+          alias: "Process CPU Load"
+        - name: "AvailableProcessors"
+          alias: "Number of Available Processors"
+        - name: "FreePhysicalMemorySize"
+          alias: "Free Physical Memory"
+        - name: "OpenFileDescriptorCount"
+          alias: "Open File Descriptor Count"
+        - name: "MaxFileDescriptorCount"
+          alias: "Maximum File Descriptor Count"
+        - name: "TotalSwapSpaceSize"
+          alias: "Total Swap Size"
+        - name: "FreeSwapSpaceSize"
+          alias: "Free Swap Size"
+
+  #mBeans for JVM Metrics
+  - objectName: "java.lang:type=Memory"
+    mbeanKeys: ["type"]
+    metrics:
+      include:
+        - name: "HeapMemoryUsage.committed"
+          alias: "Heap Memory Usage|Committed"
+        - name: "HeapMemoryUsage.used"
+          alias: "Heap Memory Usage|Used"
+        - name: "NonHeapMemoryUsage.committed"
+          alias: "Non Heap Memory Usage|Committed"
+        - name: "NonHeapMemoryUsage.used"
+          alias: "Non Heap Memory Usage|Used"
+
+
+
+separatorForMetricLists: ":"
 
 
 # Generate a custom dashboard based on the provided template
 customDashboard:
-    enabled: true
-    dashboardName: "Kafka BTD Dashboard"
-    # Update the path to the dashboard file.
-    pathToSIMDashboard: "monitors/KafkaMonitor/CustomDashboard_Kafka+BTD+Dashbaord_1550505032301.json"
-    #pathToNormalDashboard: "monitors/SampleMonitor/normalDashboard.json"
+  enabled: true
+  dashboardName: "Cassandra BTD Dashboard"
+  # Update the path to the dashboard file.
+  pathToSIMDashboard: "monitors/CassandraMonitor/CustomDashboard_Cassandra.json"
+  pathToNormalDashboard: "monitors/CassandraMonitor/CustomDashboard_Cassandra.json"
 
 controllerInfo:
-    controllerHost: "controller"
-    controllerPort: 8080
-    account: "customer1"
-    username: "user1"
-    password: "welcome"
-    encryptedPassword: ""
-    encryptionKey: ""
-    controllerSslEnabled: false
-    enableOrchestration: false
-    uniqueHostId: ""
-    accountAccessKey: "${APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY}"
-    machinePath: ""
-    simEnabled: true
-    applicationName: ""
-    tierName: ""
-    nodeName: ""
+  controllerHost: "controller"
+  controllerPort: 8080
+  account: "customer1"
+  username: "user1"
+  password: "welcome"
+  encryptedPassword: ""
+  encryptionKey: ""
+  controllerSslEnabled: false
+  enableOrchestration: false
+  uniqueHostId: ""
+  accountAccessKey: "${APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY}"
+  machinePath: ""
+  simEnabled: true
+  applicationName: ""
+  tierName: ""
+  nodeName: ""
 
+# Note: If the current "metricPathReplacements" is not working on your current machine,
+# please add escape charaters "\\" before your value. It changes from OS to OS, some need it, some don't
+# For Example, replace: "%" -> Becomes -> replace: "\\%"
 metricPathReplacements:
   - replace: "Percent"
     replaceWith: "%"
   - replace: "OneMinuteRate"
     replaceWith: "1 min Rate"
-
-
-# Each Kafka server needs 1 thread each, so please configure this according to the number of servers you are monitoring
-# [numberOfThreads] = Number_of_Kafka_Servers_Monitored
-numberOfThreads: 10
-
-# The configuration of different metrics from all mbeans exposed by Kafka server
-mbeans:
-  # Each "objectName" is fully qualified path of the object of the Kafka server
-  # For example "kafka.server:type=ReplicaManager,*" will return all objects nested under ReplicaManager type
-  # Each of the entries in the "metrics" section is an attribute of the objectName under which it's listed
-
-  - objectName: 'kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions'
-    metrics:
-      - Value:
-          alias: 'UnderReplicatedPartitions'
-          multiplier: ''
-          delta: false
-          aggregationType: 'OBSERVATION'
-          timeRollUpType: 'CURRENT'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  #    Number of partitions that don’t have an active leader and are hence not writable or readable.
-  #  Alert if value is greater than 0.
-  - objectName: 'kafka.controller:type=KafkaController,name=OfflinePartitionsCount'
-    metrics:
-      - Value:
-          alias: 'Value'
-          multiplier: ''
-          delta: false
-          aggregationType: 'OBSERVATION'
-          timeRollUpType: 'CURRENT'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  #    Number of active controllers in the cluster.
-  #  Alert if the aggregated sum across all brokers in the cluster is anything other than 1,
-  #  because there should be exactly one controller per cluster.
-  - objectName: 'kafka.controller:type=KafkaController,name=ActiveControllerCount'
-    metrics:
-      - Value:
-          alias: 'Value'
-          multiplier: ''
-          delta: false
-          aggregationType: 'OBSERVATION'
-          timeRollUpType: 'CURRENT'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  # Aggregate incoming byte rate.
-  - objectName: 'kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec'
-    metrics:
-      - OneMinuteRate:
-          alias: 'OneMinuteRate'
-          multiplier: ''
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  # Aggregate incoming byte rate.
-  - objectName: 'kafka.server:type=BrokerTopicMetrics,name=BytesOutPerSec'
-    metrics:
-      - OneMinuteRate:
-          alias: 'OneMinuteRate'
-          multiplier: ''
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  # Request rate.
-  - objectName: 'kafka.network:type=RequestMetrics,name=RequestsPerSec,request={Produce|FetchConsumer|FetchFollower}'
-    metrics:
-      - OneMinuteRate:
-          alias: 'OneMinuteRate'
-          multiplier: ''
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  # Produce request rate.
-  - objectName: 'kafka.server:type=BrokerTopicMetrics,name=TotalProduceRequestsPerSec'
-    metrics:
-      - OneMinuteRate:
-          alias: 'OneMinuteRate'
-          multiplier: ''
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  #     Fetch request rate.
-  - objectName: 'kafka.server:type=BrokerTopicMetrics,name=TotalFetchRequestsPerSec'
-    metrics:
-      - OneMinuteRate:
-          alias: 'OneMinuteRate'
-          multiplier: ''
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  #     Produce request rate for requests that failed.
-  - objectName: 'kafka.server:type=BrokerTopicMetrics,name=FailedProduceRequestsPerSec'
-    metrics:
-      - OneMinuteRate:
-          alias: 'OneMinuteRate'
-          multiplier: ''
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  #    Fetch request rate for requests that failed.
-  - objectName: 'kafka.server:type=BrokerTopicMetrics,name=FailedFetchRequestsPerSec'
-    metrics:
-      - OneMinuteRate:
-          alias: 'OneMinuteRate'
-          multiplier: ''
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  #     Number of partitions on this broker. This should be mostly even across all brokers.
-  - objectName: 'kafka.server:type=ReplicaManager,name=PartitionCount'
-    metrics:
-      - Value:
-          alias: 'Value'
-          multiplier: ''
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
-
-#      Average fraction of time the request handler threads are idle.
-#     Values are between 0 (all resources are used) and 100 (all resources are available)
-  - objectName: 'kafka.server:type=KafkaRequestHandlerPool,name=RequestHandlerAvgIdlePercent'
-    metrics:
-      - OneMinuteRate:
-          alias: 'OneMinuteRate'
-          multiplier: '100'
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  #     Average fraction of time the network processor threads are idle.
-  #  Values are between 0 (all resources are used) and 100 (all resources are available)
-  - objectName: 'kafka.network:type=SocketServer,name=NetworkProcessorAvgIdlePercent'
-    metrics:
-      - Value:
-          alias: 'Value'
-          multiplier: '100'
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  #   Size of the request queue. A congested request queue will not be able to process incoming or outgoing requests
-  - objectName: 'kafka.network:type=RequestChannel,name=RequestQueueSize'
-    metrics:
-      - Value:
-          alias: 'Value'
-          multiplier: ''
-          delta: false
-          aggregationType: 'OBSERVATION'
-          timeRollUpType: 'CURRENT'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  #   The ZooKeeper session has expired. When a session expires, we can have leader changes and even a new controller.
-  #  It is important to keep an eye on the number of such events across a Kafka cluster and if the overall number is high
-  - objectName: 'kafka.server:type=SessionExpireListener,name=ZooKeeperExpiresPerSec'
-    metrics:
-      - OneMinuteRate:
-          alias: 'OneMinuteRate'
-          multiplier: ''
-          delta: false
-          aggregationType: 'OBSERVATION'
-          timeRollUpType: 'CURRENT'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  #   Metric Per Topic
-  - objectName: 'kafka.server:type=BrokerTopicMetrics,name=*,topic=*'
-    metrics:
-      - OneMinuteRate:
-          alias: 'OneMinuteRate'
-          multiplier: ''
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  #    When a broker is brought up after a failure, it starts catching up by reading from the leader.
-  #    Once it is caught up, it gets added back to the ISR.
-  - objectName: 'kafka.server:type=ReplicaManager,name=IsrExpandsPerSec'
-    metrics:
-      - OneMinuteRate:
-          alias: 'OneMinuteRate'
-          multiplier: ''
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  #    If a broker goes down, ISR for some of the partitions will shrink.
-  #  When that broker is up again, ISR will be expanded once the replicas are fully caught up.
-  #  Other than that, the expected value for both ISR shrink rate and expansion rate is 0.
-  - objectName: 'kafka.server:type=ReplicaManager,name=IsrShrinksPerSec'
-    metrics:
-      - OneMinuteRate:
-          alias: 'OneMinuteRate'
-          multiplier: ''
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
-
-  #   JVM Metrics
-  - objectName: 'java.lang:type=Memory'
-    metrics:
-      - HeapMemoryUsage.committed:
-          alias: 'Heap Memory Usage | Committed (bytes)'
-          multiplier: ''
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
-
-      - HeapMemoryUsage.max:
-          alias: 'Heap Memory Usage | Max (bytes)'
-          multiplier: ''
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
-
-      - HeapMemoryUsage.used:
-          alias: 'Heap Memory Usage | Used (bytes)'
-          multiplier: ''
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
-
-      - NonHeapMemoryUsage.committed:
-          alias: 'Non Heap Memory Usage | Committed (bytes)'
-          multiplier: ''
-          delta: false
-          aggregationType: 'AVERAGE'
-          timeRollUpType: 'AVERAGE'
-          clusterRollUpType: 'INDIVIDUAL'
+  - replace: ","
+    replaceWith: "-"
+  - replace: "."
+    replaceWith: "-"
+  - replace: "ms"
+    replaceWith: ""
