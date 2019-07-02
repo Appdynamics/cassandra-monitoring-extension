@@ -31,26 +31,26 @@ import static com.appdynamics.extensions.util.JsonUtils.getTextValue;
  * @author: {Bhuvnesh Kumar}
  */
 public class MetricCheckIT {
-//    private MetricAPIService metricAPIService;
-//    private CustomDashboardAPIService customDashboardAPIService;
-//
-//    @Before
-//    public void setup() {
-//        metricAPIService = initializeMetricAPIService();
-//        customDashboardAPIService = IntegrationTestUtils.initializeCustomDashboardAPIService();
-//    }
-//
-//    @After
-//    public void tearDown() {
-//        //todo: shutdown client
-//    }
-//
+    private MetricAPIService metricAPIService;
+    private CustomDashboardAPIService customDashboardAPIService;
+
+    @Before
+    public void setup() {
+        metricAPIService = initializeMetricAPIService();
+        customDashboardAPIService = IntegrationTestUtils.initializeCustomDashboardAPIService();
+    }
+
+    @After
+    public void tearDown() {
+        //todo: shutdown client
+    }
+
 //    @Test
 //    public void whenInstanceIsUpThenHeartBeatIs1ForServerWithSSLDisabled() {
 //        JsonNode jsonNode = null;
 //        if (metricAPIService != null) {
 //            jsonNode = metricAPIService.getMetricData("",
-//                    "Server%20&%20Infrastructure%20Monitoring/metric-data?metric-path=Application%20Infrastructure%20Performance%7CRoot%7CCustom%20Metrics%7CKafka%7CLocal%20Kafka%20Server2%7Ckafka.server%7CHeartBeat&time-range-type=BEFORE_NOW&duration-in-mins=15&output=JSON");
+//                    "Server%20&%20Infrastructure%20Monitoring/metric-data?metric-path=Application%20Infrastructure%20Performance%7CswingTier%7CCustom%20Metrics%7CCassandra%7CCassandra%20Server%201%7CHeart%20Beat&time-range-type=BEFORE_NOW&duration-in-mins=15&output=JSON");
 //        }
 //        Assert.assertNotNull("Cannot connect to controller API", jsonNode);
 //        if (jsonNode != null) {
@@ -59,13 +59,12 @@ public class MetricCheckIT {
 //            Assert.assertEquals("heartbeat is 0", heartBeat, 1);
 //        }
 //    }
-//
 //    @Test
 //    public void whenInstanceIsUpThenHeartBeatIs1ForServerWithSSLEnabled() {
 //        JsonNode jsonNode = null;
 //        if (metricAPIService != null) {
 //            jsonNode = metricAPIService.getMetricData("",
-//                    "Server%20&%20Infrastructure%20Monitoring/metric-data?metric-path=Application%20Infrastructure%20Performance%7CRoot%7CCustom%20Metrics%7CKafka%7CLocal%20Kafka%20Server%7Ckafka.server%7CHeartBeat&time-range-type=BEFORE_NOW&duration-in-mins=15&output=JSON");
+//                    "Server%20&%20Infrastructure%20Monitoring/metric-data?metric-path=Application%20Infrastructure%20Performance%7CswingTier%7CCustom%20Metrics%7CCassandra%7CCassandra%20Server%201%7CHeart%20Beat&time-range-type=BEFORE_NOW&duration-in-mins=15&output=JSON");
 //        }
 //        Assert.assertNotNull("Cannot connect to controller API", jsonNode);
 //        if (jsonNode != null) {
@@ -74,7 +73,7 @@ public class MetricCheckIT {
 //            Assert.assertEquals("heartbeat is 0", 1, heartBeat);
 //        }
 //    }
-//
+
 //    @Test
 //    public void whenMultiplierIsAppliedThenCheckMetricValue() {
 //        JsonNode jsonNode = null;
@@ -89,22 +88,21 @@ public class MetricCheckIT {
 //            Assert.assertTrue((requestHandlerAvgPercent > 90) && (requestHandlerAvgPercent <= 100));
 //        }
 //    }
-//
-//    @Test
-//    public void checkTotalNumberOfMetricsReportedIsGreaterThan1() {
-//        JsonNode jsonNode = null;
-//        if (metricAPIService != null) {
-//            jsonNode = metricAPIService.getMetricData("",
-//                    "Server%20&%20Infrastructure%20Monitoring/metric-data?metric-path=Application%20Infrastructure%20Performance%7CRoot%7CCustom%20Metrics%7CKafka%7CMetrics%20Uploaded&time-range-type=BEFORE_NOW&duration-in-mins=15&output=JSON");
-//        }
-//        Assert.assertNotNull("Cannot connect to controller API", jsonNode);
-//        if (jsonNode != null) {
-//            JsonNode valueNode = JsonUtils.getNestedObject(jsonNode, "*", "metricValues", "*", "value");
-//            int totalNumberOfMetricsReported = (valueNode == null) ? 0 : valueNode.get(0).asInt();
-//            Assert.assertTrue(totalNumberOfMetricsReported > 1);
-//        }
-//    }
-//
+    @Test
+    public void checkTotalNumberOfMetricsReportedIsGreaterThan1() {
+        JsonNode jsonNode = null;
+        if (metricAPIService != null) {
+            jsonNode = metricAPIService.getMetricData("",
+                    "Server%20&%20Infrastructure%20Monitoring/metric-data?metric-path=Application%20Infrastructure%20Performance%7CswingTier%7CCustom%20Metrics%7CCassandra%7CMetrics%20Uploaded&time-range-type=BEFORE_NOW&duration-in-mins=15&output=JSON");
+        }
+        Assert.assertNotNull("Cannot connect to controller API", jsonNode);
+        if (jsonNode != null) {
+            JsonNode valueNode = JsonUtils.getNestedObject(jsonNode, "*", "metricValues", "*", "value");
+            int totalNumberOfMetricsReported = (valueNode == null) ? 0 : valueNode.get(0).asInt();
+            Assert.assertTrue(totalNumberOfMetricsReported > 1);
+        }
+    }
+
 //    @Test
 //    public void whenAliasIsAppliedThenCheckMetricName() {
 //        JsonNode jsonNode = null;
@@ -121,27 +119,27 @@ public class MetricCheckIT {
 //            Assert.assertNotNull("Metric Value is  null in last 15min, maybe a stale metric ", metricValue);
 //        }
 //    }
-//
-//    @Test
-//    public void checkDashboardsUploaded() {//TODO: have a good dashboard
-//        if (customDashboardAPIService != null) {
-//            JsonNode allDashboardsNode = customDashboardAPIService.getAllDashboards();
-//            boolean dashboardPresent = isDashboardPresent("Kafka BTD Dashboard", allDashboardsNode);
-//            Assert.assertTrue(dashboardPresent);
-//        }
-//    }
-//
-//    private boolean isDashboardPresent(String dashboardName, JsonNode existingDashboards) {
-//        if (existingDashboards != null) {
-//            for (JsonNode existingDashboard : existingDashboards) {
-//                if (dashboardName.equals(getTextValue(existingDashboard.get("name")))) {
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
-//    }
-//
+
+    @Test
+    public void checkDashboardsUploaded() {//TODO: have a good dashboard
+        if (customDashboardAPIService != null) {
+            JsonNode allDashboardsNode = customDashboardAPIService.getAllDashboards();
+            boolean dashboardPresent = isDashboardPresent("Cassandra BTD Dashboard", allDashboardsNode);
+            Assert.assertTrue(dashboardPresent);
+        }
+    }
+
+    private boolean isDashboardPresent(String dashboardName, JsonNode existingDashboards) {
+        if (existingDashboards != null) {
+            for (JsonNode existingDashboard : existingDashboards) {
+                if (dashboardName.equals(getTextValue(existingDashboard.get("name")))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 //    @Test
 //    public void checkMetricCharReplaced() {
 //        JsonNode jsonNode = null;
@@ -158,18 +156,18 @@ public class MetricCheckIT {
 //            Assert.assertNotNull("Metric Value is  null in last 15min, maybe a stale metric ", metricValue);
 //        }
 //    }
-//
-//
-//    @Test
-//    public void checkWorkBenchUrlIsUp() {
-//        CloseableHttpClient httpClient = HttpClients.createDefault();
-//        HttpGet get = new HttpGet("http://0.0.0.0:9089");
-//        try {
-//            CloseableHttpResponse response = httpClient.execute(get);
-//            Assert.assertEquals(200, response.getStatusLine());
-//        } catch (IOException ioe) {
-//
-//        }
-//    }
+
+
+    @Test
+    public void checkWorkBenchUrlIsUp() {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpGet get = new HttpGet("http://0.0.0.0:9089");
+        try {
+            CloseableHttpResponse response = httpClient.execute(get);
+            Assert.assertEquals(200, response.getStatusLine());
+        } catch (IOException ioe) {
+
+        }
+    }
 
 }
