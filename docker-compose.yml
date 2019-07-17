@@ -49,6 +49,8 @@ services:
       - MACHINE_AGENT_PROPERTIES=-Dappdynamics.sim.enabled=true -Dappdynamics.docker.enabled=false
       - CASSANDRA_HOST_1=localhost
       - CASSANDRA_PORT_1=7199
+      - CASSANDRA_USERNAME_1=cassandra
+      - CASSANDRA_PASSWORD_1=cassandra
 
     build:
       context: .
