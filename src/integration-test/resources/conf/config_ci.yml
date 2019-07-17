@@ -16,8 +16,8 @@ servers:
      port: "${CASSANDRA_PORT_1}"
 #     serviceUrl: ""
 
-#     username: ""
-#     password: ""
+     username: "${CASSANDRA_USERNAME_1}"
+     password: "${CASSANDRA_PASSWORD_1}"
 
 #     You can either use the normal password or encrypt your password and provide the encrypted Password and encryptionKey.
 #     Do not provide both, only provide one and comment out the other.
