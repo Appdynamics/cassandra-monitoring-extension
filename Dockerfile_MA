@@ -18,4 +18,5 @@ RUN export JAVA_HOME
 ADD target/CassandraMonitor-*.zip /opt/appdynamics/machine-agent/monitors
 RUN unzip -q "/opt/appdynamics/machine-agent/monitors/CassandraMonitor-*.zip" -d /opt/appdynamics/machine-agent/monitors
 RUN find /opt/appdynamics/machine-agent/monitors/ -name '*.zip' -delete
+COPY /src/integration-test/resources/conf/config_ci.yml /opt/appdynamics/machine-agent/monitors/CassandraMonitor/config.yml
 CMD ["sh", "-c", "java ${MACHINE_AGENT_PROPERTIES} -jar /opt/appdynamics/machine-agent/machineagent.jar"]

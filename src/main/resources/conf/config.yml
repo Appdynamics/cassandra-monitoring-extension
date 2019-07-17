@@ -12,8 +12,8 @@ servers:
 
     #     You can either use just a host and port to connect or use your full serviceURL to make the connection
     #     Do not choose both, comment one out and only use the other.
-     host: "${CASSANDRA_HOST_1}"
-     port: "${CASSANDRA_PORT_1}"
+     host: ""
+     port: ""
 #     serviceUrl: ""
 
 #     username: ""
