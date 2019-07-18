@@ -20,4 +20,3 @@ RUN unzip -q "/opt/appdynamics/machine-agent/monitors/CassandraMonitor-*.zip" -d
 RUN find /opt/appdynamics/machine-agent/monitors/ -name '*.zip' -delete
 COPY /src/integration-test/resources/conf/config_ci.yml /opt/appdynamics/machine-agent/monitors/CassandraMonitor/config.yml
 CMD ["sh", "-c", "java ${MACHINE_AGENT_PROPERTIES} -jar /opt/appdynamics/machine-agent/machineagent.jar"]
-RUN apt-get install vim

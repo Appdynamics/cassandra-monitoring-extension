@@ -52,7 +52,6 @@ services:
       - CASSANDRA_PORT_1=7199
       - CASSANDRA_USERNAME_1=cassandra
       - CASSANDRA_PASSWORD_1=cassandra
-#    network_mode: host
     build:
       context: .
       dockerfile: Dockerfile_MA
