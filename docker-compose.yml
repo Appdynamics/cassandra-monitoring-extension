@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile_Cassandra
 
     environment:
-      JMX_HOST: localhost
+      JMX_HOST: 127.0.0.1
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -47,11 +47,11 @@ services:
       - APPDYNAMICS_CONTROLLER_PORT=8080
       - EVENTS_SERVICE_HOST=controller
       - MACHINE_AGENT_PROPERTIES=-Dappdynamics.sim.enabled=true -Dappdynamics.docker.enabled=false
-      - CASSANDRA_HOST_1=localhost
+      - CASSANDRA_HOST_1=127.0.0.1
       - CASSANDRA_PORT_1=7199
       - CASSANDRA_USERNAME_1=cassandra
       - CASSANDRA_PASSWORD_1=cassandra
-
+#    network_mode: host
     build:
       context: .
       dockerfile: Dockerfile_MA
