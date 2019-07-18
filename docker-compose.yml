@@ -2,15 +2,16 @@ version: '2'
 services:
   cassandra1:
 #    image: cassandra:3.11.2
+    image: alexcheng/cassandra
     container_name: cassandra1
     ports:
       - "7199:7199"
-    build:
-      context: .
-      dockerfile: Dockerfile_Cassandra
+#    build:
+#      context: .
+#      dockerfile: Dockerfile_Cassandra
 
     environment:
-      JMX_HOST: 127.0.0.1
+      JMX_HOST: localhost
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -47,7 +48,7 @@ services:
       - APPDYNAMICS_CONTROLLER_PORT=8080
       - EVENTS_SERVICE_HOST=controller
       - MACHINE_AGENT_PROPERTIES=-Dappdynamics.sim.enabled=true -Dappdynamics.docker.enabled=false
-      - CASSANDRA_HOST_1=127.0.0.1
+      - CASSANDRA_HOST_1=localhost
       - CASSANDRA_PORT_1=7199
       - CASSANDRA_USERNAME_1=cassandra
       - CASSANDRA_PASSWORD_1=cassandra
