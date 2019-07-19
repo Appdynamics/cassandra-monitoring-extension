@@ -155,6 +155,7 @@
                                 <copy todir="${target.dir}">
                                     <fileset dir="src/main/resources/conf" includes="monitor.xml"/>
                                     <fileset dir="src/main/resources/conf" includes="CustomDashboard_Cassandra.json"/>
+                                    <fileset dir="src/main/resources/conf" includes="CustomDashboard_SIM.json"/>
                                     <fileset dir="src/main/resources/conf" includes="config.yml"/>
                                     <fileset dir="${project.basedir}" includes="LICENSE.txt,NOTICE.txt"/>
                                 </copy>

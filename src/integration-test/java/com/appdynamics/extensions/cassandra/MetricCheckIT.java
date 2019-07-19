@@ -59,20 +59,20 @@ public class MetricCheckIT {
             Assert.assertEquals("heartbeat is 0", heartBeat, 1);
         }
     }
-//    @Test
-//    public void whenInstanceIsUpThenHeartBeatIs1ForServerWithSSLEnabled() {
-//        JsonNode jsonNode = null;
-//        if (metricAPIService != null) {
-//            jsonNode = metricAPIService.getMetricData("",
-//                    "Server%20&%20Infrastructure%20Monitoring/metric-data?metric-path=Application%20Infrastructure%20Performance%7CswingTier%7CCustom%20Metrics%7CCassandra%7CCassandra%20Server%201%7CHeart%20Beat&time-range-type=BEFORE_NOW&duration-in-mins=15&output=JSON");
-//        }
-//        Assert.assertNotNull("Cannot connect to controller API", jsonNode);
-//        if (jsonNode != null) {
-//            JsonNode valueNode = JsonUtils.getNestedObject(jsonNode, "*", "metricValues", "*", "value");
-//            int heartBeat = (valueNode == null) ? 0 : valueNode.get(0).asInt();
-//            Assert.assertEquals("heartbeat is 0", 1, heartBeat);
-//        }
-//    }
+    @Test
+    public void whenInstanceIsUpThenHeartBeatIs1ForServerWithSSLEnabled() {
+        JsonNode jsonNode = null;
+        if (metricAPIService != null) {
+            jsonNode = metricAPIService.getMetricData("",
+                    "Server%20&%20Infrastructure%20Monitoring/metric-data?metric-path=Application%20Infrastructure%20Performance%7CRoot%7CCustom%20Metrics%7CCassandra%7CLocal%20Cassandra%20Server%201%7CHeart%20Beat&time-range-type=BEFORE_NOW&duration-in-mins=60&output=JSON");
+        }
+        Assert.assertNotNull("Cannot connect to controller API", jsonNode);
+        if (jsonNode != null) {
+            JsonNode valueNode = JsonUtils.getNestedObject(jsonNode, "*", "metricValues", "*", "value");
+            int heartBeat = (valueNode == null) ? 0 : valueNode.get(0).asInt();
+            Assert.assertEquals("heartbeat is 0", 1, heartBeat);
+        }
+    }
 
     @Test
     public void whenMultiplierIsAppliedThenCheckMetricValue() {
@@ -145,14 +145,14 @@ public class MetricCheckIT {
         JsonNode jsonNode = null;
         if (metricAPIService != null) {
             jsonNode = metricAPIService.getMetricData("",
-                    "Server%20&%20Infrastructure%20Monitoring/metric-data?metric-path=Application%20Infrastructure%20Performance%7CRoot%7CCustom%20Metrics%7CCassandra%7CLocal%20Cassandra%20Server%201%7CClientRequest%7CCASRead%7CLatency%7COneMinuteRate&time-range-type=BEFORE_NOW&duration-in-mins=60&output=JSON");
+                    "Server%20&%20Infrastructure%20Monitoring/metric-data?metric-path=Application%20Infrastructure%20Performance%7CRoot%7CCustom%20Metrics%7CCassandra%7CLocal%20Cassandra%20Server%201%7CCommit%20Log%7CCompletedTasks%7CNumber%20of%20Completed%20Tasks&time-range-type=BEFORE_NOW&duration-in-mins=60&output=JSON");
         }
         Assert.assertNotNull("Cannot connect to controller API", jsonNode);
         if (jsonNode != null) {
             JsonNode valueNode = JsonUtils.getNestedObject(jsonNode, "metricName");
             String metricName = (valueNode == null) ? "" : valueNode.get(0).toString();
             int metricValue = (valueNode == null) ? 0 : valueNode.get(0).asInt();
-            Assert.assertEquals("Metric char replacement is not done", "\"Custom Metrics|Cassandra|Local Cassandra Server 1|ClientRequest|CASRead|Latency|OneMinuteRate\"", metricName);
+            Assert.assertEquals("Metric char replacement is not done", "\"Custom Metrics|Cassandra|Local Cassandra Server 1|Commit Log|CompletedTasks|Number of Completed Tasks\"", metricName);
             Assert.assertNotNull("Metric Value is  null in last 15min, maybe a stale metric ", metricValue);
         }
     }

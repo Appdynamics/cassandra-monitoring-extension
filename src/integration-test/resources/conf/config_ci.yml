@@ -85,7 +85,7 @@ mbeans:
         - name: "Count"
           alias: "Latency"
         - name: "OneMinuteRate"
-          alias: "OneMinuteRate"
+          alias: "One Minute Rate"
   - objectName: "org.apache.cassandra.metrics:type=ClientRequest,scope=*,name=Unavailables"
     mbeanKeys: ["type", "scope", "name"]
     metrics:
@@ -305,9 +305,9 @@ separatorForMetricLists: ":"
 # Generate a custom dashboard based on the provided template
 customDashboard:
   enabled: true
-  dashboardName: "Cassandra BTD Dashboard"
+  dashboardName: "Cassandra SIM Dashboard"
   # Update the path to the dashboard file.
-  pathToSIMDashboard: "monitors/CassandraMonitor/CustomDashboard_Cassandra.json"
+  pathToSIMDashboard: "monitors/CassandraMonitor/CustomDashboard_SIM.json"
   pathToNormalDashboard: "monitors/CassandraMonitor/CustomDashboard_Cassandra.json"
 
 controllerInfo:
@@ -336,6 +336,8 @@ metricPathReplacements:
     replaceWith: "%"
   - replace: "OneMinuteRate"
     replaceWith: "1 min Rate"
+  - replace: "CommitLog"
+    replaceWith: "Commit Log"
   - replace: ","
     replaceWith: "-"
   - replace: "."
