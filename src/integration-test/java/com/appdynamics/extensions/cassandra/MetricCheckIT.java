@@ -124,7 +124,7 @@ public class MetricCheckIT {
     public void checkDashboardsUploaded() {//TODO: have a good dashboard
         if (customDashboardAPIService != null) {
             JsonNode allDashboardsNode = customDashboardAPIService.getAllDashboards();
-            boolean dashboardPresent = isDashboardPresent("Cassandra BTD Dashboard", allDashboardsNode);
+            boolean dashboardPresent = isDashboardPresent("Cassandra SIM Dashboard", allDashboardsNode);
             Assert.assertTrue(dashboardPresent);
         }
     }
