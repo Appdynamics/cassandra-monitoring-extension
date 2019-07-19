@@ -85,7 +85,7 @@ mbeans:
         - name: "Count"
           alias: "Latency"
         - name: "OneMinuteRate"
-          alias: "One Minute Rate"
+          alias: "OneMinuteRate"
   - objectName: "org.apache.cassandra.metrics:type=ClientRequest,scope=*,name=Unavailables"
     mbeanKeys: ["type", "scope", "name"]
     metrics:
@@ -271,6 +271,7 @@ mbeans:
           alias: "Process CPU Load"
         - name: "AvailableProcessors"
           alias: "Number of Available Processors"
+          multiplier: 10
         - name: "FreePhysicalMemorySize"
           alias: "Free Physical Memory"
         - name: "OpenFileDescriptorCount"
