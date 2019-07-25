@@ -29,7 +29,7 @@ services:
       - APPDYNAMICS_CONTROLLER_SSL_ENABLED=false
       - APPDYNAMICS_CONTROLLER_PORT=8080
       - EVENTS_SERVICE_HOST=controller
-      - MACHINE_AGENT_PROPERTIES=-Dappdynamics.sim.enabled=true -Dappdynamics.docker.enabled=false
+      - MACHINE_AGENT_PROPERTIES=-Dappdynamics.agent.uniqueHostId=cassandraTest -Dappdynamics.sim.enabled=true -Dappdynamics.docker.enabled=false
       - CASSANDRA_HOST_1=cassandra1
       - CASSANDRA_PORT_1=7199
       - CASSANDRA_USERNAME_1=cassandra
