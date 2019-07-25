@@ -278,7 +278,7 @@
                             "displayName": "null",
                             "inputMetricText": false,
                             "inputMetricPath": null,
-                            "relativeMetricPath": "${METRIC_PREFIX}|*|ClientRequest|*|*|OneMinuteRate"
+                            "relativeMetricPath": "${METRIC_PREFIX}|*|ClientRequest|*|*|One Minute Rate"
                         },
                         "rollupMetricData": false,
                         "expressionString": null,
@@ -287,7 +287,7 @@
                         "maxResults": 20,
                         "evaluationScopeType": null,
                         "baselineName": null,
-                        "applicationName": "${SIM_APPLICATION_NAME}",
+                        "applicationName": "Server & Infrastructure Monitoring",
                         "metricDisplayNameStyle": "DISPLAY_STYLE_AUTO",
                         "metricDisplayNameCustomFormat": null
                     },
