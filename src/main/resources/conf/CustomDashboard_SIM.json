@@ -72,7 +72,7 @@
                                 {
                                     "applicationName": "${SIM_APPLICATION_NAME}",
                                     "entityType": "APPLICATION_COMPONENT_NODE",
-                                    "entityName": "${HOST_NAME}",
+                                    "entityName": "${UNIQUE_HOST_ID}",
                                     "scopingEntityType": "APPLICATION_COMPONENT",
                                     "scopingEntityName": "${MACHINE_PATH}",
                                     "subtype": null
