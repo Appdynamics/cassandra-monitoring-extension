@@ -309,7 +309,7 @@ customDashboard:
   # Update the path to the dashboard file.
   pathToSIMDashboard: "monitors/CassandraMonitor/CustomDashboard_SIM.json"
   pathToNormalDashboard: "monitors/CassandraMonitor/CustomDashboard_Cassandra.json"
-  periodicDashboardCheckInSeconds: 60
+#  periodicDashboardCheckInSeconds: 60
 
 controllerInfo:
   controllerHost: "controller"
