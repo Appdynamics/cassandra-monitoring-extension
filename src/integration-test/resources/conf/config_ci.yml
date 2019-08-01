@@ -297,8 +297,6 @@ mbeans:
         - name: "NonHeapMemoryUsage.used"
           alias: "Non Heap Memory Usage|Used"
 
-
-
 separatorForMetricLists: ":"
 
 
