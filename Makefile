@@ -26,6 +26,8 @@ dockerStop:
 	docker rm machine controller cassandra1
 	docker rmi dtr.corp.appdynamics.com/appdynamics/machine-agent:latest
 	docker rmi dtr.corp.appdynamics.com/appdynamics/enterprise-console:latest
+    docker rmi $(docker images -a |  grep "machine")
+    docker rmi cassandra:3.11.2
 	@echo remove containers and images
 	## always remove all unused networks, will cause a leak otherwise. use --force when running on TC
 	docker network prune --force
