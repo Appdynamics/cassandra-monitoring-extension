@@ -1,7 +1,7 @@
 version: '2'
 services:
   cassandra1:
-    image: cassandra:latest
+    image: cassandra:3:11
     container_name: cassandra1
     ports:
       - "7199:7199"
