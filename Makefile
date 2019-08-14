@@ -22,7 +22,7 @@ dockerStop:
 	## stop and remove all containers
 	sleep 60
 	@echo remove containers and images
-    docker-compose down --rmi all -v
+	docker-compose down --rmi all -v
 
 sleep:
 	@echo Waiting for 5 minutes to read the metrics
