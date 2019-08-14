@@ -22,14 +22,7 @@ dockerStop:
 	## stop and remove all containers
 	sleep 60
 	@echo remove containers and images
-	docker stop machine controller cassandra1
-	docker rm machine controller cassandra1
-	docker rmi dtr.corp.appdynamics.com/appdynamics/machine-agent:latest
-	docker rmi dtr.corp.appdynamics.com/appdynamics/enterprise-console:latest
-    docker rmi cassandra:3.11.2
-	@echo remove containers and images
-	## always remove all unused networks, will cause a leak otherwise. use --force when running on TC
-	docker network prune --force
+    docker-compose down --rmi all -v
 
 sleep:
 	@echo Waiting for 5 minutes to read the metrics
