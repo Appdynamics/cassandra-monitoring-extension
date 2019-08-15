@@ -310,7 +310,7 @@ customDashboard:
   periodicDashboardCheckInSeconds: 60
 
 controllerInfo:
-  controllerHost: "controller"
+  controllerHost: "${APPDYNAMICS_CONTROLLER_HOST_NAME}"
   controllerPort: 8080
   account: "customer1"
   username: "user1"
