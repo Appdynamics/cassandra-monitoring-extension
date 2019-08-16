@@ -13,7 +13,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   controller:
-    image: dtr.corp.appdynamics.com/appdynamics/enterprise-console:4.5.12.20345
+    image: dtr.corp.appdynamics.com/appdynamics/enterprise-console:latest
     container_name: controller
     ports:
       - "8080:8080"
