@@ -1,14 +1,19 @@
 package AE_CassandraMonitoringExtension.vcsRoots
 
-import jetbrains.buildServer.configs.kotlin.v2018_2.*
 import jetbrains.buildServer.configs.kotlin.v2018_2.vcs.GitVcsRoot
 
-object cassandramonitoringextension : GitVcsRoot({
-    uuid = "de423cab-7e1b-4ba5-8727-b321715da94d"
-    name = "cassandramonitoringextension"
+object AE_CassandraMonitoringExtension : GitVcsRoot({
+    uuid = "000d1b5f-d547-451f-a5e0-84ee9bb647d5"
+    id("AE_CassandraMonitoringExtension")
+    name = "AE_CassandraMonitoringExtension"
     url = "ssh://git@bitbucket.corp.appdynamics.com:7999/ae/cassandra-monitoring-extension.git"
     pushUrl = "ssh://git@bitbucket.corp.appdynamics.com:7999/ae/cassandra-monitoring-extension.git"
     authMethod = uploadedKey {
         uploadedKey = "TeamCity BitBucket Key"
     }
+    agentCleanPolicy = AgentCleanPolicy.ALWAYS
+    branchSpec = """
+    +:refs/heads/(master)
+    +:refs/(pull-requests/*)/from
+    """.trimIndent()
 })
