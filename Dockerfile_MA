@@ -1,22 +1,14 @@
-FROM dtr.corp.appdynamics.com/appdynamics/machine-agent:latest AS MA
-RUN pwd
-RUN apt-get update && \
-    apt-get install -y openjdk-8-jdk && \
-    apt-get install -y ant && \
-    apt-get clean;
-
-# Fix certificate issues
-RUN apt-get update && \
-    apt-get install ca-certificates-java && \
-    apt-get clean && \
-    update-ca-certificates -f;
-
+FROM alpine:latest
+RUN apk add --no-cache openjdk8
+WORKDIR /opt/appdynamics/machine-agent
+COPY --from=dtr.corp.appdynamics.com/appdynamics/machine-agent /opt/appdynamics/machine-agent .
+COPY target/CassandraMonitor-*.zip monitors/CassandraMonitor.zip
+RUN unzip -q monitors/CassandraMonitor.zip -d monitors/ && \
+    rm monitors/CassandraMonitor.zip
+COPY src/integration-test/resources/conf/config-ci.yml monitors/CassandraMonitor/config.yml
+# enable debug logging
+RUN sed -i '1,/sigar/ s/info/debug/' conf/logging/log4j.xml
 # Setup JAVA_HOME
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
-RUN export JAVA_HOME
-
-ADD target/CassandraMonitor-*.zip /opt/appdynamics/machine-agent/monitors
-RUN unzip -q "/opt/appdynamics/machine-agent/monitors/CassandraMonitor-*.zip" -d /opt/appdynamics/machine-agent/monitors
-RUN find /opt/appdynamics/machine-agent/monitors/ -name '*.zip' -delete
-COPY /src/integration-test/resources/conf/config_ci.yml /opt/appdynamics/machine-agent/monitors/CassandraMonitor/config.yml
-CMD ["sh", "-c", "java ${MACHINE_AGENT_PROPERTIES} -jar /opt/appdynamics/machine-agent/machineagent.jar"]
+ENV JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk
+ENV PATH="$JAVA_HOME/bin:${PATH}"
+CMD ["sh", "-c", "java ${MACHINE_AGENT_PROPERTIES} -jar machineagent.jar"]
