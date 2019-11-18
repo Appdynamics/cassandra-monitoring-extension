@@ -5,7 +5,7 @@ COPY --from=dtr.corp.appdynamics.com/appdynamics/machine-agent /opt/appdynamics/
 COPY target/CassandraMonitor-*.zip monitors/CassandraMonitor.zip
 RUN unzip -q monitors/CassandraMonitor.zip -d monitors/ && \
     rm monitors/CassandraMonitor.zip
-COPY src/integration-test/resources/conf/config-ci.yml monitors/CassandraMonitor/config.yml
+COPY src/integration-test/resources/conf/config_ci.yml monitors/CassandraMonitor/config.yml
 # enable debug logging
 RUN sed -i '1,/sigar/ s/info/debug/' conf/logging/log4j.xml
 # Setup JAVA_HOME

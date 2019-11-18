@@ -72,7 +72,7 @@ workbenchTest: ##test workbench mode
 	printf "*****/api/metric-path returned*****\n%s\n**********\n" "$$out"; \
 	code=$$(echo "$$out"|tail -1); \
 	[ "$$code" = "200" ] || { echo "Failure: code=$$code"; exit 1; }; \
-	[ "$$(echo "$$out"|grep ".*Heart Beat.*")" = "Custom Metrics|Cassandra Monitor|Heart Beat" ] || { echo "Hear Beat metric not found"; exit 1; }
+	[ "$$(echo "$$out"|grep ".*Heart Beat.*")" = "Custom Metrics|Cassandra Monitor|Local Cassandra Server 1|Heart Beat" ] || { echo "Hear Beat metric not found"; exit 1; }
 	@echo "Workbench Tested successfully"
 	@echo "Stopping docker container workbench"
 	docker stop workbench
