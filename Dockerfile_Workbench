@@ -8,7 +8,7 @@ COPY target/CassandraMonitor-*.zip CassandraMonitor.zip
 RUN unzip -q CassandraMonitor.zip && \
     rm CassandraMonitor.zip
 WORKDIR /opt/appdynamics/machine-agent/monitors/CassandraMonitor
-COPY src/integration-test/resources/conf/config.yml config.yml
+COPY src/integration-test/resources/conf/config_ci.yml config.yml
 # Setup JAVA_HOME
 ENV JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk
 ENV PATH="$JAVA_HOME/bin:${PATH}"
