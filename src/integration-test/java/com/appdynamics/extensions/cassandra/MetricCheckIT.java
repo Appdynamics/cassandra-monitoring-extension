@@ -59,6 +59,7 @@ public class MetricCheckIT {
             Assert.assertEquals("heartbeat is 0", heartBeat, 1);
         }
     }
+
     @Test
     public void whenInstanceIsUpThenHeartBeatIs1ForServerWithSSLEnabled() {
         JsonNode jsonNode = null;
@@ -74,20 +75,6 @@ public class MetricCheckIT {
         }
     }
 
-    @Test
-    public void whenMultiplierIsAppliedThenCheckMetricValue() {
-        JsonNode jsonNode = null;
-        if (metricAPIService != null) {
-            jsonNode = metricAPIService.getMetricData("",
-                    "Server%20&%20Infrastructure%20Monitoring/metric-data?metric-path=Application%20Infrastructure%20Performance%7CRoot%7CCustom%20Metrics%7CCassandra%7CLocal%20Cassandra%20Server%201%7COperatingSystem%7CNumber%20of%20Available%20Processors&time-range-type=BEFORE_NOW&duration-in-mins=15&output=JSON");
-        }
-        Assert.assertNotNull("Cannot connect to controller API", jsonNode);
-        if (jsonNode != null) {
-            JsonNode valueNode = JsonUtils.getNestedObject(jsonNode, "*", "metricValues", "*", "current");
-            int multipliedValue = (valueNode == null) ? 0 : valueNode.get(0).asInt();
-            Assert.assertTrue((multipliedValue == 40));
-        }
-    }
     @Test
     public void checkTotalNumberOfMetricsReportedIsGreaterThan1() {
         JsonNode jsonNode = null;
