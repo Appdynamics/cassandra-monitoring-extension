@@ -284,7 +284,7 @@ Please contact [help@appdynamics.com](mailto:help@appdynamics.com) with the fol
 
 <td style="text-align: right; width: 210px">Version</td>
 
-<td>1.6.0</td>
+<td>2.1</td>
 
 </tr>
 
