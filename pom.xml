@@ -22,7 +22,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
         <target.dir>${project.build.directory}/CassandraMonitor</target.dir>
-        <kotlin.version>1.2.71</kotlin.version>
         <skipITs>true</skipITs>
     </properties>
 
@@ -222,7 +221,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
     <profiles>
