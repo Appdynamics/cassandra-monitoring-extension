@@ -33,7 +33,7 @@ sleep: ##sleep for x seconds
 
 workbenchTest: ##test workbench mode
 	@echo "Creating docker container for workbench"
-	docker build -t 'workbench:latest' --no-cache -f Dockerfile_WorkBench .
+	docker build -t 'workbench:latest' --no-cache -f Dockerfile_Workbench .
 	docker run --name workbench -d workbench
 	@echo "Done"
 # wait 60 seconds for workbench to report metrics
