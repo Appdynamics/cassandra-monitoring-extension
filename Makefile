@@ -1,6 +1,7 @@
 ##Makefile Setup
 dockerRun: ##Spin up docker containers for MA with extension, controller and other apps
 	@echo starting container ##################%%%%%%%%%%%%%%%%%%%&&&&&&&&&&&&&&&&&&&&&&
+	@echo "------- Starting Cassandra -------"
 	docker-compose --file docker-compose.yml up --force-recreate -d --build cassandra1
 
 	@echo "------- Starting controller -------"
@@ -33,6 +34,8 @@ sleep: ##sleep for x seconds
 
 workbenchTest: ##test workbench mode
 	@echo "Creating docker container for workbench"
+    @echo "------- Starting Cassandra -------"
+    docker-compose --file docker-compose.yml up --force-recreate -d --build cassandra1
 	docker build -t 'workbench:latest' --no-cache -f Dockerfile_Workbench .
 	docker run --name workbench -d workbench
 	@echo "Done"
@@ -47,7 +50,7 @@ workbenchTest: ##test workbench mode
 	@echo "Workbench Tested successfully"
 	@echo "Stopping docker container workbench"
 	docker stop workbench
-	docker rm workbench
+	docker rmi workbench
 	docker rmi dtr.corp.appdynamics.com/appdynamics/machine-agent:latest
 	docker rmi alpine
 
