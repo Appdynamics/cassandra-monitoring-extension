@@ -23,8 +23,6 @@ dockerRun: ##Spin up docker containers for MA with extension, controller and oth
 dockerStop: ##Stop and remove all containers
 	@echo ------- Stop and remove containers, images, networks and volumes -------
 	docker-compose down --rmi all -v --remove-orphans
-    docker stop cassandra1
-    docker rmi cassandra1
 	docker rmi dtr.corp.appdynamics.com/appdynamics/machine-agent:latest
 	docker rmi alpine
 
@@ -37,8 +35,6 @@ sleep: ##sleep for x seconds
 
 workbenchTest: ##test workbench mode
 	@echo "Creating docker container for workbench"
-    @echo "------- Starting Cassandra -------"
-    docker-compose --file docker-compose.yml up --force-recreate -d --build cassandra1
 	docker build -t 'workbench:latest' --no-cache -f Dockerfile_Workbench .
 	docker run --name workbench -d workbench
 	@echo "Done"
@@ -54,8 +50,6 @@ workbenchTest: ##test workbench mode
 	@echo "Stopping docker container workbench"
 	docker stop workbench
 	docker rmi workbench
-    docker stop cassandra1
-    docker rmi cassandra1
 	docker rmi dtr.corp.appdynamics.com/appdynamics/machine-agent:latest
 	docker rmi alpine
 
