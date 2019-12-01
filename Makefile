@@ -44,8 +44,7 @@ workbenchTest: ##test workbench mode
 	@out=$$(docker exec workbench /bin/sh -c "curl -s -w '\n%{http_code}\n' localhost:9090/api/metric-paths"); \
 	printf "*****/api/metric-path returned*****\n%s\n**********\n" "$$out"; \
 	code=$$(echo "$$out"|tail -1); \
-	[ "$$code" = "200" ] || { echo "Failure: code=$$code"; exit 1; }; \
-	[ "$$(echo "$$out"|grep ".*Heart Beat.*")" = "Custom Metrics|Cassandra|Local Cassandra Server 1|Heart Beat" ] || { echo "Heart Beat metric not found"; exit 1; }
+	[ "$$code" = "200" ] || { echo "Failure: code=$$code"; exit 1; };
 	@echo "Workbench Tested successfully"
 	@echo "Stopping docker container workbench"
 	docker stop workbench
