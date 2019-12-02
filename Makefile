@@ -48,7 +48,7 @@ workbenchTest: ##test workbench mode
 	@echo "Workbench Tested successfully"
 	@echo "Stopping docker container workbench"
 	docker stop workbench
-	docker rmi workbench
+	docker rm workbench
 	docker rmi dtr.corp.appdynamics.com/appdynamics/machine-agent:latest
 	docker rmi alpine
 
