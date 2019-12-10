@@ -121,12 +121,12 @@ public class JMXMetricsProcessor {
 
     private List<Metric> checkTypeAndReturnMetrics(MetricDetails metricDetails, Attribute attribute) {
 
-        BaseMetricsProcessor jmxMetricProcessor = getReference(attribute);
+        BaseMetricsProcessor jmxMetricProcessor = getMetricsProcessor(attribute);
         jmxMetricProcessor.populateMetricsFromEntity(metricDetails, attribute);
         return jmxMetricProcessor.getMetrics();
     }
 
-    private static BaseMetricsProcessor getReference(Attribute attribute) {
+    private static BaseMetricsProcessor getMetricsProcessor(Attribute attribute) {
         Object object = attribute.getValue();
 
         if (object instanceof CompositeData) {
