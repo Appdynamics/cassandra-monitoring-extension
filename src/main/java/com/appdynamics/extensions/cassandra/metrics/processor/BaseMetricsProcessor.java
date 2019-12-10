@@ -76,7 +76,7 @@ public class BaseMetricsProcessor {
             getInstanceKey(metricDetails.getInstance(), metricDetails.getmBeanKeys(), metricTokens, metricDetails.getDisplayName());
             addAttributeNameToMetricPathTokens(attributeName, metricTokens);
             String attrVal = getAttrValue(attribute);
-            if (!attrVal.equals("")) {
+            if(!Strings.isNullOrEmpty(attrVal)){
                 String[] tokens = new String[metricTokens.size()];
                 tokens = metricTokens.toArray(tokens);
                 metrics.add(new Metric(attributeName, attrVal, props, metricDetails.getMetricPrefix(), tokens));

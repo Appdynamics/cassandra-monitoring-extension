@@ -16,6 +16,7 @@ import com.appdynamics.extensions.cassandra.metrics.JMXMetricsProcessor;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.metrics.Metric;
 import com.appdynamics.extensions.util.CryptoUtils;
+import com.appdynamics.extensions.util.StringUtils;
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -59,8 +60,7 @@ public class CassandraMonitorTask implements AMonitorTaskRunnable {
         int port = NumberUtils.toInt(portStr, -1);
         String username = (String) server.get(USERNAME);
         String password = getPassword(server);
-
-        if (!Strings.isNullOrEmpty(serviceUrl) || !Strings.isNullOrEmpty(host)) {
+        if (StringUtils.hasText(serviceUrl) || StringUtils.hasText(host)) {
             jmxConnectionAdapter = JMXConnectionAdapter.create(serviceUrl, host, port, username, password);
         } else {
             throw new MalformedURLException();
@@ -68,10 +68,14 @@ public class CassandraMonitorTask implements AMonitorTaskRunnable {
     }
 
     private String getPassword(Map server) {
-        if (monitorContextConfiguration.getConfigYml().get(ENCRYPTION_KEY) != null) {
+        if (StringUtils.hasText((String) monitorContextConfiguration.getConfigYml().get(ENCRYPTION_KEY))) {
             String encryptionKey = (String) monitorContextConfiguration.getConfigYml().get(ENCRYPTION_KEY);
             server.put(ENCRYPTION_KEY, encryptionKey);
         }
+//        if (monitorContextConfiguration.getConfigYml().get(ENCRYPTION_KEY) != null) {
+//            String encryptionKey = (String) monitorContextConfiguration.getConfigYml().get(ENCRYPTION_KEY);
+//            server.put(ENCRYPTION_KEY, encryptionKey);
+//        }
         return CryptoUtils.getPassword(server);
     }
 
@@ -112,17 +116,17 @@ public class CassandraMonitorTask implements AMonitorTaskRunnable {
                     if (nodeMetrics.size() > 0) {
                         metricWriter.transformAndPrintMetrics(nodeMetrics);
                     } else {
-                        logger.debug("No metrics being sent from mBean : {} and server: {}",configObjName, serverName);
+                        logger.debug("No metrics being sent from mBean : {} and server: {}", configObjName, serverName);
                     }
                 } catch (JMException e) {
                     logger.error("JMException Occurred for {} " + configObjName, e);
                     heartBeatStatus = false;
-                }catch (IOException e) {
-                    logger.error("IOException occurred while getting metrics for mBean : {} and server: {} ", configObjName,serverName, e);
+                } catch (IOException e) {
+                    logger.error("IOException occurred while getting metrics for mBean : {} and server: {} ", configObjName, serverName, e);
                     heartBeatStatus = false;
                 }
             }
-        }  catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error occurred while fetching metrics from Server : " + serverName, e);
             heartBeatStatus = false;
         } finally {

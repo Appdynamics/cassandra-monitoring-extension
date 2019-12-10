@@ -28,6 +28,9 @@ servers:
 
 # number of concurrent tasks.
 # Each server would require its own thread to process. Please provide adequate threads accordingly.
+# Please change the value based on the number of server instances you are monitoring.
+# If this number goes above 5, please update it.
+
 numberOfThreads: 5
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #                                      List of metrics
