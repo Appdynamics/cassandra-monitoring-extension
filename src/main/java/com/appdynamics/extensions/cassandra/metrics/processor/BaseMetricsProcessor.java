@@ -40,7 +40,7 @@ public class BaseMetricsProcessor {
         return metrics;
     }
 
-    private static void getInstanceKey(ObjectInstance instance, List<String> mBeanKeys, LinkedList<String> metricTokens, String displayName) {
+    private static void getInstanceKey(ObjectInstance instance, List<String> mBeanKeys, List<String> metricTokens, String displayName) {
         if (!Strings.isNullOrEmpty(displayName)) {
             metricTokens.add(displayName);
         }
@@ -51,7 +51,7 @@ public class BaseMetricsProcessor {
         }
     }
 
-    private static void addAttributeNameToMetricPathTokens(String attributeName, LinkedList<String> metricTokens) {
+    private static void addAttributeNameToMetricPathTokens(String attributeName, List<String> metricTokens) {
             metricTokens.add(attributeName);
     }
 
@@ -72,7 +72,7 @@ public class BaseMetricsProcessor {
         if (props == null) {
             logger.error("Could not find metric properties for {} ", attributeName);
         } else {
-            LinkedList<String> metricTokens = new LinkedList<>();
+            List<String> metricTokens = new LinkedList<>();
             getInstanceKey(metricDetails.getInstance(), metricDetails.getmBeanKeys(), metricTokens, metricDetails.getDisplayName());
             addAttributeNameToMetricPathTokens(attributeName, metricTokens);
             String attrVal = getAttrValue(attribute);
