@@ -27,6 +27,9 @@ public class IncludeFilter {
 
     public void applyFilter(Set<String> filteredSet, List<String> readableAttributes) {
         if (readableAttributes == null || dictionary == null) {
+            if(readableAttributes.isEmpty()){
+                logger.debug("Unable to match any metrics in the config include section with metrics available via JMX");
+            }
             return;
         }
 
