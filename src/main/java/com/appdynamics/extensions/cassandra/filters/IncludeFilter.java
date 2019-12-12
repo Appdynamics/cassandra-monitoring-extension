@@ -8,7 +8,10 @@
 
 package com.appdynamics.extensions.cassandra.filters;
 
+import com.appdynamics.extensions.cassandra.metrics.JMXMetricsProcessor;
 import com.appdynamics.extensions.cassandra.utils.JMXUtil;
+import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
+import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Map;
@@ -16,6 +19,7 @@ import java.util.Set;
 
 public class IncludeFilter {
     private List<Map<String, ?>> dictionary;
+    private static final Logger logger = ExtensionsLoggerFactory.getLogger(IncludeFilter.class);
 
     public IncludeFilter(List<Map<String, ?>> dictionary) {
         this.dictionary = dictionary;
@@ -33,6 +37,8 @@ public class IncludeFilter {
             }
             if (readableAttributes.contains(metricName)) {
                 filteredSet.add(metricName);
+            } else {
+                logger.debug("Unable to find corresponding metric value for: {}", metricName);
             }
         }
     }

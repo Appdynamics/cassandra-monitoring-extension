@@ -98,7 +98,6 @@ public class JMXMetricsProcessorTest {
         Assert.assertTrue(metrics.get(1).getMetricProperties().getTimeRollUpType().equals("AVERAGE"));
         Assert.assertTrue(metrics.get(1).getMetricProperties().getClusterRollUpType().equals("INDIVIDUAL"));
         Assert.assertTrue(metrics.get(1).getMetricProperties().getAggregationType().equals("AVERAGE"));
-
     }
 
     @Test
