@@ -75,7 +75,6 @@
             <version>1.9.0</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>
