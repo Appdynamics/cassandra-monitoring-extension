@@ -310,4 +310,4 @@ Please contact [help@appdynamics.com](mailto:help@appdynamics.com) with the fol
 
 #### Codebase
 
-You can contribute your development ideas [here.](https://github.com/Appdynamics/websphere-mq-monitoring-extension)
+You can contribute your development ideas [here.](https://github.com/Appdynamics/cassandra-monitoring-extension)
