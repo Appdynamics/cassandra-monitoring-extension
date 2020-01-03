@@ -3,7 +3,7 @@ dockerRun: ##Spin up docker containers for MA with extension, controller and oth
 	@echo starting container ##################%%%%%%%%%%%%%%%%%%%&&&&&&&&&&&&&&&&&&&&&&
 	@echo "------- Starting Cassandra -------"
 	docker-compose --file docker-compose.yml up --force-recreate -d --build cassandra1
-
+	@echo "------- Cassandra started -------"
 	@echo "------- Starting controller -------"
 	docker-compose up -d --force-recreate controller
 #wait until controller and ES installation completes

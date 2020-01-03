@@ -8,3 +8,5 @@ RUN chmod 400 /etc/cassandra/jmxremote.*
 
 RUN sed -i 's/#JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.access.file=\/etc\/cassandra\/jmxremote.access"/JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.access.file=\/etc\/cassandra\/jmxremote.access"/g' /etc/cassandra/cassandra-env.sh
 RUN sed -i 's/# JVM_OPTS="$JVM_OPTS -Djava.rmi.server.hostname=<public name>"/JVM_OPTS="$JVM_OPTS -Djava.rmi.server.hostname=${JMX_HOST}"/g' /etc/cassandra/cassandra-env.sh
+
+# TODO: This dockerfile is not being used.

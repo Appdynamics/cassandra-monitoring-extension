@@ -11,6 +11,7 @@ package com.appdynamics.extensions.cassandra;
 import com.appdynamics.extensions.controller.apiservices.CustomDashboardAPIService;
 import com.appdynamics.extensions.controller.apiservices.MetricAPIService;
 import com.appdynamics.extensions.util.JsonUtils;
+import static com.appdynamics.extensions.util.JsonUtils.getTextValue;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -23,9 +24,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static com.appdynamics.extensions.cassandra.IntegrationTestUtils.initializeMetricAPIService;
-import static com.appdynamics.extensions.util.JsonUtils.getTextValue;
-
 
 /**
  * @author: {Bhuvnesh Kumar}
@@ -36,7 +34,7 @@ public class MetricCheckIT {
 
     @Before
     public void setup() {
-        metricAPIService = initializeMetricAPIService();
+        metricAPIService = IntegrationTestUtils.initializeMetricAPIService();
         customDashboardAPIService = IntegrationTestUtils.initializeCustomDashboardAPIService();
     }
 
@@ -59,7 +57,7 @@ public class MetricCheckIT {
             Assert.assertEquals("heartbeat is 0", heartBeat, 1);
         }
     }
-
+//TODO; difference wrt. to the above test
     @Test
     public void whenInstanceIsUpThenHeartBeatIs1ForServerWithSSLEnabled() {
         JsonNode jsonNode = null;
@@ -115,7 +113,7 @@ public class MetricCheckIT {
             Assert.assertTrue(dashboardPresent);
         }
     }
-
+// TODO: should be moved to integration test utils
     private boolean isDashboardPresent(String dashboardName, JsonNode existingDashboards) {
         if (existingDashboards != null) {
             for (JsonNode existingDashboard : existingDashboards) {
@@ -139,6 +137,7 @@ public class MetricCheckIT {
             JsonNode valueNode = JsonUtils.getNestedObject(jsonNode, "metricName");
             String metricName = (valueNode == null) ? "" : valueNode.get(0).toString();
             int metricValue = (valueNode == null) ? 0 : valueNode.get(0).asInt();
+//            TODO: do we need to escape\"?
             Assert.assertEquals("Metric char replacement is not done", "\"Custom Metrics|Cassandra|Local Cassandra Server 1|Commit Log|CompletedTasks|Number of Completed Tasks\"", metricName);
             Assert.assertNotNull("Metric Value is  null in last 15min, maybe a stale metric ", metricValue);
         }
@@ -148,7 +147,7 @@ public class MetricCheckIT {
     @Test
     public void checkWorkBenchUrlIsUp() {
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet get = new HttpGet("http://0.0.0.0:9089");
+        HttpGet get = new HttpGet("http://0.0.0.0:9089"); //TODO: what is 9089....
         try {
             CloseableHttpResponse response = httpClient.execute(get);
             Assert.assertEquals(200, response.getStatusLine());
@@ -156,5 +155,9 @@ public class MetricCheckIT {
 
         }
     }
+
+    // TODO: Can we add a test to check the heartbeat metrics for the workbench mode as well.
+//    or echo the same from the makefile workbench module as below.
+//    		[ "$$(echo "$$out"|grep ".*HeartBeat.*")" = "Custom Metrics|Cassandra|Local Cassandra Server 1|HeartBeat" ] || { echo "Heart Beat metric not found"; exit 1; }
 
 }
