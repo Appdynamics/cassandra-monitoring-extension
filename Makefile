@@ -25,7 +25,6 @@ dockerStop: ##Stop and remove all containers
 	docker-compose down --rmi all -v --remove-orphans
 	docker rmi dtr.corp.appdynamics.com/appdynamics/machine-agent:latest
 	docker rmi alpine
-
 	@echo ------- Done -------
 
 sleep: ##sleep for x seconds
