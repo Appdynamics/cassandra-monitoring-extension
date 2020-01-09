@@ -38,11 +38,6 @@ public class MetricCheckIT {
         customDashboardAPIService = IntegrationTestUtils.initializeCustomDashboardAPIService();
     }
 
-    @After
-    public void tearDown() {
-        //todo: shutdown client
-    }
-
     @Test
     public void whenInstanceIsUpThenHeartBeatIs1ForServerWithSSLDisabled() {
         JsonNode jsonNode = null;
@@ -55,21 +50,6 @@ public class MetricCheckIT {
             JsonNode valueNode = JsonUtils.getNestedObject(jsonNode, "*", "metricValues", "*", "value");
             int heartBeat = (valueNode == null) ? 0 : valueNode.get(0).asInt();
             Assert.assertEquals("heartbeat is 0", heartBeat, 1);
-        }
-    }
-//TODO; difference wrt. to the above test
-    @Test
-    public void whenInstanceIsUpThenHeartBeatIs1ForServerWithSSLEnabled() {
-        JsonNode jsonNode = null;
-        if (metricAPIService != null) {
-            jsonNode = metricAPIService.getMetricData("",
-                    "Server%20&%20Infrastructure%20Monitoring/metric-data?metric-path=Application%20Infrastructure%20Performance%7CRoot%7CCustom%20Metrics%7CCassandra%7CLocal%20Cassandra%20Server%201%7CHeart%20Beat&time-range-type=BEFORE_NOW&duration-in-mins=60&output=JSON");
-        }
-        Assert.assertNotNull("Cannot connect to controller API", jsonNode);
-        if (jsonNode != null) {
-            JsonNode valueNode = JsonUtils.getNestedObject(jsonNode, "*", "metricValues", "*", "value");
-            int heartBeat = (valueNode == null) ? 0 : valueNode.get(0).asInt();
-            Assert.assertEquals("heartbeat is 0", 1, heartBeat);
         }
     }
 
@@ -106,23 +86,15 @@ public class MetricCheckIT {
     }
 
     @Test
-    public void checkDashboardsUploaded() {//TODO: have a good dashboard
+    public void checkDashboardsUploaded() {
+        boolean dashboardPresent = false;
         if (customDashboardAPIService != null) {
             JsonNode allDashboardsNode = customDashboardAPIService.getAllDashboards();
-            boolean dashboardPresent = isDashboardPresent("Cassandra SIM Dashboard", allDashboardsNode);
+             dashboardPresent = IntegrationTestUtils.isDashboardPresent("Cassandra SIM Dashboard", allDashboardsNode);
             Assert.assertTrue(dashboardPresent);
+        } else {
+            Assert.assertTrue(false);
         }
-    }
-// TODO: should be moved to integration test utils
-    private boolean isDashboardPresent(String dashboardName, JsonNode existingDashboards) {
-        if (existingDashboards != null) {
-            for (JsonNode existingDashboard : existingDashboards) {
-                if (dashboardName.equals(getTextValue(existingDashboard.get("name")))) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     @Test
@@ -137,24 +109,24 @@ public class MetricCheckIT {
             JsonNode valueNode = JsonUtils.getNestedObject(jsonNode, "metricName");
             String metricName = (valueNode == null) ? "" : valueNode.get(0).toString();
             int metricValue = (valueNode == null) ? 0 : valueNode.get(0).asInt();
-//            TODO: do we need to escape\"?
             Assert.assertEquals("Metric char replacement is not done", "\"Custom Metrics|Cassandra|Local Cassandra Server 1|Commit Log|CompletedTasks|Number of Completed Tasks\"", metricName);
             Assert.assertNotNull("Metric Value is  null in last 15min, maybe a stale metric ", metricValue);
         }
     }
-
-
-    @Test
-    public void checkWorkBenchUrlIsUp() {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet get = new HttpGet("http://0.0.0.0:9089"); //TODO: what is 9089....
-        try {
-            CloseableHttpResponse response = httpClient.execute(get);
-            Assert.assertEquals(200, response.getStatusLine());
-        } catch (IOException ioe) {
-
-        }
-    }
+//
+//    @Test
+//    public void checkWorkBenchUrlIsUp() throws IOException {
+//        CloseableHttpClient httpClient = HttpClients.createDefault();
+//        HttpGet get = new HttpGet("http://0.0.0.0:9090"); //TODO: what is 9089....
+//        try {
+//            CloseableHttpResponse response = httpClient.execute(get);
+//            Assert.assertEquals(200, response.getStatusLine());
+//        } catch (IOException ioe) {
+//
+//        } finally {
+//            httpClient.close();
+//        }
+//    }
 
     // TODO: Can we add a test to check the heartbeat metrics for the workbench mode as well.
 //    or echo the same from the makefile workbench module as below.

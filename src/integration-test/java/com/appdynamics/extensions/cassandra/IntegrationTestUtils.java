@@ -17,12 +17,14 @@ import com.appdynamics.extensions.controller.apiservices.MetricAPIService;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.yml.YmlReader;
 import com.google.common.collect.Maps;
+import org.codehaus.jackson.JsonNode;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.Map;
 
 import static com.appdynamics.extensions.Constants.ENCRYPTION_KEY;
+import static com.appdynamics.extensions.util.JsonUtils.getTextValue;
 
 /**
  * @author: {Bhuvnesh Kumar}
@@ -45,6 +47,18 @@ public class IntegrationTestUtils {
             return null;
         }
     }
+
+    static boolean isDashboardPresent(String dashboardName, JsonNode existingDashboards) {
+        if (existingDashboards != null) {
+            for (JsonNode existingDashboard : existingDashboards) {
+                if (dashboardName.equals(getTextValue(existingDashboard.get("name")))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
     static CustomDashboardAPIService initializeCustomDashboardAPIService() {
         ControllerAPIService controllerAPIService = initializeControllerAPIService();

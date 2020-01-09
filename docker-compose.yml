@@ -1,16 +1,18 @@
 version: '2'
 services:
   cassandra1:
-    image: cassandra:latest
     container_name: cassandra1
     ports:
       - "7199:7199"
-
+      - "1098:1098"
     environment:
-      JVM_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=cassandra1 -Dcom.sun.management.jmxremote.port=7199 -Dcom.sun.management.jmxremote.rmi.port=1098"
+      - CASSANDRA_HOST_NAME=cassandra1
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    build:
+      context: .
+      dockerfile: Dockerfile_Cassandra
 
   controller:
     image: dtr.corp.appdynamics.com/appdynamics/enterprise-console:latest
@@ -30,7 +32,7 @@ services:
       - APPDYNAMICS_CONTROLLER_PORT=8080
       - EVENTS_SERVICE_HOST=controller
       - MACHINE_AGENT_PROPERTIES=-Dappdynamics.agent.uniqueHostId=cassandraTest -Dappdynamics.sim.enabled=true -Dappdynamics.docker.enabled=false
-      - CASSANDRA_HOST_1=cassandra1
+      - CASSANDRA_HOST_1=localhost
       - CASSANDRA_PORT_1=7199
       - CASSANDRA_USERNAME_1=cassandra
       - CASSANDRA_PASSWORD_1=cassandra
@@ -41,3 +43,6 @@ services:
     volumes:
       - /:/hostroot:ro
       - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+ cassandra1:

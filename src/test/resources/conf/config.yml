@@ -18,8 +18,7 @@ servers:
 #      host: ""
 #      port:
 
-      serviceUrl: "service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi"
-
+      serviceUrl: "service:jmx:rmi:///jndi/rmi://localhost:7199/jmxrmi"
       username: ""
       password: ""
 
