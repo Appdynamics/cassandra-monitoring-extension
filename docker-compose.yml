@@ -8,7 +8,6 @@ services:
       - "1098:1098"
     environment:
       - CASSANDRA_HOST_NAME=cassandra1
-
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     build:

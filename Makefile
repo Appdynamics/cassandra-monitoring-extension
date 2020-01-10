@@ -2,7 +2,7 @@
 dockerRun: ##Spin up docker containers for MA with extension, controller and other apps
 	@echo starting container ##################%%%%%%%%%%%%%%%%%%%&&&&&&&&&&&&&&&&&&&&&&
 	@echo "------- Starting Cassandra -------"
-	docker-compose --file docker-compose.yml up --force-recreate -d --build cassandra1
+	docker-compose up -d --force-recreate --build cassandra1
 	@echo "------- Cassandra started -------"
 	@echo "------- Starting controller -------"
 	docker-compose up -d --force-recreate controller
