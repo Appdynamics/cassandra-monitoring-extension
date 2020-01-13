@@ -46,9 +46,6 @@ services:
 
   workbench:
     container_name: workbench
-    ports:
-      - "8080:8080"
-      - "9090:9090"
     environment:
       - APPDYNAMICS_AGENT_ACCOUNT_NAME=customer1
       - APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY=SJ5b2m7d1$$354

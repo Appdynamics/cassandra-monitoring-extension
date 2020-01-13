@@ -50,6 +50,7 @@ workbenchTest: ##test workbench mode
 	@echo "Workbench Tested successfully"
 	@echo "Stopping docker container workbench"
 	docker-compose down --rmi all -v --remove-orphans
+	docker rmi cassandra
 	docker rmi dtr.corp.appdynamics.com/appdynamics/machine-agent:latest
 	docker rmi alpine
 
