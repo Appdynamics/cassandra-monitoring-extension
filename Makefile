@@ -33,9 +33,11 @@ sleep: ##sleep for x seconds
 	@echo Wait finished
 
 workbenchTest: ##test workbench mode
+	@echo "------- Starting Cassandra -------"
+	docker-compose up -d --force-recreate --build cassandra1
+	@echo "------- Cassandra started -------"
 	@echo "Creating docker container for workbench"
-	docker build -t 'workbench:latest' --no-cache -f Dockerfile_Workbench .
-	docker run --name workbench -d workbench
+	docker-compose up --force-recreate -d --build workbench
 	@echo "Done"
 # wait 60 seconds for workbench to report metrics
 	sleep 60
@@ -43,11 +45,11 @@ workbenchTest: ##test workbench mode
 	@out=$$(docker exec workbench /bin/sh -c "curl -s -w '\n%{http_code}\n' localhost:9090/api/metric-paths"); \
 	printf "*****/api/metric-path returned*****\n%s\n**********\n" "$$out"; \
 	code=$$(echo "$$out"|tail -1); \
-	[ "$$code" = "200" ] || { echo "Failure: code=$$code"; exit 1; };
+	[ "$$code" = "200" ] || { echo "Failure: code=$$code"; exit 1; }; \
+	[ "$$(echo "$$out"|grep -i ".*Heart Beat.*")" = "Custom Metrics|Cassandra|Local Cassandra Server 1|Heart Beat" ] || { echo "Heart Beat metric not found"; exit 1; }
 	@echo "Workbench Tested successfully"
 	@echo "Stopping docker container workbench"
-	docker stop workbench
-	docker rm workbench
+	docker-compose down --rmi all -v --remove-orphans
 	docker rmi dtr.corp.appdynamics.com/appdynamics/machine-agent:latest
 	docker rmi alpine
 

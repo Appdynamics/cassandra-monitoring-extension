@@ -7,17 +7,17 @@ metricPrefix: Custom Metrics|Cassandra
 
 # List of JMX Servers
 servers:
-  -  displayName: "Local Cassandra Server 1"
+  - displayName: "Local Cassandra Server 1"
     #     displayName is a required field. This will be your server name that will show up in metric path.
 
     #     You can either use just a host and port to connect or use your full serviceURL to make the connection
     #     Do not choose both, comment one out and only use the other.
-     host: "${CASSANDRA_HOST_1}"
-     port: "${CASSANDRA_PORT_1}"
-#     serviceUrl: ""
+    host: "${CASSANDRA_HOST_1}"
+    port: "${CASSANDRA_PORT_1}"
+    #     serviceUrl: ""
 
-     username: "${CASSANDRA_USERNAME_1}"
-     password: "${CASSANDRA_PASSWORD_1}"
+    username: "${CASSANDRA_USERNAME_1}"
+    password: "${CASSANDRA_PASSWORD_1}"
 
 #     You can either use the normal password or encrypt your password and provide the encrypted Password and encryptionKey.
 #     Do not provide both, only provide one and comment out the other.
@@ -28,7 +28,9 @@ servers:
 
 # number of concurrent tasks.
 # Each server would require its own thread to process. Please provide adequate threads accordingly.
+
 numberOfThreads: 5
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #                                      List of metrics
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -55,8 +57,8 @@ mbeans:
       include:
         - name: "Value"
           alias: "Store Percent Usage"
-          multiplier : 100
-          delta : true
+          multiplier: 100
+          delta: true
   - objectName: "org.apache.cassandra.metrics:type=Cache,scope=*,name=Size"
     mbeanKeys: ["type", "scope", "name"]
     metrics:
@@ -343,3 +345,5 @@ metricPathReplacements:
     replaceWith: "-"
   - replace: "ms"
     replaceWith: ""
+
+

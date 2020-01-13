@@ -44,5 +44,30 @@ services:
       - /:/hostroot:ro
       - /var/run/docker.sock:/var/run/docker.sock
 
+  workbench:
+    container_name: workbench
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    environment:
+      - APPDYNAMICS_AGENT_ACCOUNT_NAME=customer1
+      - APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY=SJ5b2m7d1$$354
+      - APPDYNAMICS_CONTROLLER_HOST_NAME=controller
+      - APPDYNAMICS_CONTROLLER_SSL_ENABLED=false
+      - APPDYNAMICS_CONTROLLER_PORT=8080
+      - EVENTS_SERVICE_HOST=controller
+      - MACHINE_AGENT_PROPERTIES=-Dappdynamics.agent.uniqueHostId=cassandraTest -Dappdynamics.sim.enabled=true -Dappdynamics.docker.enabled=false
+      - CASSANDRA_HOST_1=cassandra1
+      - CASSANDRA_PORT_1=7199
+      - CASSANDRA_USERNAME_1=cassandra
+      - CASSANDRA_PASSWORD_1=cassandra
+    build:
+      context: .
+      dockerfile: Dockerfile_Workbench
+
+    volumes:
+      - /:/hostroot:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+
 volumes:
  cassandra1:
