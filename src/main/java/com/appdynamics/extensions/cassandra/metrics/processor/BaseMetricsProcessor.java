@@ -52,7 +52,7 @@ public class BaseMetricsProcessor {
     }
 
     private static void addAttributeNameToMetricPathTokens(String attributeName, List<String> metricTokens) {
-            metricTokens.add(attributeName);
+        metricTokens.add(attributeName);
     }
 
     private static ObjectName getObjectName(ObjectInstance instance) {
@@ -76,7 +76,7 @@ public class BaseMetricsProcessor {
             getInstanceKey(metricDetails.getInstance(), metricDetails.getmBeanKeys(), metricTokens, metricDetails.getDisplayName());
             addAttributeNameToMetricPathTokens(attributeName, metricTokens);
             String attrVal = getAttrValue(attribute);
-            if(!Strings.isNullOrEmpty(attrVal)){
+            if (!Strings.isNullOrEmpty(attrVal)) {
                 String[] tokens = new String[metricTokens.size()];
                 tokens = metricTokens.toArray(tokens);
                 metrics.add(new Metric(attributeName, attrVal, props, metricDetails.getMetricPrefix(), tokens));
@@ -96,7 +96,7 @@ public class BaseMetricsProcessor {
                     return stringBuilder.toString();
                 }
             }
-        } else{
+        } else {
             return attrVal;
         }
         return stringBuilder.toString();

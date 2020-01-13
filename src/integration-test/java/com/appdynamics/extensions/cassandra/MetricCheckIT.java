@@ -39,7 +39,7 @@ public class MetricCheckIT {
     }
 
     @Test
-    public void whenInstanceIsUpThenHeartBeatIs1ForServerWithSSLDisabled() {
+    public void whenInstanceIsUpThenHeartBeatIs1ForServer() {
         JsonNode jsonNode = null;
         if (metricAPIService != null) {
             jsonNode = metricAPIService.getMetricData("",
@@ -113,23 +113,4 @@ public class MetricCheckIT {
             Assert.assertNotNull("Metric Value is  null in last 15min, maybe a stale metric ", metricValue);
         }
     }
-//
-//    @Test
-//    public void checkWorkBenchUrlIsUp() throws IOException {
-//        CloseableHttpClient httpClient = HttpClients.createDefault();
-//        HttpGet get = new HttpGet("http://0.0.0.0:9090"); //TODO: what is 9089....
-//        try {
-//            CloseableHttpResponse response = httpClient.execute(get);
-//            Assert.assertEquals(200, response.getStatusLine());
-//        } catch (IOException ioe) {
-//
-//        } finally {
-//            httpClient.close();
-//        }
-//    }
-
-    // TODO: Can we add a test to check the heartbeat metrics for the workbench mode as well.
-//    or echo the same from the makefile workbench module as below.
-//    		[ "$$(echo "$$out"|grep ".*HeartBeat.*")" = "Custom Metrics|Cassandra|Local Cassandra Server 1|HeartBeat" ] || { echo "Heart Beat metric not found"; exit 1; }
-
 }
