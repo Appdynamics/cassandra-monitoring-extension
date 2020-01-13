@@ -1,4 +1,4 @@
-FROM cassandra:3.11.2
+FROM cassandra:latest
 
 ENV LOCAL_JMX no
 COPY jmxremote.password /etc/cassandra/jmxremote.password
