@@ -67,4 +67,4 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
- cassandra1:
+  cassandra1:

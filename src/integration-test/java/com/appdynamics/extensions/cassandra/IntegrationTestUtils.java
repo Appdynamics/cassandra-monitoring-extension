@@ -59,7 +59,6 @@ public class IntegrationTestUtils {
         return false;
     }
 
-
     static CustomDashboardAPIService initializeCustomDashboardAPIService() {
         ControllerAPIService controllerAPIService = initializeControllerAPIService();
         if (controllerAPIService != null) {
@@ -71,7 +70,6 @@ public class IntegrationTestUtils {
         }
     }
 
-
     private static ControllerAPIService initializeControllerAPIService() {
         Map<String, ?> config = YmlReader.readFromFileAsMap(configFile);
         config = ConfigProcessor.process(config);
@@ -80,7 +78,7 @@ public class IntegrationTestUtils {
             controllerInfoMap = Maps.newHashMap();
         }
         //this is for test purposes only
-        controllerInfoMap.put("controllerHost","localhost");
+        controllerInfoMap.put("controllerHost", "localhost");
         controllerInfoMap.put(ENCRYPTION_KEY, config.get(ENCRYPTION_KEY));
         try {
             ControllerInfo controllerInfo = ControllerInfoFactory.initialize(controllerInfoMap, installDir);
