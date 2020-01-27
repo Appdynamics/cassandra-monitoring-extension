@@ -55,6 +55,8 @@ Once done with them, they should allow you to establish a successful connection
     #Encryption key for Encrypted password.
     encryptionKey: "axcdde43535hdhdgfiniyy576"
     ```
+    **You should either use the Normal PASSWORD or the encryptedPassword and encryptionKey in order to establish a connection. Please read the "credentials Encryption" section below to find more information on Password Encryption.**
+
  4. Configure the **numberOfThreads**
     For example,
     If number of servers that need to be monitored is 3, then number of threads required is 5 * 3 = 15
@@ -64,7 +66,6 @@ Once done with them, they should allow you to establish a successful connection
 
     * encryptionKey: If you use an encryptedPassword, please provide the key here as well in order for the system to decrypt your password.
 
-    **You should either use the Normal PASSWORD or the encryptedPassword and encryptionKey in order to establish a connection. Please read below to find more information on Password Encryption.**
 
 5. The metricPrefix of the extension has to be configured as [specified here](https://community.appdynamics.com/t5/Knowledge-Base/How-do-I-troubleshoot-missing-custom-metrics-or-extensions/ta-p/28695#Configuring%20an%20Extension). Please make sure that the right metricPrefix is chosen based on your machine agent deployment, otherwise this could lead to metrics not being visible in the controller.
 Configure the "tier" under which the metrics need to be reported. This can be done by changing the value of `<TIER NAME OR TIER ID>` in
