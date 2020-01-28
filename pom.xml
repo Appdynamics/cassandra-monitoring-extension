@@ -16,7 +16,7 @@
     <version>2.1</version>
     <packaging>jar</packaging>
     <name>cassandra-monitoring-extension</name>
-    <url>http://maven.apache.org</url>
+    <url>https://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
