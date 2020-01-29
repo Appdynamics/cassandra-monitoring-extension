@@ -227,7 +227,7 @@ Always feel free to fork and contribute any changes directly here on [GitHub](ht
 |Extension Version         |2.1       |
 |Controller Compatibility  |3.7 or Later|
 |Product Tested On         |3.1|
-|Last Update               |12/10/2019|
+|Last Update               |1/10/2020|
 
 [How to use the Extensions WorkBench ]: https://community.appdynamics.com/t5/Knowledge-Base/How-to-use-the-Extensions-WorkBench/ta-p/30130
 [Changelog.md]: https://github.com/Appdynamics/cassandra-monitoring-extension/blob/master/Changelog.md
