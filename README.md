@@ -50,12 +50,15 @@ Once done with them, they should allow you to establish a successful connection
    * encryptedPassword: In case you would like to use an encrypted password, use this field.
    
  3. Configure the encyptionKey for encryptionPasswords(only if password encryption required).
+    
     For example,
     ```
     #Encryption key for Encrypted password.
     encryptionKey: "axcdde43535hdhdgfiniyy576"
     ```
-    **You should either use the Normal PASSWORD or the encryptedPassword and encryptionKey in order to establish a connection. Please read the "credentials Encryption" section below to find more information on Password Encryption.**
+   * encryptionKey: If you use an encryptedPassword, please provide the key here as well in order for the system to decrypt your password.
+
+   **You should either use the Normal PASSWORD or the encryptedPassword and encryptionKey in order to establish a connection. Please read the "credentials Encryption" section below to find more information on Password Encryption.**
 
  4. Configure the **numberOfThreads**
     For example,
@@ -63,10 +66,6 @@ Once done with them, they should allow you to establish a successful connection
      ```
         numberOfThreads: 15
      ```  
-
-    * encryptionKey: If you use an encryptedPassword, please provide the key here as well in order for the system to decrypt your password.
-
-
 5. The metricPrefix of the extension has to be configured as [specified here](https://community.appdynamics.com/t5/Knowledge-Base/How-do-I-troubleshoot-missing-custom-metrics-or-extensions/ta-p/28695#Configuring%20an%20Extension). Please make sure that the right metricPrefix is chosen based on your machine agent deployment, otherwise this could lead to metrics not being visible in the controller.
 Configure the "tier" under which the metrics need to be reported. This can be done by changing the value of `<TIER NAME OR TIER ID>` in
      metricPrefix: "Server|Component:`<TIER NAME OR TIER ID>`|Custom Metrics|Cassandra Monitor". For example,
