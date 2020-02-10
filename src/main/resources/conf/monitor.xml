@@ -10,7 +10,6 @@
         <type>managed</type>
         <description>Cassandra monitor</description>
         <monitor-configuration></monitor-configuration>
-        <enabled>true</enabled>
         <monitor-run-task>
                 <execution-style>periodic</execution-style>
                 <execution-frequency-in-seconds>60</execution-frequency-in-seconds>
