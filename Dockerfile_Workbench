@@ -1,0 +1,16 @@
+FROM alpine:latest
+RUN apk add --no-cache openjdk8
+RUN apk add --no-cache curl
+WORKDIR /opt/appdynamics/machine-agent
+COPY --from=dtr.corp.appdynamics.com/appdynamics/machine-agent /opt/appdynamics/machine-agent .
+WORKDIR /opt/appdynamics/machine-agent/monitors
+COPY target/CassandraMonitor-*.zip CassandraMonitor.zip
+RUN unzip -q CassandraMonitor.zip && \
+    rm CassandraMonitor.zip
+WORKDIR /opt/appdynamics/machine-agent/monitors/CassandraMonitor
+COPY src/integration-test/resources/conf/config_ci.yml config.yml
+# Setup JAVA_HOME
+ENV JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk
+ENV PATH="$JAVA_HOME/bin:${PATH}"
+CMD ["sh", "-c", "java -jar cassandra-monitoring-extension.jar"]
+

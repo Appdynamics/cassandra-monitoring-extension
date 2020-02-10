@@ -1,15 +1,15 @@
 /*
- * Copyright 2018. AppDynamics LLC and its affiliates.
- * All Rights Reserved.
- * This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
- * The copyright notice above does not evidence any actual or intended publication of such source code.
+ *   Copyright 2019 . AppDynamics LLC and its affiliates.
+ *   All Rights Reserved.
+ *   This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+ *   The copyright notice above does not evidence any actual or intended publication of such source code.
+ *
  */
 
-package com.appdynamics.extensions.cassandra;
+package com.appdynamics.extensions.cassandra.commons;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import javax.management.*;
 import javax.management.remote.JMXConnector;
@@ -17,7 +17,10 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class JMXConnectionAdapter {
 
@@ -25,22 +28,17 @@ public class JMXConnectionAdapter {
     private final String username;
     private final String password;
 
-    private JMXConnectionAdapter (String host, int port, String username, String password) throws
-            MalformedURLException {
-        this.serviceUrl = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi");
-        this.username = username;
-        this.password = password;
+    private JMXConnectionAdapter(String host, int port, String username, String password) throws MalformedURLException {
+        this("service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi", username, password);
     }
 
-    private JMXConnectionAdapter (String serviceUrl, String username, String password) throws MalformedURLException {
+    private JMXConnectionAdapter(String serviceUrl, String username, String password) throws MalformedURLException {
         this.serviceUrl = new JMXServiceURL(serviceUrl);
         this.username = username;
         this.password = password;
     }
 
-
-    static JMXConnectionAdapter create (String serviceUrl, String host, int port, String username, String password)
-            throws MalformedURLException {
+    public static JMXConnectionAdapter create(String serviceUrl, String host, int port, String username, String password) throws MalformedURLException {
         if (Strings.isNullOrEmpty(serviceUrl)) {
             return new JMXConnectionAdapter(host, port, username, password);
         } else {
@@ -48,7 +46,7 @@ public class JMXConnectionAdapter {
         }
     }
 
-    JMXConnector open () throws IOException {
+    public JMXConnector open() throws IOException {
         JMXConnector jmxConnector;
         final Map<String, Object> env = new HashMap<String, Object>();
         if (!Strings.isNullOrEmpty(username)) {
@@ -63,20 +61,23 @@ public class JMXConnectionAdapter {
         return jmxConnector;
     }
 
-    void close (JMXConnector jmxConnector) throws IOException {
+    public void close(JMXConnector jmxConnector) throws IOException {
         if (jmxConnector != null) {
             jmxConnector.close();
         }
     }
 
-    public Set<ObjectInstance> queryMBeans (JMXConnector jmxConnection, ObjectName objectName) throws IOException {
-        MBeanServerConnection connection = jmxConnection.getMBeanServerConnection();
+    public Set<ObjectInstance> queryMBeans(JMXConnector jmxConnection, ObjectName objectName) throws IOException {
+        MBeanServerConnection connection = getmBeanServerConnection(jmxConnection);
         return connection.queryMBeans(objectName, null);
     }
 
-    public List<String> getReadableAttributeNames (JMXConnector jmxConnection, ObjectInstance instance) throws
-            IntrospectionException, ReflectionException, InstanceNotFoundException, IOException {
-        MBeanServerConnection connection = jmxConnection.getMBeanServerConnection();
+    private MBeanServerConnection getmBeanServerConnection(JMXConnector jmxConnection) throws IOException {
+        return jmxConnection.getMBeanServerConnection();
+    }
+
+    public List<String> getReadableAttributeNames(JMXConnector jmxConnection, ObjectInstance instance) throws IntrospectionException, ReflectionException, InstanceNotFoundException, IOException {
+        MBeanServerConnection connection = getmBeanServerConnection(jmxConnection);
         List<String> attrNames = Lists.newArrayList();
         MBeanAttributeInfo[] attributes = connection.getMBeanInfo(instance.getObjectName()).getAttributes();
         for (MBeanAttributeInfo attr : attributes) {
@@ -87,13 +88,13 @@ public class JMXConnectionAdapter {
         return attrNames;
     }
 
-    public Set<Attribute> getAttributes (JMXConnector jmxConnection, ObjectName objectName, String[] strings) throws
-            IOException, ReflectionException, InstanceNotFoundException {
-        MBeanServerConnection connection = jmxConnection.getMBeanServerConnection();
+    public List<Attribute> getAttributes(JMXConnector jmxConnection, ObjectName objectName, String[] strings) throws IOException, ReflectionException, InstanceNotFoundException {
+        MBeanServerConnection connection = getmBeanServerConnection(jmxConnection);
         AttributeList list = connection.getAttributes(objectName, strings);
         if (list != null) {
-            return new HashSet<Attribute>((List)list);
+            return list.asList();
         }
-        return Sets.newHashSet();
+        return Lists.newArrayList();
     }
+
 }

@@ -9,3 +9,7 @@ target
 .idea
 .DS_Store
 
+/target
+# Package Files #
+*.war
+*.ear
