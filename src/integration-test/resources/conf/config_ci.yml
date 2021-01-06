@@ -318,7 +318,6 @@ controllerInfo:
   username: "user1"
   password: "welcome"
   encryptedPassword: ""
-  encryptionKey: ""
   controllerSslEnabled: false
   enableOrchestration: false
   uniqueHostId: ""
@@ -345,5 +344,3 @@ metricPathReplacements:
     replaceWith: "-"
   - replace: "ms"
     replaceWith: ""
-
-
