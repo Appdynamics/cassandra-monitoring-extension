@@ -16,8 +16,8 @@ import com.appdynamics.extensions.controller.apiservices.CustomDashboardAPIServi
 import com.appdynamics.extensions.controller.apiservices.MetricAPIService;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.yml.YmlReader;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Maps;
-import org.codehaus.jackson.JsonNode;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -96,5 +96,4 @@ public class IntegrationTestUtils {
         }
         return null;
     }
-
 }

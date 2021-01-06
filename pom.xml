@@ -13,7 +13,7 @@
 
     <groupId>com.appdynamics.extensions</groupId>
     <artifactId>cassandra-monitoring-extension</artifactId>
-    <version>2.1</version>
+    <version>2.1.1</version>
     <packaging>jar</packaging>
     <name>cassandra-monitoring-extension</name>
     <url>https://maven.apache.org</url>
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>com.appdynamics</groupId>
             <artifactId>appd-exts-commons</artifactId>
-            <version>2.2.1</version>
+            <version>2.2.4</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
