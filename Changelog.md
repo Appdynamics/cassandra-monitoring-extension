@@ -2,6 +2,9 @@
 
 ## Changelog
 
+### Version 2.1.1
+* Upgrading to Commons 2.2.4
+
 ### Version 2.1
  1. Extension moved to 2.2 framework of Commons Library
  2. Extension tested through the internal testing pipeline
