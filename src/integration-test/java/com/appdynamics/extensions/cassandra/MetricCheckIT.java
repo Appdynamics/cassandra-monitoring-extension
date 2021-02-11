@@ -83,6 +83,7 @@ public class MetricCheckIT {
         if (customDashboardAPIService != null) {
             JsonNode allDashboardsNode = customDashboardAPIService.getAllDashboards();
              dashboardPresent = IntegrationTestUtils.isDashboardPresent("Cassandra SIM Dashboard", allDashboardsNode);
+            System.out.println("DASHBOARD PRESENT IN CHECKDASHBOARDUPLOADED "+dashboardPresent);
             Assert.assertTrue(dashboardPresent);
         } else {
             Assert.assertTrue(false);
