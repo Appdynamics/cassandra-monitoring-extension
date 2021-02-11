@@ -50,7 +50,9 @@ public class IntegrationTestUtils {
 
     static boolean isDashboardPresent(String dashboardName, JsonNode existingDashboards) {
         if (existingDashboards != null) {
+            System.out.println("DASHBOARD NAME FROM CONFIG");
             for (JsonNode existingDashboard : existingDashboards) {
+                System.out.println("EXISTING DASHBOARD NAMES IN ISDASHBOARDPRESENT "+getTextValue(existingDashboard.get("name")));
                 if (dashboardName.equals(getTextValue(existingDashboard.get("name")))) {
                     return true;
                 }
