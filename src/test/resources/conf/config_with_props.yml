@@ -1,0 +1,18 @@
+mbeans:
+#mBeans for Cache Metrics
+  - objectName: "org.apache.cassandra.metricsold:type=ClientRequest,scope=Read,name=Latency"
+    mbeanKeys: ["type","scope","name"]
+    metrics:
+      include:
+        - name: "Max"
+          alias: "Max Latency"
+          multiplier: ""
+          delta: false
+          aggregationType: "OBSERVATION"
+          timeRollUpType: "AVERAGE"
+          clusterRollUpType: "INDIVIDUAL"
+          convert : {
+            "ENDANGERED" : "1",
+            "NODE-SAFE" : "2",
+            "MACHINE-SAFE" : "3"
+          }

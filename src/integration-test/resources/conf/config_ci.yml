@@ -7,31 +7,30 @@ metricPrefix: Custom Metrics|Cassandra
 
 # List of JMX Servers
 servers:
-  - displayName: "Cassandra Server 1"
+  - displayName: "Local Cassandra Server 1"
     #     displayName is a required field. This will be your server name that will show up in metric path.
 
     #     You can either use just a host and port to connect or use your full serviceURL to make the connection
     #     Do not choose both, comment one out and only use the other.
-    host: ""
-    port: ""
-#    serviceUrl: "service:jmx:rmi:///jndi/rmi://localhost:7199/jmxrmi"
+    host: "${CASSANDRA_HOST_1}"
+    port: "${CASSANDRA_PORT_1}"
+    #     serviceUrl: ""
 
-    username: "cassandra"
-    password: "cassandra"
+    username: "${CASSANDRA_USERNAME_1}"
+    password: "${CASSANDRA_PASSWORD_1}"
 
 #     You can either use the normal password or encrypt your password and provide the encrypted Password and encryptionKey.
 #     Do not provide both, only provide one and comment out the other.
 #      encryptedPassword: ""
 
 # The encryptionKey is global and the same key is used for all the servers listed in the extension
-#encryptionKey: ""
+#encryptionKey: "${ENCRYPTION_KEY}"
 
 # number of concurrent tasks.
 # Each server would require its own thread to process. Please provide adequate threads accordingly.
-# Please change the value based on the number of server instances you are monitoring.
-# If this number goes above 5, please update it.
 
 numberOfThreads: 5
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #                                      List of metrics
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,8 +57,8 @@ mbeans:
       include:
         - name: "Value"
           alias: "Store Percent Usage"
-          multiplier : 100
-          delta : true
+          multiplier: 100
+          delta: true
   - objectName: "org.apache.cassandra.metrics:type=Cache,scope=*,name=Size"
     mbeanKeys: ["type", "scope", "name"]
     metrics:
@@ -274,6 +273,7 @@ mbeans:
           alias: "Process CPU Load"
         - name: "AvailableProcessors"
           alias: "Number of Available Processors"
+          multiplier: 10
         - name: "FreePhysicalMemorySize"
           alias: "Free Physical Memory"
         - name: "OpenFileDescriptorCount"
@@ -299,21 +299,20 @@ mbeans:
         - name: "NonHeapMemoryUsage.used"
           alias: "Non Heap Memory Usage|Used"
 
-
-
 separatorForMetricLists: ":"
 
 
 # Generate a custom dashboard based on the provided template
 customDashboard:
   enabled: true
-  dashboardName: "Cassandra Dashboard"
+  dashboardName: "Cassandra SIM Dashboard"
   # Update the path to the dashboard file.
   pathToSIMDashboard: "monitors/CassandraMonitor/CustomDashboard_SIM.json"
   pathToNormalDashboard: "monitors/CassandraMonitor/CustomDashboard_Cassandra.json"
+  periodicDashboardCheckInSeconds: 60
 
 controllerInfo:
-  controllerHost: "controller"
+  controllerHost: "${APPDYNAMICS_CONTROLLER_HOST_NAME}"
   controllerPort: 8080
   account: "customer1"
   username: "user1"
@@ -322,7 +321,7 @@ controllerInfo:
   controllerSslEnabled: false
   enableOrchestration: false
   uniqueHostId: ""
-  accountAccessKey: ""
+  accountAccessKey: "${APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY}"
   machinePath: ""
   simEnabled: true
   applicationName: ""
@@ -337,6 +336,8 @@ metricPathReplacements:
     replaceWith: "%"
   - replace: "OneMinuteRate"
     replaceWith: "1 min Rate"
+  - replace: "CommitLog"
+    replaceWith: "Commit Log"
   - replace: ","
     replaceWith: "-"
   - replace: "."
