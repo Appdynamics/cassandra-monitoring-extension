@@ -1,4 +1,5 @@
 # AppDynamics Monitoring Extension for use with Cassandra ##
+
 An AppDynamics extension to be used with a stand alone Java machine agent to provide metrics for Cassandra servers.
 ## Use case
 
