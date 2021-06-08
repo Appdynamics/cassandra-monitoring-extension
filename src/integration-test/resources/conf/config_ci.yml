@@ -1,0 +1,346 @@
+### ANY CHANGES TO THIS FILE DOES NOT REQUIRE A RESTART ###
+#This will create this metric in all the tiers, under this path
+metricPrefix: Custom Metrics|Cassandra
+
+#This will create it in specific Tier. Replace <TIER_NAME>
+#metricPrefix: "Server|Component:<TIER NAME OR TIER ID>|Custom Metrics|Cassandra"
+
+# List of JMX Servers
+servers:
+  - displayName: "Local Cassandra Server 1"
+    #     displayName is a required field. This will be your server name that will show up in metric path.
+
+    #     You can either use just a host and port to connect or use your full serviceURL to make the connection
+    #     Do not choose both, comment one out and only use the other.
+    host: "${CASSANDRA_HOST_1}"
+    port: "${CASSANDRA_PORT_1}"
+    #     serviceUrl: ""
+
+    username: "${CASSANDRA_USERNAME_1}"
+    password: "${CASSANDRA_PASSWORD_1}"
+
+#     You can either use the normal password or encrypt your password and provide the encrypted Password and encryptionKey.
+#     Do not provide both, only provide one and comment out the other.
+#      encryptedPassword: ""
+
+# The encryptionKey is global and the same key is used for all the servers listed in the extension
+#encryptionKey: "${ENCRYPTION_KEY}"
+
+# number of concurrent tasks.
+# Each server would require its own thread to process. Please provide adequate threads accordingly.
+
+numberOfThreads: 5
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#                                      List of metrics
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Glossary of terms(These terms are used as properties for each metric):
+#   alias
+#   aggregationType
+#   timeRollUpType
+#   clusterRollUpType
+#   multiplier -->not for derived metrics
+#   convert --> not for derived metrics
+#   delta --> not for derived metrics
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+#prefix used to show metricsold in AppDynamics
+#metricPrefix:  "Custom Metrics|Cassandra|"
+
+#This will report metricsold only to the specified tier. Please refer to the 'metric path' section of this document https://docs.appdynamics.com/display/PRO42/Build+a+Monitoring+Extension+Using+Java  for instructions on how to obtain the component ID.
+mbeans:
+  # This Mbean will extract out Broker metrics
+  - objectName: "org.apache.cassandra.metrics:type=Cache,scope=*,name=Capacity"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Store Percent Usage"
+          multiplier: 100
+          delta: true
+  - objectName: "org.apache.cassandra.metrics:type=Cache,scope=*,name=Size"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Cache Size"
+  - objectName: "org.apache.cassandra.metrics:type=Cache,scope=*,name=Hits"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Count"
+          alias: "Number Of Hits"
+  - objectName: "org.apache.cassandra.metrics:type=Cache,scope=*,name=Requests"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Count"
+          alias: "Number Of Requests"
+
+
+  #mBeans for ClientRequest Metrics
+  - objectName: "org.apache.cassandra.metrics:type=ClientRequest,scope=*,name=Latency"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Count"
+          alias: "Latency"
+        - name: "OneMinuteRate"
+          alias: "One Minute Rate"
+  - objectName: "org.apache.cassandra.metrics:type=ClientRequest,scope=*,name=Unavailables"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Count"
+          alias: "Number of Unavailables"
+        - name: "OneMinuteRate"
+          alias: "One Minute Rate"
+
+  #mBeans for ColumnFamily Metrics
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=TotalDiskSpaceUsed"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Total Disk Space Used"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=BloomFilterDiskSpaceUsed"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Bloom Filter Disk Space Used"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=BloomFilterFalsePositives"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Bloom Filter False Positives"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=BloomFilterFalseRatio"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Bloom Filter False Ratio"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=CompressionRatio"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Compression Ratio"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=LiveDiskSpaceUsed"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Live Disk Space Used"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=LiveSSTableCount"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Live SS Table Count"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MaxRowSize"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Max Row Size"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MeanRowSize"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Mean Row Size"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MemtableLiveDataSize"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Memtable Data Size"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MemtableColumnsCount"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Number of Memtable Columns"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MemtableSwitchCount"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Memtable Switch Count"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=MinRowSize"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Min Row Size"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=ReadLatency"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Count"
+          alias: "Latency"
+        - name: "Mean"
+          alias: "Mean"
+        - name: "Max"
+          alias: "Max"
+        - name: "99thPercentile"
+          alias: "99th Percentile"
+  - objectName: "org.apache.cassandra.metrics:type=ColumnFamily,name=WriteLatency"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Count"
+          alias: "Latency"
+        - name: "Mean"
+          alias: "Mean"
+        - name: "Max"
+          alias: "Max"
+        - name: "99thPercentile"
+          alias: "99th Percentile"
+
+  # mBeans for Storage Metrics
+  - objectName: "org.apache.cassandra.metrics:type=Storage,name=Load"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Count"
+          alias: "System Load"
+  - objectName: "org.apache.cassandra.metrics:type=Storage,name=Exceptions"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Count"
+          alias: "Number of Exceptions"
+
+  # mBeans for ThreadPool Metrics
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,path=*,scope=*,name=ActiveTasks"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Number of Active Tasks"
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,path=*,scope=*,name=CompletedTasks"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Number of Completed Tasks"
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,path=*,scope=*,name=PendingTasks"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Number of Pending Tasks"
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,path=*,scope=*,name=CurrentlyBlockedTasks"
+    mbeanKeys: ["type", "scope", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Number of Currently Blocked Tasks"
+
+  # mBeans for CommitLog Metrics
+  - objectName: "org.apache.cassandra.metrics:type=CommitLog,name=CompletedTasks"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Number of Completed Tasks"
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,name=PendingTasks"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Number of Pending Tasks"
+  - objectName: "org.apache.cassandra.metrics:type=ThreadPools,name=TotalCommitLogSize"
+    mbeanKeys: ["type", "name"]
+    metrics:
+      include:
+        - name: "Value"
+          alias: "Total Commit Log Size"
+  #mBeans for Memory and System Metrics
+  - objectName: "java.lang:type=OperatingSystem"
+    mbeanKeys: ["type"]
+    metrics:
+      include:
+        - name: "TotalPhysicalMemorySize"
+          alias: "Total Physical Memory"
+        - name: "SystemCpuLoad"
+          alias: "Total CPU System Load"
+        - name: "ProcessCpuLoad"
+          alias: "Process CPU Load"
+        - name: "AvailableProcessors"
+          alias: "Number of Available Processors"
+          multiplier: 10
+        - name: "FreePhysicalMemorySize"
+          alias: "Free Physical Memory"
+        - name: "OpenFileDescriptorCount"
+          alias: "Open File Descriptor Count"
+        - name: "MaxFileDescriptorCount"
+          alias: "Maximum File Descriptor Count"
+        - name: "TotalSwapSpaceSize"
+          alias: "Total Swap Size"
+        - name: "FreeSwapSpaceSize"
+          alias: "Free Swap Size"
+
+  #mBeans for JVM Metrics
+  - objectName: "java.lang:type=Memory"
+    mbeanKeys: ["type"]
+    metrics:
+      include:
+        - name: "HeapMemoryUsage.committed"
+          alias: "Heap Memory Usage|Committed"
+        - name: "HeapMemoryUsage.used"
+          alias: "Heap Memory Usage|Used"
+        - name: "NonHeapMemoryUsage.committed"
+          alias: "Non Heap Memory Usage|Committed"
+        - name: "NonHeapMemoryUsage.used"
+          alias: "Non Heap Memory Usage|Used"
+
+separatorForMetricLists: ":"
+
+
+# Generate a custom dashboard based on the provided template
+customDashboard:
+  enabled: true
+  dashboardName: "Cassandra SIM Dashboard"
+  # Update the path to the dashboard file.
+  pathToSIMDashboard: "monitors/CassandraMonitor/CustomDashboard_SIM.json"
+  pathToNormalDashboard: "monitors/CassandraMonitor/CustomDashboard_Cassandra.json"
+  periodicDashboardCheckInSeconds: 60
+
+controllerInfo:
+  controllerHost: "${APPDYNAMICS_CONTROLLER_HOST_NAME}"
+  controllerPort: 8080
+  account: "customer1"
+  username: "user1"
+  password: "welcome"
+  encryptedPassword: ""
+  controllerSslEnabled: false
+  enableOrchestration: false
+  uniqueHostId: ""
+  accountAccessKey: "${APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY}"
+  machinePath: ""
+  simEnabled: true
+  applicationName: ""
+  tierName: ""
+  nodeName: ""
+
+# Note: If the current "metricPathReplacements" is not working on your current machine,
+# please add escape charaters "\\" before your value. It changes from OS to OS, some need it, some don't
+# For Example, replace: "%" -> Becomes -> replace: "\\%"
+metricPathReplacements:
+  - replace: "Percent"
+    replaceWith: "%"
+  - replace: "OneMinuteRate"
+    replaceWith: "1 min Rate"
+  - replace: "CommitLog"
+    replaceWith: "Commit Log"
+  - replace: ","
+    replaceWith: "-"
+  - replace: "."
+    replaceWith: "-"
+  - replace: "ms"
+    replaceWith: ""
