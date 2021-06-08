@@ -1,0 +1,14 @@
+FROM alpine:latest
+RUN apk add --no-cache openjdk8
+WORKDIR /opt/appdynamics/machine-agent
+COPY --from=dtr.corp.appdynamics.com/appdynamics/machine-agent /opt/appdynamics/machine-agent .
+COPY target/CassandraMonitor-*.zip monitors/CassandraMonitor.zip
+RUN unzip -q monitors/CassandraMonitor.zip -d monitors/ && \
+    rm monitors/CassandraMonitor.zip
+COPY src/integration-test/resources/conf/config_ci.yml monitors/CassandraMonitor/config.yml
+# enable debug logging
+RUN sed -i '1,/sigar/ s/info/debug/' conf/logging/log4j.xml
+# Setup JAVA_HOME
+ENV JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk
+ENV PATH="$JAVA_HOME/bin:${PATH}"
+CMD ["sh", "-c", "java ${MACHINE_AGENT_PROPERTIES} -jar machineagent.jar"]
