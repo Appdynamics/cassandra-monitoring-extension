@@ -13,10 +13,3 @@ target
 # Package Files #
 *.war
 *.ear
-
-.teamcity/*
-docker-compose.yml
-Dockerfile_MA
-Dockerfile_WorkBench
-Makefile
-src/integration-test/*
